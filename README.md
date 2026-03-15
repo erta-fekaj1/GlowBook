@@ -99,3 +99,9 @@ Në të ardhmen aplikacioni mund të përfshijë edhe funksione shtesë si:
 
 Developed by
 **Erta Fekaj**
+
+## 📌 Version
+
+Current Version: 1.0
+
+This project is currently under development as part of a full-stack application for managing nail service bookings.
