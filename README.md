@@ -1,107 +1,91 @@
-# 💅 Glow Book
+# 💅 Glow Book - Nail Salon Management System
 
-## 📌 Project Description
+![.NET](https://img.shields.io/badge/.NET-8.0-purple)
+![C#](https://img.shields.io/badge/C%23-12.0-green)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-Glow Book është një aplikacion **full-stack për rezervimin e termineve për shërbime të thonjve**.
-Qëllimi i këtij aplikacioni është të lehtësojë procesin e rezervimit për klientët dhe menaxhimin e termineve për nail artistët.
+## 📌 About
+Glow Book është një sistem për menaxhimin e një saloni thonjsh. Aplikacioni digjitalizon procesin e rezervimeve duke zëvendësuar bllokun tradicional me një sistem automatik që menaxhon klientët, shërbimet, stafin dhe financat. Projekti është ndërtuar me **Clean Architecture** dhe **Repository Pattern** duke përdorur **C# 12** dhe **.NET 8**.
 
-Përmes aplikacionit, klientët mund të shohin shërbimet e disponueshme dhe të rezervojnë termine në mënyrë të thjeshtë, ndërsa administratori (nail artist) mund të menaxhojë rezervimet, shërbimet dhe orarin e punës.
+## ✨ Features
 
-Ky projekt është zhvilluar si pjesë e një projekti akademik për të demonstruar ndërtimin e një aplikacioni modern **full-stack**.
+**Klientët:**
+- Regjistrim dhe login
+- Shikimi i shërbimeve
+- Rezervim dhe anulim terminesh
+- Historiku i rezervimeve
+- Komente dhe vlerësime
 
----
+**Admin:**
+- Menaxhimi i rezervimeve (pranim/refuzim)
+- Shtimi dhe fshirja e shërbimeve
+- Menaxhimi i stafit
+- Statistikat e të ardhurave
 
-## ✨ Main Features
+**Specifike për Salon:**
+- Katalog shërbimesh (Manicure, Pedicure, Acrylic, Gel, Nail Art)
+- Menaxhimi i produkteve dhe stokut
+- Program besnikërie me pikë
+- Forma dhe gjatësi të ndryshme thonjsh
+  ┌─────────────────────────────────────────┐
+│ GlowBook.ConsoleUI │ ← Presentation
+├─────────────────────────────────────────┤
+│ GlowBook.Application │ ← Business Logic
+├─────────────────────────────────────────┤
+│ GlowBook.Core │ ← Domain (Entities, Interfaces)
+├─────────────────────────────────────────┤
+│ GlowBook.Infrastructure │ ← Data Access (CSV)
+└─────────────────────────────────────────┘
 
-### Client
+**4 shtresa me Clean Architecture:**
+- **Core** - Entitetet, Enums, Interfaces
+- **Infrastructure** - FileRepository, CSV storage
+- **Application** - Logjika e biznesit, Services
+- **ConsoleUI** - Ndërfaqja e përdoruesit
 
-* Krijimi i një llogarie
-* Kyçja në sistem
-* Shikimi i listës së shërbimeve
-* Rezervimi i një termini
-* Anulimi i rezervimeve
-* Shikimi i historikut të rezervimeve
+## 🛠 Tech Stack
 
-### Admin
-
-* Menaxhimi i rezervimeve
-* Pranimi ose refuzimi i rezervimeve
-* Shtimi dhe fshirja e shërbimeve
-* Menaxhimi i orarit të punës
-* Shikimi i statistikave të rezervimeve
-
----
-
-## 🛠 Technologies
-
-Ky aplikacion planifikohet të ndërtohet duke përdorur këto teknologji:
-
-### Frontend
-
-* HTML
-* CSS
-* Bootstrap
-* JavaScript
-
-### Backend
-
-* Node.js
-* Express.js
-
-### Database
-
-* PostgreSQL
-
-### Tools
-
-* Git
-* GitHub
-
----
+| Technology | Version |
+|------------|---------|
+| C# | 12.0 |
+| .NET | 8.0 |
+| CSV | Data Storage |
+| Git/GitHub | Version Control |
 
 ## 📂 Project Structure
-
-```
-glow-book/
-│
-├── frontend/
-│   ├── html
-│   ├── css
-│   └── javascript
-│
-├── backend/
-│   ├── routes
-│   ├── controllers
-│   └── server
-│
+GlowBook/
+├── GlowBook.Core/ # Domain Layer
+│ ├── Entities/ # User, Service, Appointment, etc.
+│ ├── Enums/ # UserRole, AppointmentStatus
+│ └── Interfaces/ # IRepository<T>
+├── GlowBook.Infrastructure/ # Data Layer
+│ ├── Data/Database/ # CSV files
+│ └── Repositories/ # FileRepository<T>
+├── GlowBook.Application/ # Business Layer
+│ └── Services/
+├── GlowBook.ConsoleUI/ # UI Layer
+│ └── Program.cs
+├── Docs/ # Documentation
 └── README.md
-```
 
----
+## 🚀 Getting Started
 
-## 🎯 Project Goal
+```bash
+git clone https://github.com/ertafekaj/GlowBook.git
+cd GlowBook
+dotnet restore
+dotnet run --project GlowBook.ConsoleUI
+📚 Documentation
+Architecture
 
-Qëllimi i projektit është të ndërtohet një aplikacion praktik për rezervimin e termineve që demonstron përdorimin e teknologjive **full-stack**, menaxhimin e përdoruesve dhe rezervimeve, si dhe organizimin e një projekti në GitHub.
+Class Documentation
 
----
+Repository Pattern
 
-## 🚀 Future Improvements
+👩‍💻 Author
+Erta Fekaj
 
-Në të ardhmen aplikacioni mund të përfshijë edhe funksione shtesë si:
+📌 Version
+1.0.0
 
-* Njoftime me email për rezervime
-* Pagesa online për rezervimin e termineve
-* Panel më të avancuar për statistika
-
----
-
-## 👩‍💻 Author
-
-Developed by
-**Erta Fekaj**
-
-## 📌 Version
-
-Current Version: 1.0
-
-This project is currently under development as part of a full-stack application for managing nail service bookings.
+## 🏗️ Architecture
