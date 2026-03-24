@@ -78,6 +78,16 @@ Glow Book ka 4 shtresa:
 | **Scalability** | Mund të shkallëzohet nga lokal në cloud |
 | **Code Reusability** | Core mund të ripërdoret për frontende të ndryshme |
 
+## 🎯 SOLID Principles Applied
+
+| Principle | Implementation |
+|-----------|----------------|
+| **S**ingle Responsibility | Çdo shtresë ka një përgjegjësi: Core (domain), Infrastructure (data), Application (logic), ConsoleUI (UI) |
+| **O**pen/Closed | IRepository<T> është e hapur për extension (mund të shtojmë SQLRepository) por e mbyllur për modification |
+| **L**iskov Substitution | FileRepository<T> mund të zëvendësojë IRepository<T> pa ndryshuar logjikën |
+| **I**nterface Segregation | IRepository<T> ka metoda të fokusuara, jo interface të madhe |
+| **D**ependency Inversion | Core nuk varet nga Infrastructure; të dyja varen nga abstraksioni (IRepository<T>) |
+
 ---
 
 *Versioni: 1.0*
