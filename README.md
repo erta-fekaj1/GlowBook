@@ -27,15 +27,20 @@ Glow Book është një sistem për menaxhimin e një saloni thonjsh. Aplikacioni
 - Menaxhimi i produkteve dhe stokut
 - Program besnikërie me pikë
 - Forma dhe gjatësi të ndryshme thonjsh
-  ┌─────────────────────────────────────────┐
-│ GlowBook.ConsoleUI │ ← Presentation
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────┐
+│         GlowBook.ConsoleUI              │  ← Presentation
 ├─────────────────────────────────────────┤
-│ GlowBook.Application │ ← Business Logic
+│         GlowBook.Application            │  ← Business Logic
 ├─────────────────────────────────────────┤
-│ GlowBook.Core │ ← Domain (Entities, Interfaces)
+│           GlowBook.Core                 │  ← Domain (Entities, Interfaces)
 ├─────────────────────────────────────────┤
-│ GlowBook.Infrastructure │ ← Data Access (CSV)
+│       GlowBook.Infrastructure           │  ← Data Access (CSV)
 └─────────────────────────────────────────┘
+```
 
 **4 shtresa me Clean Architecture:**
 - **Core** - Entitetet, Enums, Interfaces
@@ -53,20 +58,24 @@ Glow Book është një sistem për menaxhimin e një saloni thonjsh. Aplikacioni
 | Git/GitHub | Version Control |
 
 ## 📂 Project Structure
+
+```
 GlowBook/
-├── GlowBook.Core/ # Domain Layer
-│ ├── Entities/ # User, Service, Appointment, etc.
-│ ├── Enums/ # UserRole, AppointmentStatus
-│ └── Interfaces/ # IRepository<T>
-├── GlowBook.Infrastructure/ # Data Layer
-│ ├── Data/Database/ # CSV files
-│ └── Repositories/ # FileRepository<T>
-├── GlowBook.Application/ # Business Layer
-│ └── Services/
-├── GlowBook.ConsoleUI/ # UI Layer
-│ └── Program.cs
-├── Docs/ # Documentation
+├── GlowBook.Core/                 # Domain Layer
+│   ├── Entities/                  # User, Service, Appointment
+│   ├── Enums/                     # UserRole, AppointmentStatus
+│   └── Interfaces/                # IRepository<T>
+├── GlowBook.Infrastructure/       # Data Layer
+│   ├── Data/
+│   │   └── Database/              # CSV files
+│   └── Repositories/              # FileRepository<T>
+├── GlowBook.Application/          # Business Layer
+│   └── Services/
+├── GlowBook.ConsoleUI/            # UI Layer
+│   └── Program.cs
+├── Docs/                          # Documentation
 └── README.md
+```
 
 ## 🚀 Getting Started
 
