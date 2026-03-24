@@ -96,5 +96,3 @@ Erta Fekaj
 
 📌 Version
 1.0.0
-
-## 🏗️ Architecture
