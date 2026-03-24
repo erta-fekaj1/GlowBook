@@ -1,0 +1,21 @@
+# Build outputs
+*/bin/
+*/obj/
+*.dll
+*.exe
+*.pdb
+*.exe.config
+*.cache
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# User files
+*.user
+*.suo
+*.userprefs
