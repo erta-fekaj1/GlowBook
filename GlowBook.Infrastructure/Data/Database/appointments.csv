@@ -1,0 +1,2 @@
+﻿Id,UserId,ServiceId,TechnicianId,AppointmentDate,EndTime,Status,Notes,CreatedAt,IsDeleted
+1,2,1,1,2026-03-25 10:00,2026-03-25 11:00,Confirmed,First appointment,2026-03-24,False

@@ -11,19 +11,6 @@
         "runtime": {
           "bin/placeholder/GlowBook.Core.dll": {}
         }
-      },
-      "GlowBook.Infrastructure/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v8.0",
-        "dependencies": {
-          "GlowBook.Core": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/GlowBook.Infrastructure.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/GlowBook.Infrastructure.dll": {}
-        }
       }
     }
   },
@@ -32,17 +19,11 @@
       "type": "project",
       "path": "../GlowBook.Core/GlowBook.Core.csproj",
       "msbuildProject": "../GlowBook.Core/GlowBook.Core.csproj"
-    },
-    "GlowBook.Infrastructure/1.0.0": {
-      "type": "project",
-      "path": "../GlowBook.Infrastructure/GlowBook.Infrastructure.csproj",
-      "msbuildProject": "../GlowBook.Infrastructure/GlowBook.Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "GlowBook.Core >= 1.0.0",
-      "GlowBook.Infrastructure >= 1.0.0"
+      "GlowBook.Core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -52,11 +33,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.ConsoleUI\\GlowBook.ConsoleUI.csproj",
-      "projectName": "GlowBook.ConsoleUI",
-      "projectPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.ConsoleUI\\GlowBook.ConsoleUI.csproj",
+      "projectUniqueName": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Infrastructure\\GlowBook.Infrastructure.csproj",
+      "projectName": "GlowBook.Infrastructure",
+      "projectPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Infrastructure\\GlowBook.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.ConsoleUI\\obj\\",
+      "outputPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -80,9 +61,6 @@
           "projectReferences": {
             "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Core\\GlowBook.Core.csproj": {
               "projectPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Core\\GlowBook.Core.csproj"
-            },
-            "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Infrastructure\\GlowBook.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Infrastructure\\GlowBook.Infrastructure.csproj"
             }
           }
         }
