@@ -26,6 +26,8 @@ Glow Book ka 4 shtresa:
 
 ## Rrjedha e Varësive
 
+ConsoleUI ──→ Application ──→ Core ←── Infrastructure
+
 **Shpjegimi:**
 - Core nuk varet nga asnjë shtresë tjetër
 - Application varet vetëm nga Core
@@ -45,7 +47,14 @@ Glow Book ka 4 shtresa:
 ## Rrjedha e të Dhënave
 
 ### Leximi i të dhënave:
+
+Kërkesa e Përdoruesit → ConsoleUI → Repository.GetAll() → CSV File → Kthimi i të Dhënave
+
 ### Shkrimi i të dhënave:
+
+Input i Përdoruesit → ConsoleUI → Repository.Add() → CSV File → Ruajtja e Ndryshimeve
+
+
 ## Teknologjitë
 
 | Teknologjia | Versioni | Përshkrimi |
@@ -80,15 +89,36 @@ Glow Book ka 4 shtresa:
 
 ## 🎯 SOLID Principles Applied
 
-| Principle | Implementation |
-|-----------|----------------|
-| **S**ingle Responsibility | Çdo shtresë ka një përgjegjësi: Core (domain), Infrastructure (data), Application (logic), ConsoleUI (UI) |
-| **O**pen/Closed | IRepository<T> është e hapur për extension (mund të shtojmë SQLRepository) por e mbyllur për modification |
-| **L**iskov Substitution | FileRepository<T> mund të zëvendësojë IRepository<T> pa ndryshuar logjikën |
-| **I**nterface Segregation | IRepository<T> ka metoda të fokusuara, jo interface të madhe |
-| **D**ependency Inversion | Core nuk varet nga Infrastructure; të dyja varen nga abstraksioni (IRepository<T>) |
+| Principle | Implementation in Glow Book |
+|-----------|----------------------------|
+| **S**ingle Responsibility | 4 projekte të ndara: Core (domain), Infrastructure (data), Application (logic), ConsoleUI (presentation). Çdo shtresë ka vetëm një përgjegjësi. |
+| **O**pen/Closed | `IRepository<T>` është e hapur për extension (mund të shtojmë `SqlRepository<T>`), por e mbyllur për modification. |
+| **L**iskov Substitution | `FileRepository<T>` mund të zëvendësojë `IRepository<T>` pa ndryshuar asnjë rresht kodi në shtresat e larta. |
+| **I**nterface Segregation | `IRepository<T>` ka metoda të fokusuara (GetAll, GetById, Add, Update, Delete) – jo një interface të madhe dhe të panevojshme. |
+| **D**ependency Inversion | Core nuk varet nga Infrastructure. Të dyja varen nga abstraksioni (`IRepository<T>`). Dependencies point inward. |
 
----
+### Code Examples
 
-*Versioni: 1.0*
-*Data: March 24, 2026*
+#### Dependency Inversion
+```csharp
+// Core layer - defines abstraction
+public interface IRepository<T> { ... }
+
+// Infrastructure layer - implements abstraction
+public class FileRepository<T> : IRepository<T> { ... }
+
+// Application layer - depends on abstraction, not concrete
+public class AppointmentService
+{
+    private readonly IRepository<Appointment> _repo;
+    public AppointmentService(IRepository<Appointment> repo) { ... }
+}
+
+// Open for extension - we can add SQL implementation
+public class SqlRepository<T> : IRepository<T> { ... }
+
+// Closed for modification - no changes needed in existing code
+// The IRepository interface remains unchanged
+
+Versioni: 1.0
+Data: March 25, 2026
