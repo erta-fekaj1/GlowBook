@@ -10,3 +10,7 @@ C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\obj\Debug\net8.0\Glow
 C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\obj\Debug\net8.0\refint\GlowBook.Application.dll
 C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\obj\Debug\net8.0\GlowBook.Application.pdb
 C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\obj\Debug\net8.0\ref\GlowBook.Application.dll
+C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\bin\Debug\net8.0\GlowBook.Core.dll
+C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\bin\Debug\net8.0\GlowBook.Core.pdb
+C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\obj\Debug\net8.0\GlowBook.Application.csproj.AssemblyReference.cache
+C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.Application\obj\Debug\net8.0\GlowBook.5197E098.Up2Date

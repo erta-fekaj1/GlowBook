@@ -19,3 +19,5 @@ C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.ConsoleUI\bin\Debug\net8.0\GlowBo
 C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.ConsoleUI\bin\Debug\net8.0\GlowBook.Infrastructure.pdb
 C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.ConsoleUI\obj\Debug\net8.0\GlowBook.ConsoleUI.csproj.AssemblyReference.cache
 C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.ConsoleUI\obj\Debug\net8.0\GlowBook.CF9AFB39.Up2Date
+C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.ConsoleUI\bin\Debug\net8.0\GlowBook.Application.dll
+C:\Users\pc\OneDrive\Desktop\GlowBook\GlowBook.ConsoleUI\bin\Debug\net8.0\GlowBook.Application.pdb

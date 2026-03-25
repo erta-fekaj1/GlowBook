@@ -8,11 +8,23 @@
     ".NETCoreApp,Version=v8.0": {
       "GlowBook.ConsoleUI/1.0.0": {
         "dependencies": {
+          "GlowBook.Application": "1.0.0",
           "GlowBook.Core": "1.0.0",
           "GlowBook.Infrastructure": "1.0.0"
         },
         "runtime": {
           "GlowBook.ConsoleUI.dll": {}
+        }
+      },
+      "GlowBook.Application/1.0.0": {
+        "dependencies": {
+          "GlowBook.Core": "1.0.0"
+        },
+        "runtime": {
+          "GlowBook.Application.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "GlowBook.Core/1.0.0": {
@@ -38,6 +50,11 @@
   },
   "libraries": {
     "GlowBook.ConsoleUI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GlowBook.Application/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -1,3 +1,3 @@
-﻿Id,Name,Email,PasswordHash,PhoneNumber,Role,CreatedAt,IsDeleted
-1,Admin,admin@glowbook.com,admin123,069123456,Admin,2026-03-24,False
-2,Erta Fekaj,erta@glowbook.com,erta123,069789012,Customer,2026-03-24,False
+Id,Name,Email,Password,PhoneNumber,Role,CreatedAt
+1,Admin,admin@glowbook.com,,069123456,Admin,3/24/2026 12:00:00 AM
+2,Erta Fekaj,erta@glowbook.com,,069789012,Customer,3/24/2026 12:00:00 AM
