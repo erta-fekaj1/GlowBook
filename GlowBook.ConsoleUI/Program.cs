@@ -71,4 +71,27 @@ class Program
         Console.WriteLine("\nPress any key to exit...");
         Console.ReadKey();
     }
+
+        Console.WriteLine("1. Shiko të gjithë përdoruesit");
+        Console.WriteLine("2. Shto përdorues të ri");
+        Console.WriteLine("3. Dil");
+
+        string choice = Console.ReadLine();
+
+        if (choice == "1")
+       {
+        var users = userRepo.GetAll();
+        foreach (var user in users)
+        Console.WriteLine($"{user.Id}. {user.Name} - {user.Email}");
+       }
+       else if (choice == "2")
+      {
+       var newUser = new User();
+       Console.Write("Emri: "); newUser.Name = Console.ReadLine();
+       Console.Write("Email: "); newUser.Email = Console.ReadLine();
+       Console.Write("Password: "); newUser.Password = Console.ReadLine();
+    
+       userRepo.Add(newUser);
+       Console.WriteLine("✅ Përdoruesi u shtua!");
+ }
 }
