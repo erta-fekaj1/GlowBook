@@ -2,6 +2,7 @@
 using GlowBook.Core.Entities;
 using GlowBook.Core.Interfaces;
 using GlowBook.Infrastructure.Repositories;
+using GlowBook.Application.Services;
 
 namespace GlowBook.ConsoleUI;
 
@@ -34,8 +35,9 @@ class Program
             return;
         }
         
-        // Testo User Repository
+        // Testo User Repository dhe Service
         IRepository<User> userRepo = new FileRepository<User>(userPath);
+        UserService userService = new UserService(userRepo);
         
         Console.WriteLine("\n📋 Users in database:");
         var users = userRepo.GetAll();
@@ -78,11 +80,11 @@ class Program
         while (running)
         {
             Console.WriteLine("\n📋 MAIN MENU");
-            Console.WriteLine("1. Shiko të gjithë përdoruesit (GetAll)");
-            Console.WriteLine("2. Shiko përdorues sipas ID (GetById)");
-            Console.WriteLine("3. Shto përdorues të ri (Add)");
-            Console.WriteLine("4. Përditëso përdorues (Update)");
-            Console.WriteLine("5. Fshij përdorues (Delete)");
+            Console.WriteLine("1. Shiko të gjithë përdoruesit (me filtrim)");
+            Console.WriteLine("2. Shiko përdorues sipas ID");
+            Console.WriteLine("3. Shto përdorues të ri (me validim)");
+            Console.WriteLine("4. Përditëso përdorues");
+            Console.WriteLine("5. Fshij përdorues");
             Console.WriteLine("6. Dil nga programi");
             Console.Write("\nZgjidhni opsionin (1-6): ");
 
@@ -91,22 +93,35 @@ class Program
             switch (choice)
             {
                 case "1":
-                    Console.WriteLine("\n📋 LISTA E PËRDORUESVE:");
-                    var allUsers = userRepo.GetAll();
-                    foreach (var user in allUsers)
+                    Console.WriteLine("\n📋 LISTA E PËRDORUESVE (ME FILTRIM):");
+                    Console.Write("Filtro sipas emrit (Enter për të kaluar): ");
+                    string filterName = Console.ReadLine();
+                    Console.Write("Filtro sipas rolit (Customer/Admin - Enter për të kaluar): ");
+                    string filterRole = Console.ReadLine();
+                    
+                    var allUsers = userService.GetAllUsers(filterName, string.IsNullOrEmpty(filterRole) ? null : filterRole);
+                    
+                    if (allUsers.Count == 0)
                     {
-                        Console.WriteLine($"   ID: {user.Id}, Emri: {user.Name}, Email: {user.Email}, Roli: {user.Role}");
+                        Console.WriteLine("\n❌ Nuk u gjet asnjë përdorues me këtë filtër.");
                     }
-                    Console.WriteLine($"\n✅ Total përdorues: {allUsers.Count()}");
+                    else
+                    {
+                        foreach (var user in allUsers)
+                        {
+                            Console.WriteLine($"   ID: {user.Id}, Emri: {user.Name}, Email: {user.Email}, Roli: {user.Role}");
+                        }
+                        Console.WriteLine($"\n✅ Total përdorues: {allUsers.Count()}");
+                    }
                     break;
 
                 case "2":
                     Console.Write("\nShkruani ID-në e përdoruesit: ");
                     if (int.TryParse(Console.ReadLine(), out int id))
                     {
-                        var user = userRepo.GetById(id);
-                        if (user != null)
+                        try
                         {
+                            var user = userService.GetUserById(id);
                             Console.WriteLine($"\n✅ Përdoruesi u gjet:");
                             Console.WriteLine($"   ID: {user.Id}");
                             Console.WriteLine($"   Emri: {user.Name}");
@@ -115,9 +130,9 @@ class Program
                             Console.WriteLine($"   Telefoni: {user.PhoneNumber}");
                             Console.WriteLine($"   Krijuar: {user.CreatedAt}");
                         }
-                        else
+                        catch (KeyNotFoundException ex)
                         {
-                            Console.WriteLine($"\n❌ Përdoruesi me ID {id} nuk u gjet!");
+                            Console.WriteLine($"\n❌ {ex.Message}");
                         }
                     }
                     else
@@ -127,55 +142,75 @@ class Program
                     break;
 
                 case "3":
-                    Console.WriteLine("\n🆕 SHTO PËRDORUES TË RI:");
-                    var newUser = new User();
+                    Console.WriteLine("\n🆕 SHTO PËRDORUES TË RI (ME VALIDIM):");
                     
                     Console.Write("Emri: ");
-                    newUser.Name = Console.ReadLine();
+                    string name = Console.ReadLine();
                     
                     Console.Write("Email: ");
-                    newUser.Email = Console.ReadLine();
+                    string email = Console.ReadLine();
                     
-                    Console.Write("Password: ");
-                    newUser.Password = Console.ReadLine();
+                    Console.Write("Password (min 4 karaktere): ");
+                    string password = Console.ReadLine();
                     
                     Console.Write("Telefoni: ");
-                    newUser.PhoneNumber = Console.ReadLine();
+                    string phone = Console.ReadLine();
                     
-                    newUser.Role = "Customer";
-                    newUser.CreatedAt = DateTime.Now;
-                    
-                    userRepo.Add(newUser);
-                    Console.WriteLine($"\n✅ Përdoruesi u shtua me sukses! ID e krijuar: {newUser.Id}");
+                    try
+                    {
+                        var newUser = userService.AddUser(name, email, password, phone);
+                        Console.WriteLine($"\n✅ Përdoruesi u shtua me sukses! ID: {newUser.Id}");
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine($"\n❌ Gabim në validim: {ex.Message}");
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        Console.WriteLine($"\n❌ {ex.Message}");
+                    }
                     break;
 
                 case "4":
                     Console.Write("\nShkruani ID-në e përdoruesit për përditësim: ");
                     if (int.TryParse(Console.ReadLine(), out int updateId))
                     {
-                        var existingUser = userRepo.GetById(updateId);
-                        if (existingUser != null)
+                        try
                         {
+                            var existingUser = userService.GetUserById(updateId);
                             Console.WriteLine($"\n📝 Përdoruesi aktual: {existingUser.Name} - {existingUser.Email}");
+                            
                             Console.Write("Emri i ri (Enter për të lënë pa ndryshim): ");
                             string newName = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(newName)) existingUser.Name = newName;
+                            if (string.IsNullOrEmpty(newName)) newName = existingUser.Name;
                             
                             Console.Write("Email i ri (Enter për të lënë pa ndryshim): ");
                             string newEmail = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(newEmail)) existingUser.Email = newEmail;
+                            if (string.IsNullOrEmpty(newEmail)) newEmail = existingUser.Email;
                             
                             Console.Write("Telefoni i ri (Enter për të lënë pa ndryshim): ");
                             string newPhone = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(newPhone)) existingUser.PhoneNumber = newPhone;
+                            if (string.IsNullOrEmpty(newPhone)) newPhone = existingUser.PhoneNumber;
                             
-                            userRepo.Update(existingUser);
+                            userService.UpdateUser(updateId, newName, newEmail, newPhone);
                             Console.WriteLine("\n✅ Përdoruesi u përditësua me sukses!");
                         }
-                        else
+                        catch (KeyNotFoundException ex)
                         {
-                            Console.WriteLine($"\n❌ Përdoruesi me ID {updateId} nuk u gjet!");
+                            Console.WriteLine($"\n❌ {ex.Message}");
                         }
+                        catch (ArgumentException ex)
+                        {
+                            Console.WriteLine($"\n❌ Gabim në validim: {ex.Message}");
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            Console.WriteLine($"\n❌ {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n❌ ID e pavlefshme!");
                     }
                     break;
 
@@ -183,13 +218,13 @@ class Program
                     Console.Write("\nShkruani ID-në e përdoruesit për fshirje: ");
                     if (int.TryParse(Console.ReadLine(), out int deleteId))
                     {
-                        var userToDelete = userRepo.GetById(deleteId);
-                        if (userToDelete != null)
+                        try
                         {
+                            var userToDelete = userService.GetUserById(deleteId);
                             Console.Write($"\n⚠️ A jeni i sigurt që doni të fshini '{userToDelete.Name}'? (po/jo): ");
                             if (Console.ReadLine().ToLower() == "po")
                             {
-                                userRepo.Delete(deleteId);
+                                userService.DeleteUser(deleteId);
                                 Console.WriteLine("\n✅ Përdoruesi u fshi me sukses!");
                             }
                             else
@@ -197,10 +232,14 @@ class Program
                                 Console.WriteLine("\n❌ Fshirja u anulua.");
                             }
                         }
-                        else
+                        catch (KeyNotFoundException ex)
                         {
-                            Console.WriteLine($"\n❌ Përdoruesi me ID {deleteId} nuk u gjet!");
+                            Console.WriteLine($"\n❌ {ex.Message}");
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n❌ ID e pavlefshme!");
                     }
                     break;
 
