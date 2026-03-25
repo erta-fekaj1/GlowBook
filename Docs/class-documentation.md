@@ -1,4 +1,8 @@
-# 📚 Glow Book - Class Documentation
+## 📊 Visual Class Diagram
+
+![Glow Book Class Diagram](./class-diagram.png)
+
+---# 📚 Glow Book - Class Documentation
 
 ## 📋 Table of Contents
 1. [Core Entities](#core-entities)
