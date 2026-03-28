@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GlowBook.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2157e6321eb30e63325362b8e767175d5331a6b5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ccd851cd27236bd0beedf5e320fac885d77372c8")]
 [assembly: System.Reflection.AssemblyProductAttribute("GlowBook.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GlowBook.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
