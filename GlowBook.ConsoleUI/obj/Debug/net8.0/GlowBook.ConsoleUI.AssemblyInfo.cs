@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GlowBook.ConsoleUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+03a5fb8758d2e801e7a2a6475506aff943e971dd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8ef482dac3452ee5926041323568b67fed3ab0ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("GlowBook.ConsoleUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GlowBook.ConsoleUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
