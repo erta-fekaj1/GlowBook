@@ -2,7 +2,7 @@
 
 ## 🎯 Përmbledhje
 
-Glow Book është një sistem për menaxhimin e një saloni thonjsh, i ndërtuar me **Clean Architecture** dhe **Repository Pattern**. Ky dokumentacion përshkruan implementimin e plotë të CRUD operacioneve për entitetin User.
+Glow Book është një sistem për menaxhimin e një saloni thonjsh, i ndërtuar me **Clean Architecture** dhe **Repository Pattern**. Ky dokumentacion përshkruan implementimin e plotë të CRUD operacioneve për entitetin User, si dhe API dhe Frontend.
 
 ---
 
@@ -28,8 +28,9 @@ Glow Book është një sistem për menaxhimin e një saloni thonjsh, i ndërtuar
 | **UpdateUser()** | Validon të dhënat dhe unicitetin e email-it |
 | **DeleteUser()** | Kontrollon nëse përdoruesi ekziston |
 
-### 3. UI Menu (Ushtrimi 3)
+### 3. UI — Console + Web (Ushtrimi 3)
 
+#### Console Menu
 | Opsioni | Funksioni |
 |---------|-----------|
 | 1 | Shiko të gjithë përdoruesit (me filtrim) |
@@ -39,117 +40,124 @@ Glow Book është një sistem për menaxhimin e një saloni thonjsh, i ndërtuar
 | 5 | Fshij përdorues |
 | 6 | Dil nga programi |
 
+#### Web Frontend
+| Funksioni | Përshkrimi |
+|-----------|------------|
+| **Lista** | Shfaq të gjithë përdoruesit në tabelë |
+| **Filtrim** | Filtro sipas emrit dhe rolit |
+| **Shto** | Formë për shtim të përdoruesit të ri |
+| **Edit** | Modal për përditësim |
+| **Delete** | Fshirje me konfirmim |
+
+### 4. REST API (GlowBook.API)
+
+| Endpoint | Metoda | Përshkrimi |
+|----------|--------|------------|
+| `/api/users` | GET | Merr të gjithë përdoruesit |
+| `/api/users/{id}` | GET | Merr përdoruesin sipas ID |
+| `/api/users` | POST | Shton përdorues të ri |
+| `/api/users/{id}` | PUT | Përditëson përdoruesin |
+| `/api/users/{id}` | DELETE | Fshin përdoruesin |
+| `/api/services` | GET/POST/PUT/DELETE | CRUD për shërbime |
+| `/api/appointments` | GET/POST/PUT/DELETE | CRUD për takime |
+
 ---
 
 ## 📸 Screenshots
 
-### 1. Fillimi i programit - Testimi i Repository Pattern
+### 1. Swagger UI — Të gjitha Endpoints
+![Swagger UI](screenshots/swagger.png)
 
-![Repository Test](screenshots/repository-test.png)
-
-Programi fillon duke testuar repository-t dhe shfaq të dhënat ekzistuese nga CSV files.
-
----
-
-### 2. Lista e përdoruesve me filtrim
-
-![GetAll with Filter](screenshots/getall-filter.png)
-
-**Shembull:** Listimi i të gjithë përdoruesve dhe filtrimi sipas rolit "Admin".
+API e dokumentuar me Swagger, duke shfaqur të gjitha endpoints për Users, Services dhe Appointments.
 
 ---
 
-### 3. Gjetja e përdoruesit sipas ID
+### 2. Swagger — GET /api/users Response
+![Swagger Response](screenshots/swagger-response.png)
 
-![GetById](screenshots/getbyid.png)
-
-**Shembull:** Gjetja e përdoruesit me ID 1 (Admin).
-
----
-
-### 4. Shtimi i përdoruesit të ri me validim
-
-![Add User](screenshots/add-user.png)
-
-**Shembull:** Shtimi i një përdoruesi të ri me validim të plotë.
+Testimi i endpoint `GET /api/users` me përgjigje **200 OK** dhe listën e përdoruesve në format JSON.
 
 ---
 
-### 5. Përditësimi i përdoruesit
+### 3. Frontend — Lista e Përdoruesve
+![Frontend](screenshots/frontend.png)
 
-![Update User](screenshots/update-user.png)
-
-**Shembull:** Përditësimi i emrit të përdoruesit.
+Web frontend me tabelën e përdoruesve, filtrat dhe butonat Edit/Delete të lidhur me API-n.
 
 ---
 
-### 6. Fshirja e përdoruesit
+### 4. Terminal — API Running
+![Terminal](screenshots/terminal.png)
 
-![Delete User](screenshots/delete-user.png)
-
-**Shembull:** Fshirja e përdoruesit me konfirmim.
+API po funksionon te `http://localhost:5000` me të gjitha shërbimet aktive.
 
 ---
 
 ## 🔄 Rrjedha e Plotë e Aplikacionit
-┌─────────────────────────────────────────────────────────────────┐
-│ UI LAYER │
-│ Program.cs (Menu) │
-│ ┌───────────────────────────────────────────────────────────┐ │
-│ │ User zgjedh opsionin → thirret UserService │ │
-│ └───────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────────────────────────┐
-│ SERVICE LAYER │
-│ UserService.cs │
-│ ┌───────────────────────────────────────────────────────────┐ │
-│ │ - Validime (emri jo bosh, email format, password min 4) │ │
-│ │ - Filtrim sipas emrit dhe rolit │ │
-│ │ - Thirr repository-in për CRUD │ │
-│ └───────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────────────────────────┐
-│ REPOSITORY LAYER │
-│ FileRepository.cs │
-│ ┌───────────────────────────────────────────────────────────┐ │
-│ │ - GetAll() - lexon CSV │ │
-│ │ - GetById() - gjen sipas ID │ │
-│ │ - Add() - shton dhe gjeneron ID │ │
-│ │ - Update() - përditëson │ │
-│ │ - Delete() - fshin │ │
-│ │ - SaveData() - ruan në CSV │ │
-│ └───────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-│
-▼
-┌─────────────────────────────────────────────────────────────────┐
-│ DATA STORAGE │
-│ CSV Files │
-│ ┌───────────────────────────────────────────────────────────┐ │
-│ │ users.csv, services.csv, appointments.csv │ │
-│ └───────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
+```
+┌─────────────────────────────────────┐
+│           UI LAYER                  │
+│  Console Menu  +  Web Frontend      │
+└─────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────┐
+│           API LAYER                 │
+│  UsersController                    │
+│  ServicesController                 │
+│  AppointmentsController             │
+│  CORS → localhost:5500              │
+└─────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────┐
+│         SERVICE LAYER               │
+│  UserService                        │
+│  - Validime                         │
+│  - Filtrim sipas emrit dhe rolit    │
+└─────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────┐
+│        REPOSITORY LAYER             │
+│  FileRepository<T>                  │
+│  - GetAll(), GetById()              │
+│  - Add(), Update(), Delete()        │
+│  - SaveData() → CSV                 │
+└─────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────┐
+│         DATA STORAGE                │
+│  users.csv                          │
+│  services.csv                       │
+│  appointments.csv                   │
+└─────────────────────────────────────┘
+```
+
+---
 
 ## 📁 Struktura e Projektit
+```
 GlowBook/
-├── GlowBook.Core/ # Domain Layer
-│ ├── Entities/ # User, Service, Appointment
-│ ├── Enums/ # UserRole, AppointmentStatus
-│ └── Interfaces/ # IRepository<T>
-├── GlowBook.Infrastructure/ # Data Layer
-│ ├── Data/Database/ # CSV files
-│ └── Repositories/ # FileRepository<T>
-├── GlowBook.Application/ # Business Layer
-│ └── Services/ # UserService
-├── GlowBook.ConsoleUI/ # UI Layer
-│ └── Program.cs # Menu interaktive
-├── Docs/ # Dokumentacioni
-└── README.md
-
+├── GlowBook.Core/            # Domain Layer
+│   ├── Entities/             # User, Service, Appointment
+│   └── Interfaces/           # IRepository<T>
+├── GlowBook.Infrastructure/  # Data Layer
+│   ├── Data/Database/        # CSV files
+│   └── Repositories/         # FileRepository<T>
+├── GlowBook.Application/     # Business Layer
+│   └── Services/             # UserService
+├── GlowBook.API/             # API Layer
+│   └── Controllers/          # UsersController, ServicesController, AppointmentsController
+├── GlowBook.ConsoleUI/       # Console UI Layer
+│   └── Program.cs            # Menu interaktive
+├── Frontend/                 # Web UI Layer
+│   ├── src/index.html        # Faqja kryesore
+│   ├── css/style.css         # Stilizimi
+│   └── js/app.js             # Logjika JS + fetch API
+└── Docs/                     # Dokumentacioni
+```
 
 ---
 
@@ -159,7 +167,7 @@ GlowBook/
 |----------|------------|---------|
 | **Ushtrimi 1** | Model + Repository (CRUD, CSV me 5+ rekorde) | ✅ Komplet |
 | **Ushtrimi 2** | Service me Logjikë (filtrim, validim) | ✅ Komplet |
-| **Ushtrimi 3** | UI — Menu (lidhja UI → Service → Repository → File) | ✅ Komplet |
+| **Ushtrimi 3** | UI — Console + Web Frontend + API | ✅ Komplet |
 | **Ushtrimi 4** | Dokumentimi (screenshots dhe shpjegim) | ✅ Komplet |
 
 ---
@@ -170,11 +178,13 @@ Të gjitha ushtrimet janë përfunduar me sukses:
 
 - ✅ **Repository Pattern** i implementuar plotësisht
 - ✅ **UserService** me validime dhe filtrim
-- ✅ **UI Menu** interaktive me 6 opsione
-- ✅ **Rrjedha** UI → Service → Repository → File funksionon komplet
+- ✅ **Console Menu** interaktive me 6 opsione
+- ✅ **REST API** me ASP.NET Core Web API + Swagger
+- ✅ **Web Frontend** i lidhur me API përmes CORS
+- ✅ **Rrjedha** UI → API → Service → Repository → File funksionon komplet
 - ✅ **Dokumentimi** me screenshot dhe shpjegim
 
 ---
 
-*Data: March 25, 2026*
+*Data: March 31, 2026*  
 *Autori: Erta Fekaj*
