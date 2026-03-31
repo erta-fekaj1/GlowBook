@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FBEAF0 0%, #EEEDFE 50%, #FBEAF0 100%); padding: 2rem; font-family: 'DM Sans', sans-serif; }
+        .gb-card { background: white; border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(212,83,126,0.12); }
+        .gb-logo { text-align: center; margin-bottom: 2rem; }
+        .gb-logo-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .gb-logo h1 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: #993556; margin: 0; letter-spacing: 1px; }
+        .gb-logo p { font-size: 0.8rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; margin: 4px 0 0; }
+        .gb-tabs { display: flex; background: #FBEAF0; border-radius: 12px; padding: 4px; margin-bottom: 1.5rem; }
+        .gb-tab { flex: 1; text-align: center; padding: 8px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; color: #B4B2A9; border: none; background: none; }
+        .gb-tab.active { background: white; color: #993556; box-shadow: 0 2px 8px rgba(212,83,126,0.15); }
+        .gb-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+        .gb-field label { font-size: 0.78rem; font-weight: 500; color: #72243E; letter-spacing: 0.5px; text-transform: uppercase; }
+        .gb-field input { padding: 12px 16px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.9rem; font-family: 'DM Sans', sans-serif; outline: none; transition: all 0.2s; color: #2C2C2A; }
+        .gb-field input:focus { border-color: #D4537E; box-shadow: 0 0 0 3px rgba(212,83,126,0.1); }
+        .gb-field input::placeholder { color: #D3D1C7; }
+        .gb-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; letter-spacing: 0.5px; }
+        .gb-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
+        .gb-forgot { text-align: right; margin-bottom: 0.5rem; }
+        .gb-forgot a { font-size: 0.78rem; color: #D4537E; text-decoration: none; }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .gb-toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
+        .gb-toast.success { background: #1D9E75; display: block; }
+        .gb-toast.error { background: #D85A30; display: block; }
+    </style>
+</head>
+<body>
+    <div class="gb-card">
+        <div class="gb-logo">
+            <div class="gb-logo-icon">💅</div>
+            <h1>Glow Book</h1>
+            <p>Nail Salon Management</p>
+        </div>
+
+        <div class="gb-tabs">
+            <button class="gb-tab active" onclick="switchTab('login')">Kyçu</button>
+            <button class="gb-tab" onclick="switchTab('register')">Regjistrohu</button>
+        </div>
+
+        <div id="loginPanel" class="panel active">
+            <div class="gb-field">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="emri@example.com">
+            </div>
+            <div class="gb-field">
+                <label>Fjalëkalimi</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            <div class="gb-forgot"><a href="#">Keni harruar fjalëkalimin?</a></div>
+            <button class="gb-btn" onclick="handleLogin()">Kyçu në llogarinë tuaj</button>
+        </div>
+
+        <div id="registerPanel" class="panel">
+            <div class="gb-field">
+                <label>Emri i plotë</label>
+                <input type="text" id="regName" placeholder="Ana Krasniqi">
+            </div>
+            <div class="gb-field">
+                <label>Email</label>
+                <input type="email" id="regEmail" placeholder="emri@example.com">
+            </div>
+            <div class="gb-field">
+                <label>Telefoni</label>
+                <input type="text" id="regPhone" placeholder="044 123 456">
+            </div>
+            <div class="gb-field">
+                <label>Fjalëkalimi</label>
+                <input type="password" id="regPassword" placeholder="Min. 4 karaktere">
+            </div>
+            <button class="gb-btn" onclick="handleRegister()">Krijo llogarinë</button>
+        </div>
+    </div>
+
+    <div class="gb-toast" id="toast"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.gb-tab').forEach((t, i) =>
+                t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
+            document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
+            document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'gb-toast ' + type;
+            setTimeout(() => t.className = 'gb-toast', 3000);
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            if (!email || !pass) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
+            try {
+                const res = await fetch(`${API}/users`);
+                const users = await res.json();
+                const user = users.find(u => u.email === email && u.password === pass);
+                if (user) {
+                    localStorage.setItem('glowbook_user', JSON.stringify(user));
+                    showToast('Mirë se vini, ' + user.name + '!', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                } else {
+                    showToast('Email ose fjalëkalim i gabuar!', 'error');
+                }
+            } catch (e) {
+                showToast('Nuk u lidh me serverin!', 'error');
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const pass = document.getElementById('regPassword').value;
+            if (!name || !email || !phone || !pass) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
+            if (pass.length < 4) { showToast('Fjalëkalimi min. 4 karaktere!', 'error'); return; }
+            try {
+                const res = await fetch(`${API}/users`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password: pass, phoneNumber: phone })
+                });
+                if (res.ok) {
+                    showToast('Llogaria u krijua me sukses!', 'success');
+                    setTimeout(() => switchTab('login'), 1500);
+                } else {
+                    const err = await res.json();
+                    showToast(err.message || 'Gabim!', 'error');
+                }
+            } catch (e) {
+                showToast('Nuk u lidh me serverin!', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
