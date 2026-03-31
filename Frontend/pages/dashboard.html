@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
+        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
+        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
+        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
+        .nav-item:hover { background: #FBEAF0; color: #993556; }
+        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
+        .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+        .nav-bottom { margin-top: auto; }
+        .main { margin-left: 220px; padding: 2rem; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
+        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
+        .user-badge { display: flex; align-items: center; gap: 10px; background: white; padding: 8px 16px; border-radius: 50px; border: 1px solid #F4C0D1; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #D4537E, #993556); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem; font-weight: 500; }
+        .user-name { font-size: 0.85rem; font-weight: 500; color: #72243E; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; border-radius: 16px; padding: 1.25rem; border: 1px solid #F4C0D1; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.1; }
+        .stat-card.pink::before { background: #D4537E; }
+        .stat-card.purple::before { background: #7F77DD; }
+        .stat-card.teal::before { background: #1D9E75; }
+        .stat-card.amber::before { background: #BA7517; }
+        .stat-label { font-size: 0.75rem; color: #B4B2A9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .stat-value { font-size: 1.8rem; font-weight: 500; color: #2C2C2A; margin-bottom: 4px; }
+        .stat-sub { font-size: 0.75rem; color: #1D9E75; }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        .card { background: white; border-radius: 16px; padding: 1.25rem; border: 1px solid #F4C0D1; }
+        .card-title { font-size: 0.9rem; font-weight: 500; color: #72243E; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .card-title span { font-size: 0.75rem; color: #D4537E; cursor: pointer; font-weight: 400; }
+        .appt-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #FBEAF0; }
+        .appt-item:last-child { border-bottom: none; }
+        .appt-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #F4C0D1, #EEEDFE); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 500; color: #993556; flex-shrink: 0; }
+        .appt-info { flex: 1; }
+        .appt-name { font-size: 0.85rem; font-weight: 500; color: #2C2C2A; }
+        .appt-service { font-size: 0.75rem; color: #B4B2A9; }
+        .appt-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+        .badge-pending { background: #FAEEDA; color: #854F0B; }
+        .badge-confirmed { background: #EAF3DE; color: #3B6D11; }
+        .badge-done { background: #E1F5EE; color: #0F6E56; }
+        .service-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #FBEAF0; }
+        .service-item:last-child { border-bottom: none; }
+        .service-name { font-size: 0.85rem; font-weight: 500; color: #2C2C2A; }
+        .service-price { font-size: 0.85rem; color: #D4537E; font-weight: 500; }
+        .bar-wrap { margin-top: 0.5rem; }
+        .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .bar-label { font-size: 0.75rem; color: #888780; width: 80px; flex-shrink: 0; }
+        .bar-track { flex: 1; height: 8px; background: #FBEAF0; border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #D4537E, #993556); }
+        .bar-val { font-size: 0.75rem; color: #993556; font-weight: 500; width: 30px; text-align: right; }
+    </style>
+</head>
+<body>
+    <div style="display:flex; min-height:100vh;">
+        <div class="sidebar">
+            <div class="logo">
+                <div style="font-size:1.8rem;">💅</div>
+                <h2>Glow Book</h2>
+                <p>Nail Salon</p>
+            </div>
+            <a class="nav-item active" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+            <a class="nav-item" href="appointments.html"><span class="nav-icon">📅</span> Takimet</a>
+            <a class="nav-item" href="services.html"><span class="nav-icon">💆</span> Shërbimet</a>
+            <a class="nav-item" href="index.html"><span class="nav-icon">👥</span> Përdoruesit</a>
+            <div class="nav-bottom">
+                <a class="nav-item" href="login.html"><span class="nav-icon">🚪</span> Dilni</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="topbar">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Mirë se vini! Ja përmbledhja e ditës.</p>
+                </div>
+                <div class="user-badge">
+                    <div class="user-avatar" id="userInitials">AD</div>
+                    <span class="user-name" id="userName">Admin</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card pink">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-label">Klientë</div>
+                    <div class="stat-value" id="totalUsers">–</div>
+                    <div class="stat-sub">totali</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-label">Takime</div>
+                    <div class="stat-value" id="totalAppts">–</div>
+                    <div class="stat-sub">totali</div>
+                </div>
+                <div class="stat-card teal">
+                    <div class="stat-icon">💆</div>
+                    <div class="stat-label">Shërbime</div>
+                    <div class="stat-value" id="totalServices">–</div>
+                    <div class="stat-sub">totali</div>
+                </div>
+                <div class="stat-card amber">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-label">Në pritje</div>
+                    <div class="stat-value" id="pendingAppts">–</div>
+                    <div class="stat-sub">takime</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Takimet e fundit <span onclick="window.location.href='appointments.html'">Shiko të gjitha →</span></div>
+                    <div id="apptList"><div style="color:#B4B2A9;font-size:0.85rem;">Duke ngarkuar...</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Shërbimet <span onclick="window.location.href='services.html'">Shiko të gjitha →</span></div>
+                    <div id="serviceList"><div style="color:#B4B2A9;font-size:0.85rem;">Duke ngarkuar...</div></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Klientët sipas rolit</div>
+                <div class="bar-wrap" id="roleChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+
+        const userData = JSON.parse(localStorage.getItem('glowbook_user') || '{}');
+        if (userData.name) {
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userInitials').textContent = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        async function loadDashboard() {
+            try {
+                const [usersRes, apptsRes, servicesRes] = await Promise.all([
+                    fetch(`${API}/users`),
+                    fetch(`${API}/appointments`),
+                    fetch(`${API}/services`)
+                ]);
+                const users = await usersRes.json();
+                const appts = await apptsRes.json();
+                const services = await servicesRes.json();
+
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('totalAppts').textContent = appts.length;
+                document.getElementById('totalServices').textContent = services.length;
+                document.getElementById('pendingAppts').textContent = appts.filter(a => a.status === 'Pending').length;
+
+                const apptList = document.getElementById('apptList');
+                apptList.innerHTML = appts.slice(0, 4).map(a => {
+                    const user = users.find(u => u.id === a.userId);
+                    const svc = services.find(s => s.id === a.serviceId);
+                    const initials = user ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '??';
+                    const badgeClass = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
+                    return `<div class="appt-item">
+                        <div class="appt-avatar">${initials}</div>
+                        <div class="appt-info">
+                            <div class="appt-name">${user ? user.name : 'I panjohur'}</div>
+                            <div class="appt-service">${svc ? svc.name : 'Shërbim'}</div>
+                        </div>
+                        <span class="appt-badge ${badgeClass}">${a.status}</span>
+                    </div>`;
+                }).join('') || '<div style="color:#B4B2A9;font-size:0.85rem;">Nuk ka takime</div>';
+
+                const serviceList = document.getElementById('serviceList');
+                serviceList.innerHTML = services.slice(0, 5).map(s =>
+                    `<div class="service-item">
+                        <span class="service-name">${s.name}</span>
+                        <span class="service-price">$${s.price}</span>
+                    </div>`
+                ).join('') || '<div style="color:#B4B2A9;font-size:0.85rem;">Nuk ka shërbime</div>';
+
+                const admins = users.filter(u => u.role === 'Admin').length;
+                const customers = users.filter(u => u.role === 'Customer').length;
+                const total = users.length || 1;
+                document.getElementById('roleChart').innerHTML = `
+                    <div class="bar-row"><span class="bar-label">Admin</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(admins/total*100)}%"></div></div><span class="bar-val">${admins}</span></div>
+                    <div class="bar-row"><span class="bar-label">Customer</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#7F77DD,#534AB7)"></div></div><span class="bar-val">${customers}</span></div>
+                `;
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
