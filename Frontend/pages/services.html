@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Shërbimet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
+        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
+        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
+        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
+        .nav-item:hover { background: #FBEAF0; color: #993556; }
+        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
+        .nav-bottom { margin-top: auto; }
+        .main { margin-left: 220px; padding: 2rem; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
+        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
+        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
+        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .filters input { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; transition: all 0.2s; flex: 1; }
+        .filters input:focus { border-color: #D4537E; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .service-card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; padding: 1.5rem; transition: all 0.2s; }
+        .service-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,83,126,0.12); }
+        .service-icon { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #FBEAF0, #EEEDFE); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
+        .service-name { font-size: 1rem; font-weight: 500; color: #2C2C2A; margin-bottom: 6px; }
+        .service-desc { font-size: 0.8rem; color: #B4B2A9; margin-bottom: 1rem; line-height: 1.5; }
+        .service-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #FBEAF0; }
+        .service-price { font-size: 1.1rem; font-weight: 500; color: #D4537E; }
+        .service-duration { font-size: 0.75rem; color: #B4B2A9; }
+        .service-actions { display: flex; gap: 6px; margin-top: 1rem; }
+        .btn-sm { padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-edit { background: #EEEDFE; color: #534AB7; }
+        .btn-delete { background: #FCEBEB; color: #A32D2D; }
+        .btn-edit:hover { background: #CCC8F5; }
+        .btn-delete:hover { background: #F7C1C1; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(153,53,86,0.15); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(212,83,126,0.15); }
+        .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: #993556; margin-bottom: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+        .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
+        .field input, .field textarea { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
+        .field input:focus, .field textarea:focus { border-color: #D4537E; }
+        .field textarea { resize: vertical; min-height: 80px; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
+        .btn-cancel { flex: 1; padding: 10px; background: #FBEAF0; color: #993556; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-save { flex: 2; padding: 10px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
+        .toast.success { background: #1D9E75; display: block; }
+        .toast.error { background: #D85A30; display: block; }
+        .empty { text-align: center; padding: 3rem; color: #B4B2A9; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div style="display:flex; min-height:100vh;">
+        <div class="sidebar">
+            <div class="logo">
+                <div style="font-size:1.8rem;">💅</div>
+                <h2>Glow Book</h2>
+                <p>Nail Salon</p>
+            </div>
+            <a class="nav-item" href="dashboard.html"><span>🏠</span> Dashboard</a>
+            <a class="nav-item" href="appointments.html"><span>📅</span> Takimet</a>
+            <a class="nav-item active" href="services.html"><span>💆</span> Shërbimet</a>
+            <a class="nav-item" href="index.html"><span>👥</span> Përdoruesit</a>
+            <div class="nav-bottom">
+                <a class="nav-item" href="login.html"><span>🚪</span> Dilni</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="topbar">
+                <div>
+                    <h1>Shërbimet</h1>
+                    <p>Menaxho shërbimet e salonit</p>
+                </div>
+                <button class="btn-primary" onclick="openModal()">+ Shto Shërbim</button>
+            </div>
+
+            <div class="filters">
+                <input type="text" id="filterName" placeholder="🔍 Kërko shërbim..." oninput="renderCards()">
+            </div>
+
+            <div class="services-grid" id="servicesGrid">
+                <div class="empty">Duke ngarkuar...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitle">Shto Shërbim të Ri</h2>
+            <div class="field">
+                <label>Emri i Shërbimit</label>
+                <input type="text" id="svcName" placeholder="p.sh. Manikyr Klasik">
+            </div>
+            <div class="field">
+                <label>Përshkrimi</label>
+                <textarea id="svcDesc" placeholder="Përshkrim i shkurtër..."></textarea>
+            </div>
+            <div class="field">
+                <label>Çmimi ($)</label>
+                <input type="number" id="svcPrice" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="field">
+                <label>Kohëzgjatja (minuta)</label>
+                <input type="number" id="svcDuration" placeholder="60" min="1">
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal()">Anulo</button>
+                <button class="btn-save" onclick="saveService()">Ruaj</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        let services = [], editingId = null;
+
+        const icons = ['💅', '✨', '💎', '🌸', '🎀', '💄', '🌺', '⭐'];
+
+        async function load() {
+            try {
+                const res = await fetch(`${API}/services`);
+                services = await res.json();
+                renderCards();
+            } catch(e) {
+                showToast('Gabim në lidhje me serverin!', 'error');
+            }
+        }
+
+        function renderCards() {
+            const filter = document.getElementById('filterName').value.toLowerCase();
+            const filtered = services.filter(s => !filter || s.name.toLowerCase().includes(filter));
+            const grid = document.getElementById('servicesGrid');
+            if (!filtered.length) {
+                grid.innerHTML = '<div class="empty">Nuk ka shërbime</div>';
+                return;
+            }
+            grid.innerHTML = filtered.map((s, i) => `
+                <div class="service-card">
+                    <div class="service-icon">${icons[i % icons.length]}</div>
+                    <div class="service-name">${s.name}</div>
+                    <div class="service-desc">${s.description || 'Pa përshkrim'}</div>
+                    <div class="service-footer">
+                        <div>
+                            <div class="service-price">$${parseFloat(s.price).toFixed(2)}</div>
+                            <div class="service-duration">${s.durationMinutes} minuta</div>
+                        </div>
+                    </div>
+                    <div class="service-actions">
+                        <button class="btn-sm btn-edit" onclick="editService(${s.id})">Edito</button>
+                        <button class="btn-sm btn-delete" onclick="deleteService(${s.id})">Fshi</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(id = null) {
+            editingId = id;
+            document.getElementById('modalTitle').textContent = id ? 'Edito Shërbim' : 'Shto Shërbim të Ri';
+            if (!id) {
+                document.getElementById('svcName').value = '';
+                document.getElementById('svcDesc').value = '';
+                document.getElementById('svcPrice').value = '';
+                document.getElementById('svcDuration').value = '';
+            }
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        function editService(id) {
+            const s = services.find(x => x.id === id);
+            if (!s) return;
+            openModal(id);
+            document.getElementById('svcName').value = s.name;
+            document.getElementById('svcDesc').value = s.description || '';
+            document.getElementById('svcPrice').value = s.price;
+            document.getElementById('svcDuration').value = s.durationMinutes;
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            editingId = null;
+        }
+
+        async function saveService() {
+            const name = document.getElementById('svcName').value;
+            const desc = document.getElementById('svcDesc').value;
+            const price = parseFloat(document.getElementById('svcPrice').value);
+            const duration = parseInt(document.getElementById('svcDuration').value);
+
+            if (!name || isNaN(price) || isNaN(duration)) {
+                showToast('Plotësoni të gjitha fushat!', 'error');
+                return;
+            }
+            if (price <= 0) { showToast('Çmimi duhet të jetë më i madh se 0!', 'error'); return; }
+
+            const body = { name, description: desc, price, durationMinutes: duration };
+
+            try {
+                const res = editingId
+                    ? await fetch(`${API}/services/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+                    : await fetch(`${API}/services`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+                if (res.ok) {
+                    showToast(editingId ? 'Shërbimi u përditësua!' : 'Shërbimi u shtua!', 'success');
+                    closeModal();
+                    load();
+                } else {
+                    showToast('Gabim gjatë ruajtjes!', 'error');
+                }
+            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+        }
+
+        async function deleteService(id) {
+            if (!confirm('A jeni i sigurt që doni ta fshini këtë shërbim?')) return;
+            try {
+                const res = await fetch(`${API}/services/${id}`, { method: 'DELETE' });
+                if (res.ok) { showToast('Shërbimi u fshi!', 'success'); load(); }
+                else { showToast('Gabim gjatë fshirjes!', 'error'); }
+            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type;
+            setTimeout(() => t.className = 'toast', 3000);
+        }
+
+        load();
+    </script>
+</body>
+</html>
