@@ -14,6 +14,7 @@ builder.Services.AddCors(options =>
                 "http://localhost:5500",
                 "http://127.0.0.1:5500",
                 "http://localhost:3000",
+                "https://glowbook-frontend.onrender.com",
                 "null"
             )
             .AllowAnyHeader()
@@ -21,10 +22,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-string basePath = Path.GetFullPath(Path.Combine(
-    AppDomain.CurrentDomain.BaseDirectory,
-    "..", "..", "..", "..", "GlowBook.Infrastructure", "Data", "Database"
-));
+string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Database");
 Directory.CreateDirectory(basePath);
 
 string userPath        = Path.Combine(basePath, "users.csv");
@@ -45,22 +43,17 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "GlowBook API v1");
-        c.RoutePrefix = "swagger";
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GlowBook API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapControllers();
 
-Console.WriteLine("GlowBook API: http://localhost:5000");
-Console.WriteLine("Swagger:      http://localhost:5000/swagger");
-
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+Console.WriteLine($"GlowBook API duke filluar ne port: {port}");
 app.Run($"http://0.0.0.0:{port}");
