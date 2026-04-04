@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Përdoruesit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
+        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
+        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
+        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
+        .nav-item:hover { background: #FBEAF0; color: #993556; }
+        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
+        .nav-bottom { margin-top: auto; }
+        .main { margin-left: 220px; padding: 2rem; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
+        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
+        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-mini { background: white; border-radius: 12px; padding: 1rem; border: 1px solid #F4C0D1; text-align: center; }
+        .stat-mini .val { font-size: 1.5rem; font-weight: 500; color: #993556; }
+        .stat-mini .lbl { font-size: 0.75rem; color: #B4B2A9; text-transform: uppercase; letter-spacing: 1px; }
+        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .filters input, .filters select { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; transition: all 0.2s; }
+        .filters input { flex: 1; }
+        .filters input:focus, .filters select:focus { border-color: #D4537E; }
+        .card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); }
+        th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 12px 16px; font-size: 0.85rem; border-bottom: 1px solid #FBEAF0; color: #2C2C2A; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #FDFAF9; }
+        .user-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #F4C0D1, #EEEDFE); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500; color: #993556; flex-shrink: 0; }
+        .badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+        .badge-admin { background: #FCEBEB; color: #A32D2D; }
+        .badge-customer { background: #E1F5EE; color: #0F6E56; }
+        .btn-sm { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-edit { background: #EEEDFE; color: #534AB7; }
+        .btn-delete { background: #FCEBEB; color: #A32D2D; }
+        .btn-view { background: #FBEAF0; color: #993556; }
+        .btn-edit:hover { background: #CCC8F5; }
+        .btn-delete:hover { background: #F7C1C1; }
+        .btn-view:hover { background: #F4C0D1; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(153,53,86,0.15); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(212,83,126,0.15); }
+        .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: #993556; margin-bottom: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+        .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
+        .field input, .field select { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
+        .field input:focus, .field select:focus { border-color: #D4537E; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
+        .btn-cancel { flex: 1; padding: 10px; background: #FBEAF0; color: #993556; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-save { flex: 2; padding: 10px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
+        .toast.success { background: #1D9E75; display: block; }
+        .toast.error { background: #D85A30; display: block; }
+    </style>
+</head>
+<body>
+    <div style="display:flex; min-height:100vh;">
+        <div class="sidebar">
+            <div class="logo">
+                <div style="font-size:1.8rem;">💅</div>
+                <h2>Glow Book</h2>
+                <p>Nail Salon</p>
+            </div>
+            <a class="nav-item" href="dashboard.html"><span>🏠</span> Dashboard</a>
+            <a class="nav-item" href="appointments.html"><span>📅</span> Takimet</a>
+            <a class="nav-item" href="services.html"><span>💆</span> Shërbimet</a>
+            <a class="nav-item active" href="users.html"><span>👥</span> Përdoruesit</a>
+            <div class="nav-bottom">
+                <a class="nav-item" href="login.html"><span>🚪</span> Dilni</a>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="topbar">
+                <div>
+                    <h1>Përdoruesit</h1>
+                    <p>Menaxho të gjithë përdoruesit</p>
+                </div>
+                <button class="btn-primary" onclick="openModal()">+ Shto Përdorues</button>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-mini"><div class="val" id="totalUsers">–</div><div class="lbl">Gjithsej</div></div>
+                <div class="stat-mini"><div class="val" id="totalAdmins">–</div><div class="lbl">Admin</div></div>
+                <div class="stat-mini"><div class="val" id="totalCustomers">–</div><div class="lbl">Customer</div></div>
+            </div>
+
+            <div class="filters">
+                <input type="text" id="filterName" placeholder="🔍 Kërko përdorues..." oninput="renderTable()">
+                <select id="filterRole" onchange="renderTable()">
+                    <option value="">Të gjitha rolet</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Customer">Customer</option>
+                </select>
+            </div>
+
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Përdoruesi</th>
+                            <th>Email</th>
+                            <th>Telefoni</th>
+                            <th>Roli</th>
+                            <th>Krijuar</th>
+                            <th>Veprimet</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Duke ngarkuar...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitle">Shto Përdorues të Ri</h2>
+            <div class="field"><label>Emri</label><input type="text" id="uName" placeholder="Ana Krasniqi"></div>
+            <div class="field"><label>Email</label><input type="email" id="uEmail" placeholder="ana@gmail.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="uPassword" placeholder="Min. 4 karaktere"></div>
+            <div class="field"><label>Telefoni</label><input type="text" id="uPhone" placeholder="044 123 456"></div>
+            <div class="field">
+                <label>Roli</label>
+                <select id="uRole">
+                    <option value="Customer">Customer</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal()">Anulo</button>
+                <button class="btn-save" onclick="saveUser()">Ruaj</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        let users = [], editingId = null;
+
+        async function load() {
+            try {
+                const res = await fetch(`${API}/users`);
+                if (!res.ok) throw new Error('Gabim në ngarkim');
+                users = await res.json();
+                renderTable();
+                renderStats();
+            } catch(e) {
+                showToast('Gabim në lidhje me serverin!', 'error');
+            }
+        }
+
+        function renderStats() {
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalAdmins').textContent = users.filter(u => u.role === 'Admin').length;
+            document.getElementById('totalCustomers').textContent = users.filter(u => u.role === 'Customer').length;
+        }
+
+        function renderTable() {
+            const filterName = document.getElementById('filterName').value.toLowerCase();
+            const filterRole = document.getElementById('filterRole').value;
+            const filtered = users.filter(u => {
+                const matchName = !filterName || u.name.toLowerCase().includes(filterName) || u.email.toLowerCase().includes(filterName);
+                const matchRole = !filterRole || u.role === filterRole;
+                return matchName && matchRole;
+            });
+            const tbody = document.getElementById('usersTable');
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka përdorues</td></tr>';
+                return;
+            }
+            tbody.innerHTML = filtered.map(u => {
+                const initials = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const badgeClass = u.role === 'Admin' ? 'badge-admin' : 'badge-customer';
+                const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–';
+                return `<tr>
+                    <td style="display:flex;align-items:center;gap:10px;">
+                        <div class="user-avatar-sm">${initials}</div>
+                        <strong>${u.name}</strong>
+                    </td>
+                    <td>${u.email}</td>
+                    <td>${u.phoneNumber || '–'}</td>
+                    <td><span class="badge ${badgeClass}">${u.role}</span></td>
+                    <td>${date}</td>
+                    <td style="display:flex;gap:6px;">
+                        <button class="btn-sm btn-view" onclick="viewProfile(${u.id})">Profili</button>
+                        <button class="btn-sm btn-edit" onclick="editUser(${u.id})">Edito</button>
+                        <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})">Fshi</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function openModal(id = null) {
+            editingId = id;
+            document.getElementById('modalTitle').textContent = id ? 'Edito Përdorues' : 'Shto Përdorues të Ri';
+            if (!id) {
+                document.getElementById('uName').value = '';
+                document.getElementById('uEmail').value = '';
+                document.getElementById('uPassword').value = '';
+                document.getElementById('uPhone').value = '';
+                document.getElementById('uRole').value = 'Customer';
+            }
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        function editUser(id) {
+            const u = users.find(x => x.id === id);
+            if (!u) return;
+            openModal(id);
+            document.getElementById('uName').value = u.name;
+            document.getElementById('uEmail').value = u.email;
+            document.getElementById('uPhone').value = u.phoneNumber || '';
+            document.getElementById('uRole').value = u.role;
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            editingId = null;
+        }
+
+        async function saveUser() {
+            const name  = document.getElementById('uName').value;
+            const email = document.getElementById('uEmail').value;
+            const password = document.getElementById('uPassword').value;
+            const phone = document.getElementById('uPhone').value;
+
+            if (!name || !email || !phone) {
+                showToast('Plotësoni fushat e detyrueshme!', 'error');
+                return;
+            }
+
+            try {
+                const res = editingId
+                    ? await fetch(`${API}/users/${editingId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, phoneNumber: phone })
+                    })
+                    : await fetch(`${API}/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password, phoneNumber: phone })
+                    });
+
+                if (res.ok) {
+                    showToast(editingId ? 'Përdoruesi u përditësua!' : 'Përdoruesi u shtua!', 'success');
+                    closeModal();
+                    load();
+                } else {
+                    const err = await res.json();
+                    showToast(err.message || 'Gabim!', 'error');
+                }
+            } catch(e) {
+                showToast('Gabim në lidhje!', 'error');
+            }
+        }
+
+        async function deleteUser(id) {
+            const u = users.find(x => x.id === id);
+            if (!confirm(`A jeni i sigurt që doni të fshini "${u.name}"?`)) return;
+            try {
+                const res = await fetch(`${API}/users/${id}`, { method: 'DELETE' });
+                if (res.ok) { showToast('Përdoruesi u fshi!', 'success'); load(); }
+                else { showToast('Gabim gjatë fshirjes!', 'error'); }
+            } catch(e) {
+                showToast('Gabim në lidhje!', 'error');
+            }
+        }
+
+        function viewProfile(id) {
+            window.location.href = `profile.html?id=${id}`;
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type;
+            setTimeout(() => t.className = 'toast', 3000);
+        }
+
+        load();
+    </script>
+</body>
+</html>
