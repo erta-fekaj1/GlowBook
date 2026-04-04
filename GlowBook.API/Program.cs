@@ -22,8 +22,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Database");
-Directory.CreateDirectory(basePath);
+string basePath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(),
+    "..", "GlowBook.Infrastructure", "Data", "Database"
+));
 
 string userPath        = Path.Combine(basePath, "users.csv");
 string servicePath     = Path.Combine(basePath, "services.csv");
