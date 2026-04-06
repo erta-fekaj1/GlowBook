@@ -36,6 +36,7 @@ builder.Services.AddSingleton<IRepository<Service>>(new FileRepository<Service>(
 builder.Services.AddSingleton<IRepository<Appointment>>(new FileRepository<Appointment>(appointmentPath));
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using GlowBook.Application.Services;
 using GlowBook.Core.Entities;
-using GlowBook.Core.Interfaces;
 
 namespace GlowBook.API.Controllers;
 
@@ -8,55 +8,164 @@ namespace GlowBook.API.Controllers;
 [Route("api/[controller]")]
 public class AppointmentsController : ControllerBase
 {
-    private readonly IRepository<Appointment> _appointmentRepo;
-    public AppointmentsController(IRepository<Appointment> appointmentRepo) { _appointmentRepo = appointmentRepo; }
+    private readonly AppointmentService _appointmentService;
 
-    [HttpGet]
-    public IActionResult GetAll([FromQuery] int? userId, [FromQuery] string? status)
+    public AppointmentsController(AppointmentService appointmentService)
     {
-        var apps = _appointmentRepo.GetAll();
-        if (userId.HasValue) apps = apps.Where(a => a.UserId == userId.Value);
-        if (!string.IsNullOrEmpty(status)) apps = apps.Where(a => a.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
-        return Ok(apps);
+        _appointmentService = appointmentService;
     }
 
+    // GET: api/appointments
+    // GET: api/appointments?userId=1&status=Pending&sortBy=date
+    [HttpGet]
+    public IActionResult GetAll(
+        [FromQuery] int?   userId = null,
+        [FromQuery] string status = null,
+        [FromQuery] string sortBy = null)
+    {
+        var appointments = _appointmentService.GetAll(userId, status, sortBy);
+        return Ok(appointments);
+    }
+
+    // GET: api/appointments/1
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        var a = _appointmentRepo.GetById(id);
-        if (a == null) return NotFound(new { message = $"Takimi me ID {id} nuk u gjet" });
-        return Ok(a);
+        try
+        {
+            var appointment = _appointmentService.GetById(id);
+            return Ok(appointment);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
+    // GET: api/appointments/statistics
+    [HttpGet("statistics")]
+    public IActionResult GetStatistics()
+    {
+        var stats = _appointmentService.GetStatistics();
+        return Ok(stats);
+    }
+
+    // GET: api/appointments/upcoming
+    [HttpGet("upcoming")]
+    public IActionResult GetUpcoming([FromQuery] int days = 7)
+    {
+        var upcoming = _appointmentService.GetUpcoming(days);
+        return Ok(upcoming);
+    }
+
+    // POST: api/appointments
     [HttpPost]
     public IActionResult Create([FromBody] AppointmentDto dto)
     {
-        var appointment = new Appointment { UserId = dto.UserId, ServiceId = dto.ServiceId, AppointmentDate = dto.AppointmentDate, Notes = dto.Notes ?? "", Status = "Pending" };
-        _appointmentRepo.Add(appointment);
-        return CreatedAtAction(nameof(GetById), new { id = appointment.Id }, appointment);
+        if (dto == null)
+            return BadRequest(new { message = "Të dhënat janë të pavlefshme" });
+
+        try
+        {
+            var appointment = _appointmentService.Add(
+                dto.UserId,
+                dto.ServiceId,
+                dto.AppointmentDate,
+                dto.Notes ?? ""
+            );
+            return CreatedAtAction(nameof(GetById), new { id = appointment.Id }, appointment);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
+    // PUT: api/appointments/1
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromBody] UpdateAppointmentDto dto)
     {
-        var a = _appointmentRepo.GetById(id);
-        if (a == null) return NotFound(new { message = $"Takimi me ID {id} nuk u gjet" });
-        a.AppointmentDate = dto.AppointmentDate;
-        a.Status = dto.Status ?? a.Status;
-        a.Notes = dto.Notes ?? a.Notes;
-        _appointmentRepo.Update(a);
-        return Ok(a);
+        if (dto == null)
+            return BadRequest(new { message = "Të dhënat janë të pavlefshme" });
+
+        try
+        {
+            var appointment = _appointmentService.Update(
+                id,
+                dto.AppointmentDate,
+                dto.Status ?? "Pending",
+                dto.Notes ?? ""
+            );
+            return Ok(appointment);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
+    // PATCH: api/appointments/1/status
+    [HttpPatch("{id}/status")]
+    public IActionResult UpdateStatus(int id, [FromBody] StatusDto dto)
+    {
+        try
+        {
+            var appointment = _appointmentService.UpdateStatus(id, dto.Status);
+            return Ok(appointment);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // DELETE: api/appointments/1
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var a = _appointmentRepo.GetById(id);
-        if (a == null) return NotFound(new { message = $"Takimi me ID {id} nuk u gjet" });
-        _appointmentRepo.Delete(id);
-        return NoContent();
+        try
+        {
+            _appointmentService.Delete(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 }
 
-public record AppointmentDto(int UserId, int ServiceId, DateTime AppointmentDate, string? Notes);
-public record UpdateAppointmentDto(DateTime AppointmentDate, string? Status, string? Notes);
+public record AppointmentDto(
+    int      UserId,
+    int      ServiceId,
+    DateTime AppointmentDate,
+    string?  Notes
+);
+
+public record UpdateAppointmentDto(
+    DateTime AppointmentDate,
+    string?  Status,
+    string?  Notes
+);
+
+public record StatusDto(string Status);
