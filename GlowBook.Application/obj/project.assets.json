@@ -33,11 +33,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Application\\GlowBook.Application.csproj",
+      "projectUniqueName": "c:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Application\\GlowBook.Application.csproj",
       "projectName": "GlowBook.Application",
-      "projectPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Application\\GlowBook.Application.csproj",
+      "projectPath": "c:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Application\\GlowBook.Application.csproj",
       "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Application\\obj\\",
+      "outputPath": "c:\\Users\\pc\\OneDrive\\Desktop\\GlowBook\\GlowBook.Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
