@@ -77,16 +77,13 @@
             <a class="nav-item" href="services.html"><span>💆</span> Shërbimet</a>
             <a class="nav-item active" href="users.html"><span>👥</span> Përdoruesit</a>
             <div class="nav-bottom">
-                <a class="nav-item" href="login.html"><span>🚪</span> Dilni</a>
+                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><span>🚪</span> Dilni</a>
             </div>
         </div>
 
         <div class="main">
             <div class="topbar">
-                <div>
-                    <h1>Përdoruesit</h1>
-                    <p>Menaxho të gjithë përdoruesit</p>
-                </div>
+                <div><h1>Përdoruesit</h1><p>Menaxho të gjithë përdoruesit</p></div>
                 <button class="btn-primary" onclick="openModal()">+ Shto Përdorues</button>
             </div>
 
@@ -109,12 +106,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Përdoruesi</th>
-                            <th>Email</th>
-                            <th>Telefoni</th>
-                            <th>Roli</th>
-                            <th>Krijuar</th>
-                            <th>Veprimet</th>
+                            <th>Përdoruesi</th><th>Email</th><th>Telefoni</th><th>Roli</th><th>Krijuar</th><th>Veprimet</th>
                         </tr>
                     </thead>
                     <tbody id="usersTable">
@@ -132,8 +124,7 @@
             <div class="field"><label>Email</label><input type="email" id="uEmail" placeholder="ana@gmail.com"></div>
             <div class="field"><label>Password</label><input type="password" id="uPassword" placeholder="Min. 4 karaktere"></div>
             <div class="field"><label>Telefoni</label><input type="text" id="uPhone" placeholder="044 123 456"></div>
-            <div class="field">
-                <label>Roli</label>
+            <div class="field"><label>Roli</label>
                 <select id="uRole">
                     <option value="Customer">Customer</option>
                     <option value="Admin">Admin</option>
@@ -148,45 +139,42 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="../js/auth.js"></script>
     <script>
-        const API = 'http://localhost:5000/api';
+        requireAuth();
+        loadUserBadge();
+
         let users = [], editingId = null;
 
         async function load() {
             try {
-                const res = await fetch(`${API}/users`);
-                if (!res.ok) throw new Error('Gabim në ngarkim');
+                const res = await authFetch(`${API}/users`);
                 users = await res.json();
                 renderTable();
                 renderStats();
-            } catch(e) {
-                showToast('Gabim në lidhje me serverin!', 'error');
-            }
+            } catch(e) { showToast('Gabim në lidhje me serverin!', 'error'); }
         }
 
         function renderStats() {
-            document.getElementById('totalUsers').textContent = users.length;
-            document.getElementById('totalAdmins').textContent = users.filter(u => u.role === 'Admin').length;
+            document.getElementById('totalUsers').textContent     = users.length;
+            document.getElementById('totalAdmins').textContent    = users.filter(u => u.role === 'Admin').length;
             document.getElementById('totalCustomers').textContent = users.filter(u => u.role === 'Customer').length;
         }
 
         function renderTable() {
             const filterName = document.getElementById('filterName').value.toLowerCase();
             const filterRole = document.getElementById('filterRole').value;
-            const filtered = users.filter(u => {
+            const filtered   = users.filter(u => {
                 const matchName = !filterName || u.name.toLowerCase().includes(filterName) || u.email.toLowerCase().includes(filterName);
                 const matchRole = !filterRole || u.role === filterRole;
                 return matchName && matchRole;
             });
             const tbody = document.getElementById('usersTable');
-            if (!filtered.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka përdorues</td></tr>';
-                return;
-            }
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka përdorues</td></tr>'; return; }
             tbody.innerHTML = filtered.map(u => {
-                const initials = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const initials   = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 const badgeClass = u.role === 'Admin' ? 'badge-admin' : 'badge-customer';
-                const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–';
+                const date       = u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–';
                 return `<tr>
                     <td style="display:flex;align-items:center;gap:10px;">
                         <div class="user-avatar-sm">${initials}</div>
@@ -208,13 +196,7 @@
         function openModal(id = null) {
             editingId = id;
             document.getElementById('modalTitle').textContent = id ? 'Edito Përdorues' : 'Shto Përdorues të Ri';
-            if (!id) {
-                document.getElementById('uName').value = '';
-                document.getElementById('uEmail').value = '';
-                document.getElementById('uPassword').value = '';
-                document.getElementById('uPhone').value = '';
-                document.getElementById('uRole').value = 'Customer';
-            }
+            if (!id) { document.getElementById('uName').value = ''; document.getElementById('uEmail').value = ''; document.getElementById('uPassword').value = ''; document.getElementById('uPhone').value = ''; document.getElementById('uRole').value = 'Customer'; }
             document.getElementById('modalOverlay').classList.add('open');
         }
 
@@ -222,74 +204,44 @@
             const u = users.find(x => x.id === id);
             if (!u) return;
             openModal(id);
-            document.getElementById('uName').value = u.name;
+            document.getElementById('uName').value  = u.name;
             document.getElementById('uEmail').value = u.email;
             document.getElementById('uPhone').value = u.phoneNumber || '';
-            document.getElementById('uRole').value = u.role;
+            document.getElementById('uRole').value  = u.role;
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('open');
-            editingId = null;
-        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
         async function saveUser() {
-            const name  = document.getElementById('uName').value;
-            const email = document.getElementById('uEmail').value;
+            const name     = document.getElementById('uName').value;
+            const email    = document.getElementById('uEmail').value;
             const password = document.getElementById('uPassword').value;
-            const phone = document.getElementById('uPhone').value;
-
-            if (!name || !email || !phone) {
-                showToast('Plotësoni fushat e detyrueshme!', 'error');
-                return;
-            }
-
+            const phone    = document.getElementById('uPhone').value;
+            if (!name || !email || !phone) { showToast('Plotësoni fushat e detyrueshme!', 'error'); return; }
             try {
                 const res = editingId
-                    ? await fetch(`${API}/users/${editingId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email, phoneNumber: phone })
-                    })
-                    : await fetch(`${API}/users`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email, password, phoneNumber: phone })
-                    });
-
-                if (res.ok) {
-                    showToast(editingId ? 'Përdoruesi u përditësua!' : 'Përdoruesi u shtua!', 'success');
-                    closeModal();
-                    load();
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || 'Gabim!', 'error');
-                }
-            } catch(e) {
-                showToast('Gabim në lidhje!', 'error');
-            }
+                    ? await authFetch(`${API}/users/${editingId}`, { method: 'PUT', body: JSON.stringify({ name, email, phoneNumber: phone }) })
+                    : await authFetch(`${API}/users`, { method: 'POST', body: JSON.stringify({ name, email, password, phoneNumber: phone }) });
+                if (res.ok) { showToast(editingId ? 'Përdoruesi u përditësua!' : 'Përdoruesi u shtua!', 'success'); closeModal(); load(); }
+                else { const err = await res.json(); showToast(err.message || 'Gabim!', 'error'); }
+            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
         }
 
         async function deleteUser(id) {
             const u = users.find(x => x.id === id);
             if (!confirm(`A jeni i sigurt që doni të fshini "${u.name}"?`)) return;
             try {
-                const res = await fetch(`${API}/users/${id}`, { method: 'DELETE' });
+                const res = await authFetch(`${API}/users/${id}`, { method: 'DELETE' });
                 if (res.ok) { showToast('Përdoruesi u fshi!', 'success'); load(); }
                 else { showToast('Gabim gjatë fshirjes!', 'error'); }
-            } catch(e) {
-                showToast('Gabim në lidhje!', 'error');
-            }
+            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
         }
 
-        function viewProfile(id) {
-            window.location.href = `profile.html?id=${id}`;
-        }
+        function viewProfile(id) { window.location.href = `profile.html?id=${id}`; }
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type;
+            t.textContent = msg; t.className = 'toast ' + type;
             setTimeout(() => t.className = 'toast', 3000);
         }
 

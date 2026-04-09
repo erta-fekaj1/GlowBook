@@ -69,9 +69,9 @@
             <a class="nav-item" href="dashboard.html"><span>🏠</span> Dashboard</a>
             <a class="nav-item active" href="appointments.html"><span>📅</span> Takimet</a>
             <a class="nav-item" href="services.html"><span>💆</span> Shërbimet</a>
-            <a class="nav-item" href="index.html"><span>👥</span> Përdoruesit</a>
+            <a class="nav-item" href="users.html"><span>👥</span> Përdoruesit</a>
             <div class="nav-bottom">
-                <a class="nav-item" href="login.html"><span>🚪</span> Dilni</a>
+                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><span>🚪</span> Dilni</a>
             </div>
         </div>
 
@@ -99,12 +99,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Klienti</th>
-                            <th>Shërbimi</th>
-                            <th>Data</th>
-                            <th>Statusi</th>
-                            <th>Veprimet</th>
+                            <th>ID</th><th>Klienti</th><th>Shërbimi</th><th>Data</th><th>Statusi</th><th>Veprimet</th>
                         </tr>
                     </thead>
                     <tbody id="apptTable">
@@ -118,20 +113,10 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <h2 id="modalTitle">Shto Takim të Ri</h2>
-            <div class="field">
-                <label>Klienti</label>
-                <select id="apptUser"></select>
-            </div>
-            <div class="field">
-                <label>Shërbimi</label>
-                <select id="apptService"></select>
-            </div>
-            <div class="field">
-                <label>Data dhe Ora</label>
-                <input type="datetime-local" id="apptDate">
-            </div>
-            <div class="field">
-                <label>Statusi</label>
+            <div class="field"><label>Klienti</label><select id="apptUser"></select></div>
+            <div class="field"><label>Shërbimi</label><select id="apptService"></select></div>
+            <div class="field"><label>Data dhe Ora</label><input type="datetime-local" id="apptDate"></div>
+            <div class="field"><label>Statusi</label>
                 <select id="apptStatus">
                     <option value="Pending">Pending</option>
                     <option value="Confirmed">Confirmed</option>
@@ -139,10 +124,7 @@
                     <option value="Cancelled">Cancelled</option>
                 </select>
             </div>
-            <div class="field">
-                <label>Shënime</label>
-                <input type="text" id="apptNotes" placeholder="Shënime opsionale...">
-            </div>
+            <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime opsionale..."></div>
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeModal()">Anulo</button>
                 <button class="btn-save" onclick="saveAppt()">Ruaj</button>
@@ -152,16 +134,19 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="../js/auth.js"></script>
     <script>
-        const API = 'http://localhost:5000/api';
+        requireAuth();
+        loadUserBadge();
+
         let appts = [], users = [], services = [], editingId = null;
 
         async function load() {
             try {
                 const [a, u, s] = await Promise.all([
-                    fetch(`${API}/appointments`).then(r => r.json()),
-                    fetch(`${API}/users`).then(r => r.json()),
-                    fetch(`${API}/services`).then(r => r.json())
+                    authFetch(`${API}/appointments`).then(r => r.json()),
+                    authFetch(`${API}/users`).then(r => r.json()),
+                    authFetch(`${API}/services`).then(r => r.json())
                 ]);
                 appts = a; users = u; services = s;
                 renderTable();
@@ -170,29 +155,26 @@
         }
 
         function populateSelects() {
-            document.getElementById('apptUser').innerHTML = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+            document.getElementById('apptUser').innerHTML    = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
             document.getElementById('apptService').innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         }
 
         function renderTable() {
-            const filterUser = document.getElementById('filterUser').value.toLowerCase();
+            const filterUser   = document.getElementById('filterUser').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
-            const filtered = appts.filter(a => {
-                const user = users.find(u => u.id === a.userId);
+            const filtered     = appts.filter(a => {
+                const user      = users.find(u => u.id === a.userId);
                 const matchUser = !filterUser || (user && user.name.toLowerCase().includes(filterUser));
-                const matchStatus = !filterStatus || a.status === filterStatus;
-                return matchUser && matchStatus;
+                const matchStat = !filterStatus || a.status === filterStatus;
+                return matchUser && matchStat;
             });
             const tbody = document.getElementById('apptTable');
-            if (!filtered.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka takime</td></tr>';
-                return;
-            }
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka takime</td></tr>'; return; }
             tbody.innerHTML = filtered.map(a => {
-                const user = users.find(u => u.id === a.userId);
-                const svc = services.find(s => s.id === a.serviceId);
+                const user       = users.find(u => u.id === a.userId);
+                const svc        = services.find(s => s.id === a.serviceId);
                 const badgeClass = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : a.status === 'Cancelled' ? 'badge-cancelled' : 'badge-done';
-                const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+                const date       = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
                 return `<tr>
                     <td>#${a.id}</td>
                     <td>${user ? user.name : '–'}</td>
@@ -210,11 +192,7 @@
         function openModal(id = null) {
             editingId = id;
             document.getElementById('modalTitle').textContent = id ? 'Edito Takim' : 'Shto Takim të Ri';
-            if (!id) {
-                document.getElementById('apptDate').value = '';
-                document.getElementById('apptNotes').value = '';
-                document.getElementById('apptStatus').value = 'Pending';
-            }
+            if (!id) { document.getElementById('apptDate').value = ''; document.getElementById('apptNotes').value = ''; document.getElementById('apptStatus').value = 'Pending'; }
             document.getElementById('modalOverlay').classList.add('open');
         }
 
@@ -222,47 +200,36 @@
             const a = appts.find(x => x.id === id);
             if (!a) return;
             openModal(id);
-            document.getElementById('apptUser').value = a.userId;
+            document.getElementById('apptUser').value    = a.userId;
             document.getElementById('apptService').value = a.serviceId;
-            document.getElementById('apptStatus').value = a.status;
-            document.getElementById('apptNotes').value = a.notes || '';
-            if (a.appointmentDate) {
-                const d = new Date(a.appointmentDate);
-                document.getElementById('apptDate').value = d.toISOString().slice(0, 16);
-            }
+            document.getElementById('apptStatus').value  = a.status;
+            document.getElementById('apptNotes').value   = a.notes || '';
+            if (a.appointmentDate) document.getElementById('apptDate').value = new Date(a.appointmentDate).toISOString().slice(0, 16);
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('open');
-            editingId = null;
-        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
         async function saveAppt() {
             const body = {
-                userId: parseInt(document.getElementById('apptUser').value),
-                serviceId: parseInt(document.getElementById('apptService').value),
+                userId:          parseInt(document.getElementById('apptUser').value),
+                serviceId:       parseInt(document.getElementById('apptService').value),
                 appointmentDate: document.getElementById('apptDate').value,
-                status: document.getElementById('apptStatus').value,
-                notes: document.getElementById('apptNotes').value
+                status:          document.getElementById('apptStatus').value,
+                notes:           document.getElementById('apptNotes').value
             };
             try {
                 const res = editingId
-                    ? await fetch(`${API}/appointments/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ appointmentDate: body.appointmentDate, status: body.status, notes: body.notes }) })
-                    : await fetch(`${API}/appointments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                if (res.ok) {
-                    showToast(editingId ? 'Takimi u përditësua!' : 'Takimi u shtua!', 'success');
-                    closeModal();
-                    load();
-                } else {
-                    showToast('Gabim gjatë ruajtjes!', 'error');
-                }
+                    ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT', body: JSON.stringify({ appointmentDate: body.appointmentDate, status: body.status, notes: body.notes }) })
+                    : await authFetch(`${API}/appointments`, { method: 'POST', body: JSON.stringify(body) });
+                if (res.ok) { showToast(editingId ? 'Takimi u përditësua!' : 'Takimi u shtua!', 'success'); closeModal(); load(); }
+                else { showToast('Gabim gjatë ruajtjes!', 'error'); }
             } catch(e) { showToast('Gabim në lidhje!', 'error'); }
         }
 
         async function deleteAppt(id) {
             if (!confirm('A jeni i sigurt?')) return;
             try {
-                const res = await fetch(`${API}/appointments/${id}`, { method: 'DELETE' });
+                const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
                 if (res.ok) { showToast('Takimi u fshi!', 'success'); load(); }
                 else { showToast('Gabim gjatë fshirjes!', 'error'); }
             } catch(e) { showToast('Gabim në lidhje!', 'error'); }
@@ -270,8 +237,7 @@
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type;
+            t.textContent = msg; t.className = 'toast ' + type;
             setTimeout(() => t.className = 'toast', 3000);
         }
 

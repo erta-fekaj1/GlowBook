@@ -23,7 +23,7 @@
         .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
         .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .filters input { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; transition: all 0.2s; flex: 1; }
+        .filters input { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; flex: 1; }
         .filters input:focus { border-color: #D4537E; }
         .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
         .service-card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; padding: 1.5rem; transition: all 0.2s; }
@@ -55,7 +55,6 @@
         .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
         .toast.success { background: #1D9E75; display: block; }
         .toast.error { background: #D85A30; display: block; }
-        .empty { text-align: center; padding: 3rem; color: #B4B2A9; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -69,27 +68,22 @@
             <a class="nav-item" href="dashboard.html"><span>🏠</span> Dashboard</a>
             <a class="nav-item" href="appointments.html"><span>📅</span> Takimet</a>
             <a class="nav-item active" href="services.html"><span>💆</span> Shërbimet</a>
-            <a class="nav-item" href="index.html"><span>👥</span> Përdoruesit</a>
+            <a class="nav-item" href="users.html"><span>👥</span> Përdoruesit</a>
             <div class="nav-bottom">
-                <a class="nav-item" href="login.html"><span>🚪</span> Dilni</a>
+                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><span>🚪</span> Dilni</a>
             </div>
         </div>
 
         <div class="main">
             <div class="topbar">
-                <div>
-                    <h1>Shërbimet</h1>
-                    <p>Menaxho shërbimet e salonit</p>
-                </div>
+                <div><h1>Shërbimet</h1><p>Menaxho shërbimet e salonit</p></div>
                 <button class="btn-primary" onclick="openModal()">+ Shto Shërbim</button>
             </div>
-
             <div class="filters">
                 <input type="text" id="filterName" placeholder="🔍 Kërko shërbim..." oninput="renderCards()">
             </div>
-
             <div class="services-grid" id="servicesGrid">
-                <div class="empty">Duke ngarkuar...</div>
+                <div style="color:#B4B2A9;font-size:0.85rem;">Duke ngarkuar...</div>
             </div>
         </div>
     </div>
@@ -97,22 +91,10 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <h2 id="modalTitle">Shto Shërbim të Ri</h2>
-            <div class="field">
-                <label>Emri i Shërbimit</label>
-                <input type="text" id="svcName" placeholder="p.sh. Manikyr Klasik">
-            </div>
-            <div class="field">
-                <label>Përshkrimi</label>
-                <textarea id="svcDesc" placeholder="Përshkrim i shkurtër..."></textarea>
-            </div>
-            <div class="field">
-                <label>Çmimi ($)</label>
-                <input type="number" id="svcPrice" placeholder="0.00" min="0" step="0.01">
-            </div>
-            <div class="field">
-                <label>Kohëzgjatja (minuta)</label>
-                <input type="number" id="svcDuration" placeholder="60" min="1">
-            </div>
+            <div class="field"><label>Emri</label><input type="text" id="svcName" placeholder="p.sh. Manikyr Klasik"></div>
+            <div class="field"><label>Përshkrimi</label><textarea id="svcDesc" placeholder="Përshkrim i shkurtër..."></textarea></div>
+            <div class="field"><label>Çmimi ($)</label><input type="number" id="svcPrice" placeholder="0.00" min="0" step="0.01"></div>
+            <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="svcDuration" placeholder="60" min="1"></div>
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeModal()">Anulo</button>
                 <button class="btn-save" onclick="saveService()">Ruaj</button>
@@ -122,30 +104,27 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="../js/auth.js"></script>
     <script>
-        const API = 'http://localhost:5000/api';
-        let services = [], editingId = null;
+        requireAuth();
+        loadUserBadge();
 
-        const icons = ['💅', '✨', '💎', '🌸', '🎀', '💄', '🌺', '⭐'];
+        let services = [], editingId = null;
+        const icons  = ['💅', '✨', '💎', '🌸', '🎀', '💄', '🌺', '⭐'];
 
         async function load() {
             try {
-                const res = await fetch(`${API}/services`);
-                services = await res.json();
+                const res = await authFetch(`${API}/services`);
+                services  = await res.json();
                 renderCards();
-            } catch(e) {
-                showToast('Gabim në lidhje me serverin!', 'error');
-            }
+            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
         }
 
         function renderCards() {
-            const filter = document.getElementById('filterName').value.toLowerCase();
+            const filter   = document.getElementById('filterName').value.toLowerCase();
             const filtered = services.filter(s => !filter || s.name.toLowerCase().includes(filter));
-            const grid = document.getElementById('servicesGrid');
-            if (!filtered.length) {
-                grid.innerHTML = '<div class="empty">Nuk ka shërbime</div>';
-                return;
-            }
+            const grid     = document.getElementById('servicesGrid');
+            if (!filtered.length) { grid.innerHTML = '<div style="color:#B4B2A9;">Nuk ka shërbime</div>'; return; }
             grid.innerHTML = filtered.map((s, i) => `
                 <div class="service-card">
                     <div class="service-icon">${icons[i % icons.length]}</div>
@@ -168,12 +147,7 @@
         function openModal(id = null) {
             editingId = id;
             document.getElementById('modalTitle').textContent = id ? 'Edito Shërbim' : 'Shto Shërbim të Ri';
-            if (!id) {
-                document.getElementById('svcName').value = '';
-                document.getElementById('svcDesc').value = '';
-                document.getElementById('svcPrice').value = '';
-                document.getElementById('svcDuration').value = '';
-            }
+            if (!id) { document.getElementById('svcName').value = ''; document.getElementById('svcDesc').value = ''; document.getElementById('svcPrice').value = ''; document.getElementById('svcDuration').value = ''; }
             document.getElementById('modalOverlay').classList.add('open');
         }
 
@@ -181,50 +155,35 @@
             const s = services.find(x => x.id === id);
             if (!s) return;
             openModal(id);
-            document.getElementById('svcName').value = s.name;
-            document.getElementById('svcDesc').value = s.description || '';
-            document.getElementById('svcPrice').value = s.price;
+            document.getElementById('svcName').value     = s.name;
+            document.getElementById('svcDesc').value     = s.description || '';
+            document.getElementById('svcPrice').value    = s.price;
             document.getElementById('svcDuration').value = s.durationMinutes;
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('open');
-            editingId = null;
-        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
         async function saveService() {
-            const name = document.getElementById('svcName').value;
-            const desc = document.getElementById('svcDesc').value;
-            const price = parseFloat(document.getElementById('svcPrice').value);
+            const name     = document.getElementById('svcName').value;
+            const desc     = document.getElementById('svcDesc').value;
+            const price    = parseFloat(document.getElementById('svcPrice').value);
             const duration = parseInt(document.getElementById('svcDuration').value);
-
-            if (!name || isNaN(price) || isNaN(duration)) {
-                showToast('Plotësoni të gjitha fushat!', 'error');
-                return;
-            }
-            if (price <= 0) { showToast('Çmimi duhet të jetë më i madh se 0!', 'error'); return; }
-
+            if (!name || isNaN(price) || isNaN(duration)) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
+            if (price <= 0) { showToast('Çmimi duhet të jetë > 0!', 'error'); return; }
             const body = { name, description: desc, price, durationMinutes: duration };
-
             try {
                 const res = editingId
-                    ? await fetch(`${API}/services/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-                    : await fetch(`${API}/services`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-
-                if (res.ok) {
-                    showToast(editingId ? 'Shërbimi u përditësua!' : 'Shërbimi u shtua!', 'success');
-                    closeModal();
-                    load();
-                } else {
-                    showToast('Gabim gjatë ruajtjes!', 'error');
-                }
+                    ? await authFetch(`${API}/services/${editingId}`, { method: 'PUT', body: JSON.stringify(body) })
+                    : await authFetch(`${API}/services`, { method: 'POST', body: JSON.stringify(body) });
+                if (res.ok) { showToast(editingId ? 'Shërbimi u përditësua!' : 'Shërbimi u shtua!', 'success'); closeModal(); load(); }
+                else { showToast('Gabim gjatë ruajtjes!', 'error'); }
             } catch(e) { showToast('Gabim në lidhje!', 'error'); }
         }
 
         async function deleteService(id) {
-            if (!confirm('A jeni i sigurt që doni ta fshini këtë shërbim?')) return;
+            if (!confirm('A jeni i sigurt?')) return;
             try {
-                const res = await fetch(`${API}/services/${id}`, { method: 'DELETE' });
+                const res = await authFetch(`${API}/services/${id}`, { method: 'DELETE' });
                 if (res.ok) { showToast('Shërbimi u fshi!', 'success'); load(); }
                 else { showToast('Gabim gjatë fshirjes!', 'error'); }
             } catch(e) { showToast('Gabim në lidhje!', 'error'); }
@@ -232,8 +191,7 @@
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type;
+            t.textContent = msg; t.className = 'toast ' + type;
             setTimeout(() => t.className = 'toast', 3000);
         }
 

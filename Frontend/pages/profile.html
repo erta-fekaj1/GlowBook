@@ -20,7 +20,7 @@
         .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
         .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
-        .btn-back { padding: 8px 16px; background: #FBEAF0; color: #993556; border: 1px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-back { padding: 8px 16px; background: #FBEAF0; color: #993556; border: 1px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
         .btn-back:hover { background: #F4C0D1; }
         .profile-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
         .profile-card { background: white; border-radius: 20px; border: 1px solid #F4C0D1; padding: 2rem; text-align: center; }
@@ -53,7 +53,7 @@
         .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
         .field input { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
         .field input:focus { border-color: #D4537E; }
-        .btn-save { padding: 10px 24px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; align-self: flex-start; }
+        .btn-save { padding: 10px 24px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; align-self: flex-start; }
         .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
         .stats-mini { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
         .stat-box { background: #FBEAF0; border-radius: 10px; padding: 12px; text-align: center; }
@@ -77,7 +77,7 @@
             <a class="nav-item" href="services.html"><span>💆</span> Shërbimet</a>
             <a class="nav-item active" href="users.html"><span>👥</span> Përdoruesit</a>
             <div class="nav-bottom">
-                <a class="nav-item" href="login.html"><span>🚪</span> Dilni</a>
+                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><span>🚪</span> Dilni</a>
             </div>
         </div>
 
@@ -136,59 +136,59 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="../js/auth.js"></script>
     <script>
-        const API = 'http://localhost:5000/api';
+        requireAuth();
+        loadUserBadge();
+
         let userId = 1;
 
         async function load() {
             try {
                 const params = new URLSearchParams(window.location.search);
-                userId = parseInt(params.get('id') || 1);
+                userId       = parseInt(params.get('id') || 1);
 
                 const [usersRes, apptsRes, servicesRes] = await Promise.all([
-                    fetch(`${API}/users`),
-                    fetch(`${API}/appointments`),
-                    fetch(`${API}/services`)
+                    authFetch(`${API}/users`),
+                    authFetch(`${API}/appointments`),
+                    authFetch(`${API}/services`)
                 ]);
 
-                const users = await usersRes.json();
-                const appts = await apptsRes.json();
+                const users    = await usersRes.json();
+                const appts    = await apptsRes.json();
                 const services = await servicesRes.json();
 
                 const userData = users.find(u => u.id === userId) || users[0];
                 if (!userData) return;
 
                 const initials = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                document.getElementById('avatar').textContent = initials;
-                document.getElementById('pageTitle').textContent = userData.name;
+                document.getElementById('avatar').textContent      = initials;
+                document.getElementById('pageTitle').textContent   = userData.name;
                 document.getElementById('profileName').textContent = userData.name;
                 document.getElementById('profileEmail').textContent = userData.email;
                 document.getElementById('profilePhone').textContent = userData.phoneNumber || '–';
-                document.getElementById('profileRole').textContent = userData.role;
-                document.getElementById('profileDate').textContent = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('sq-AL') : '–';
+                document.getElementById('profileRole').textContent  = userData.role;
+                document.getElementById('profileDate').textContent  = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('sq-AL') : '–';
 
-                const badge = document.getElementById('profileBadge');
+                const badge       = document.getElementById('profileBadge');
                 badge.textContent = userData.role;
-                badge.className = `badge ${userData.role === 'Admin' ? 'badge-admin' : 'badge-customer'}`;
+                badge.className   = `badge ${userData.role === 'Admin' ? 'badge-admin' : 'badge-customer'}`;
 
-                document.getElementById('editName').value = userData.name;
+                document.getElementById('editName').value  = userData.name;
                 document.getElementById('editEmail').value = userData.email;
                 document.getElementById('editPhone').value = userData.phoneNumber || '';
 
                 const userAppts = appts.filter(a => a.userId === userId);
-                document.getElementById('statTotal').textContent = userAppts.length;
-                document.getElementById('statDone').textContent = userAppts.filter(a => a.status === 'Done').length;
+                document.getElementById('statTotal').textContent   = userAppts.length;
+                document.getElementById('statDone').textContent    = userAppts.filter(a => a.status === 'Done').length;
                 document.getElementById('statPending').textContent = userAppts.filter(a => a.status === 'Pending').length;
 
                 const apptList = document.getElementById('apptList');
-                if (!userAppts.length) {
-                    apptList.innerHTML = '<div style="color:#B4B2A9;font-size:0.85rem;">Nuk ka takime</div>';
-                    return;
-                }
+                if (!userAppts.length) { apptList.innerHTML = '<div style="color:#B4B2A9;font-size:0.85rem;">Nuk ka takime</div>'; return; }
                 apptList.innerHTML = userAppts.slice(0, 5).map(a => {
-                    const svc = services.find(s => s.id === a.serviceId);
+                    const svc        = services.find(s => s.id === a.serviceId);
                     const badgeClass = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
-                    const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+                    const date       = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
                     return `<div class="appt-item">
                         <div class="appt-dot"></div>
                         <div class="appt-info">
@@ -198,9 +198,7 @@
                         <span class="appt-badge ${badgeClass}">${a.status}</span>
                     </div>`;
                 }).join('');
-            } catch(e) {
-                showToast('Gabim në lidhje me serverin!', 'error');
-            }
+            } catch(e) { showToast('Gabim në lidhje me serverin!', 'error'); }
         }
 
         async function saveChanges() {
@@ -209,10 +207,9 @@
             const phone = document.getElementById('editPhone').value;
             if (!name || !email) { showToast('Plotësoni fushat e detyrueshme!', 'error'); return; }
             try {
-                const res = await fetch(`${API}/users/${userId}`, {
+                const res = await authFetch(`${API}/users/${userId}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, phoneNumber: phone })
+                    body:   JSON.stringify({ name, email, phoneNumber: phone })
                 });
                 if (res.ok) { showToast('Të dhënat u përditësuan!', 'success'); load(); }
                 else { const err = await res.json(); showToast(err.message || 'Gabim!', 'error'); }
@@ -221,8 +218,7 @@
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type;
+            t.textContent = msg; t.className = 'toast ' + type;
             setTimeout(() => t.className = 'toast', 3000);
         }
 
