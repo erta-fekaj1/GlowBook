@@ -1,4 +1,5 @@
-﻿Id,Name,Description,Price,DurationMinutes,IsActive
-1,Gel Manicure,Gel polish application,25.00,60,True
-2,Acrylic Nails,Acrylic extension,35.00,90,True
-3,Nail Art,Hand painted design,15.00,30,True
+Id,Name,Description,Price,DurationMinutes
+1,Gel Manicure,Gel polish application,10,60
+2,Acrylic Nails,Acrylic extension,35.00,90
+3,Nail Art,Hand painted design,15.00,30
+4,French Tips,,15,90
