@@ -1,0 +1,210 @@
+/* ============================================================
+   RESPONSIVE CSS - GlowBook
+   ============================================================ */
+
+/* Tablet - 768px dhe më pak */
+@media (max-width: 768px) {
+
+    /* Sidebar fshihet, shfaqet navbar sipër */
+    .sidebar {
+        position: fixed;
+        left: -220px;
+        transition: left 0.3s ease;
+        z-index: 100;
+    }
+
+    .sidebar.open {
+        left: 0;
+        box-shadow: 4px 0 20px rgba(153,53,86,0.15);
+    }
+
+    /* Main content zgjerohet */
+    .main {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+    }
+
+    /* Topbar */
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+
+    .topbar h1 {
+        font-size: 1.4rem !important;
+    }
+
+    /* Stats grid - 2 kolona */
+    .stats-grid,
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Grid 2 kolonash -> 1 kolonë */
+    .grid-2,
+    .profile-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Gallery grid */
+    .gallery-grid,
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Filters wrap */
+    .filters {
+        flex-wrap: wrap !important;
+    }
+
+    .filters input,
+    .filters select,
+    .search-box {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Table scroll */
+    .card {
+        overflow-x: auto !important;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    /* Modal full width */
+    .modal,
+    .modal-overlay .modal {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 0 auto;
+    }
+
+    /* User badge compact */
+    .user-badge {
+        padding: 6px 10px !important;
+    }
+
+    /* Hamburger button */
+    .hamburger {
+        display: flex !important;
+    }
+}
+
+/* Mobile - 480px dhe më pak */
+@media (max-width: 480px) {
+
+    .main {
+        padding: 0.75rem !important;
+    }
+
+    /* Stats - 1 kolonë */
+    .stats-grid,
+    .stats-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .stat-value,
+    .stat .n {
+        font-size: 1.4rem !important;
+    }
+
+    /* Gallery - 1 kolonë */
+    .gallery-grid,
+    .services-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Topbar buttons */
+    .btn-primary {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Filter buttons wrap */
+    .filter-btn {
+        font-size: 0.75rem !important;
+        padding: 5px 12px !important;
+    }
+
+    /* Modal preview smaller */
+    .modal-preview {
+        height: 180px !important;
+        font-size: 4rem !important;
+    }
+
+    .topbar h1 {
+        font-size: 1.2rem !important;
+    }
+}
+
+/* ============================================================
+   HAMBURGER MENU BUTTON
+   ============================================================ */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    border: none;
+    background: none;
+    margin-right: 10px;
+}
+
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #993556;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+/* Overlay kur sidebar është hapur */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(153,53,86,0.2);
+    z-index: 99;
+}
+
+.sidebar-overlay.open {
+    display: block;
+}
+
+/* Mobile navbar sipër */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-bottom: 1px solid #F4C0D1;
+    padding: 12px 1rem;
+    z-index: 50;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mobile-nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: #993556;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: flex !important;
+    }
+
+    .main {
+        padding-top: 5rem !important;
+    }
+}
