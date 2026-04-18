@@ -10,7 +10,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================================
-// CORS - Përditësuar me URL-në tënde të re në Render
+// CORS - Konfigurimi për Frontend-in në Render
 // ============================================================
 builder.Services.AddCors(options =>
 {
@@ -21,8 +21,7 @@ builder.Services.AddCors(options =>
                 "http://localhost:5500",
                 "http://127.0.0.1:5500",
                 "http://localhost:3000",
-                "https://glowbook-2.onrender.com", // URL e Frontendit tënd
-                "null"
+                "https://glowbook-2.onrender.com" // URL e Frontendit tënd
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -53,10 +52,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // ============================================================
-// CSV PATHS - Fix për Docker (Render)
+// CSV PATHS - Konfigurimi për Docker (Render)
 // ============================================================
-// Në Docker, folderat Infrastructure/Data mund të mos jenë në folderin prind
-// Kjo siguron që databaza krijohet saktë brenda kontejnerit
 string basePath = Path.Combine(Directory.GetCurrentDirectory(), "Database");
 Directory.CreateDirectory(basePath);
 
@@ -109,17 +106,27 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // ============================================================
-// MIDDLEWARE PIPELINE - Aktivizojmë Swagger për të gjithë
+// MIDDLEWARE PIPELINE
 // ============================================================
 
-// E lëmë Swagger-in të hapur edhe në Production që ta shohësh në Render
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "GlowBook API v1");
-    // Lere RoutePrefix bosh ("") nëse dëshiron që Swagger të jetë faqja kryesore
-    // Ose lere "swagger" që të hapet te url.com/swagger
-    c.RoutePrefix = "swagger"; 
+    
+    // NDRYSHIMI KRYESOR: Bosh që të hapet direkt në root URL
+    c.RoutePrefix = string.Empty; 
+});
+
+// Ridrejtim automatik nëse dikush shkruan prapë /swagger
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/swagger")
+    {
+        context.Response.Redirect("/");
+        return;
+    }
+    await next();
 });
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -128,6 +135,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Render përdor variablën e mjedisit PORT
+// Render përdor variablën e mjedisit PORT (Render cakton portën 10000 automatikisht)
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Run($"http://0.0.0.0:{port}");
