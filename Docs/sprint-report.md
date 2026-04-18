@@ -35,7 +35,7 @@
 - CORS konfiguruar për frontend
 
 ### 5. Web Frontend
-- `login.html` — autentikim me API
+- `index.html` — autentikim me API
 - `dashboard.html` — statistika live
 - `appointments.html` — CRUD i plotë
 - `services.html` — CRUD i plotë
