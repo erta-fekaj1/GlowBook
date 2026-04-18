@@ -3,129 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Book - Shërbimet</title>
-    <link rel="stylesheet" href="../css/responsive.css">
-    <link rel="stylesheet" href="../css/premium-theme.css">
+    <title>Glow Book - Takimet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* --- STILIMET BAZË --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
+        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- SIDEBAR (DESKTOP) --- */
+        .sidebar { 
+            position: fixed; left: 0; top: 0; bottom: 0; width: 240px; 
+            background: white; border-right: 1px solid #F4C0D1; 
+            padding: 1.5rem 1rem; display: flex; flex-direction: column; 
+            z-index: 1001; transition: transform 0.3s ease;
+        }
+        
+        .main { margin-left: 240px; padding: 2rem; transition: all 0.3s ease; }
+
+        /* --- NAVIGATION MOBILE --- */
+        .mobile-nav {
+            display: none; background: white; padding: 1rem;
+            border-bottom: 1px solid #F4C0D1; justify-content: space-between;
+            align-items: center; position: sticky; top: 0; z-index: 999;
+        }
+
+        .hamburger { background: none; border: none; font-size: 1.4rem; color: #993556; cursor: pointer; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.3);
+            display: none; z-index: 1000; backdrop-filter: blur(2px);
+        }
+
+        /* --- LOGO & NAV --- */
         .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
-        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
-        .nav-item:hover { background: #FBEAF0; color: #993556; }
-        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
-        .nav-bottom { margin-top: auto; }
-        .main { margin-left: 220px; padding: 2rem; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
-        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
-        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
-        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .filters input { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; flex: 1; }
-        .filters input:focus { border-color: #D4537E; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-        .service-card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; padding: 1.5rem; transition: all 0.2s; }
-        .service-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,83,126,0.12); }
-        .service-icon { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #FBEAF0, #EEEDFE); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
-        .service-name { font-size: 1rem; font-weight: 500; color: #2C2C2A; margin-bottom: 6px; }
-        .service-desc { font-size: 0.8rem; color: #B4B2A9; margin-bottom: 1rem; line-height: 1.5; }
-        .service-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #FBEAF0; }
-        .service-price { font-size: 1.1rem; font-weight: 500; color: #D4537E; }
-        .service-duration { font-size: 0.75rem; color: #B4B2A9; }
-        .service-actions { display: flex; gap: 6px; margin-top: 1rem; }
-        .btn-sm { padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
-        .btn-edit { background: #EEEDFE; color: #534AB7; }
-        .btn-delete { background: #FCEBEB; color: #A32D2D; }
-        .btn-edit:hover { background: #CCC8F5; }
-        .btn-delete:hover { background: #F7C1C1; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(153,53,86,0.15); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .logo h2 { font-family: 'Poppins', sans-serif; font-size: 1.4rem; color: #993556; }
+        
+        .nav-item { 
+            display: flex; align-items: center; gap: 12px; padding: 12px; 
+            border-radius: 12px; font-size: 0.9rem; color: #888780; 
+            cursor: pointer; transition: 0.2s; text-decoration: none; margin-bottom: 5px;
+        }
+        .nav-item:hover, .nav-item.active { background: #FBEAF0; color: #993556; font-weight: 500; }
+        .nav-bottom { margin-top: auto; border-top: 1px solid #FBEAF0; padding-top: 1rem; }
+
+        /* --- TOPBAR & FILTERS --- */
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .topbar h1 { font-family: 'Poppins', sans-serif; font-size: 1.7rem; color: #993556; }
+        
+        .btn-primary { 
+            padding: 12px 24px; background: linear-gradient(135deg, #D4537E, #993556); 
+            color: white; border: none; border-radius: 12px; font-weight: 500; 
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(212,83,126,0.2);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212,83,126,0.3); }
+
+        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .filters input, .filters select { 
+            padding: 12px; border: 1.5px solid #F4C0D1; border-radius: 12px; 
+            outline: none; flex: 1; min-width: 200px; font-family: inherit;
+        }
+
+        /* --- TABLE DESIGN --- */
+        .table-container { 
+            background: white; border-radius: 20px; border: 1px solid #F4C0D1; 
+            overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { background: #FDF6F9; padding: 15px; text-align: left; font-size: 0.75rem; color: #993556; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 15px; border-bottom: 1px solid #FBEAF0; font-size: 0.9rem; }
+        tr:hover td { background-color: #FDF9FA; }
+
+        /* --- BADGES --- */
+        .badge { font-size: 0.75rem; padding: 5px 12px; border-radius: 50px; font-weight: 600; display: inline-block; }
+        .badge-pending { background: #FFF4E5; color: #B07B05; }
+        .badge-confirmed { background: #E7F6EC; color: #0D8A43; }
+        .badge-cancelled { background: #FEECEB; color: #D32F2F; }
+        .badge-done { background: #F0F2FF; color: #3F51B5; }
+
+        .btn-action { padding: 8px; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; background: #F5F5F5; color: #555; }
+        .btn-edit:hover { background: #EEEDFE; color: #534AB7; }
+        .btn-delete:hover { background: #FCEBEB; color: #A32D2D; }
+
+        /* --- MODAL --- */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
+            display: none; align-items: center; justify-content: center; 
+            z-index: 2000; padding: 1rem; 
+        }
         .modal-overlay.open { display: flex; }
-        .modal { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(212,83,126,0.15); }
-        .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: #993556; margin-bottom: 1.5rem; }
-        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
-        .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
-        .field input, .field textarea { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
-        .field input:focus, .field textarea:focus { border-color: #D4537E; }
-        .field textarea { resize: vertical; min-height: 80px; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
-        .btn-cancel { flex: 1; padding: 10px; background: #FBEAF0; color: #993556; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .btn-save { flex: 2; padding: 10px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
-        .toast.success { background: #1D9E75; display: block; }
-        .toast.error { background: #D85A30; display: block; }
+        .modal { background: white; border-radius: 24px; padding: 2rem; width: 100%; max-width: 450px; position: relative; }
+        .field { margin-bottom: 1.2rem; }
+        .field label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: #72243E; }
+        .field input, .field select { width: 100%; padding: 12px; border: 1.5px solid #F4C0D1; border-radius: 12px; outline: none; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .mobile-nav { display: flex; }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main { margin-left: 0; padding: 1.5rem 1rem; }
+            .topbar h1 { font-size: 1.4rem; }
+            .filters input, .filters select { min-width: 100%; }
+        }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 15px 25px; border-radius: 12px; color: white; display: none; z-index: 3000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
-</script>
 <body>
-    <!-- Mobile Navbar -->
-<div class="mobile-nav">
-    <button class="hamburger" onclick="toggleSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
-    <div style="width:40px;"></div>
-</div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="mobile-nav">
+        <button class="hamburger" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+        <span style="font-weight: 700; color: #993556; letter-spacing: 1px;">GLOW BOOK</span>
+        <div style="width: 24px;"></div>
+    </div>
 
-    <div style="display:flex; min-height:100vh;">
-        <div class="sidebar">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div style="display:flex;">
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
-                <div style="font-size:1.8rem;">💅</div>
+                <div style="font-size:2rem; margin-bottom: 0.5rem;">💅</div>
                 <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+                <p>Nail Salon Management</p>
             </div>
-            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-            <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-            <a class="nav-item active" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-            <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-            <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-            <div class="nav-bottom">
-                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-            </div>
-        </div>
+            
+            <a href="dashboard.html" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="appointments.html" class="nav-item active">
+                <i class="fa-regular fa-calendar-check"></i> Takimet
+            </a>
+            <a href="services.html" class="nav-item">
+                <i class="fa-solid fa-wand-sparkles"></i> Shërbimet
+            </a>
+            <a href="users.html" class="nav-item">
+                <i class="fa-solid fa-circle-user"></i> Klientët
+            </a>
+            <a href="gallery.html" class="nav-item">
+                <i class="fa-regular fa-images"></i> Galeria
+            </a>
 
-        <div class="main">
+            <div class="nav-bottom">
+                <a onclick="logout()" class="nav-item" style="color: #D32F2F;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Dilni
+                </a>
+            </div>
+        </nav>
+
+        <main class="main">
             <div class="topbar">
-                <div><h1>Shërbimet</h1><p>Menaxho shërbimet e salonit</p></div>
-                <button class="btn-primary" onclick="openModal()">+ Shto Shërbim</button>
+                <div>
+                    <h1>Takimet</h1>
+                    <p style="color: #888;">Menaxhoni orarin dhe rezervimet e klientëve</p>
+                </div>
+                <button class="btn-primary" onclick="openModal()">
+                    <i class="fa-solid fa-plus"></i> Shto Takim
+                </button>
             </div>
+
             <div class="filters">
-                <input type="text" id="filterName" placeholder="🔍 Kërko shërbim..." oninput="renderCards()">
+                <input type="text" id="filterUser" placeholder="Kërko sipas emrit të klientit..." oninput="renderTable()">
+                <select id="filterStatus" onchange="renderTable()">
+                    <option value="">Të gjitha statuset</option>
+                    <option value="Pending">Në pritje (Pending)</option>
+                    <option value="Confirmed">I konfirmuar</option>
+                    <option value="Done">I përfunduar</option>
+                    <option value="Cancelled">I anuluar</option>
+                </select>
             </div>
-            <div class="services-grid" id="servicesGrid">
-                <div style="color:#B4B2A9;font-size:0.85rem;">Duke ngarkuar...</div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Klienti</th>
+                            <th>Shërbimi</th>
+                            <th>Data & Ora</th>
+                            <th>Statusi</th>
+                            <th>Veprimet</th>
+                        </tr>
+                    </thead>
+                    <tbody id="apptTable">
+                        <tr><td colspan="6" style="text-align:center; padding:3rem; color:#999;">Duke ngarkuar të dhënat...</td></tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </main>
     </div>
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <h2 id="modalTitle">Shto Shërbim të Ri</h2>
-            <div class="field"><label>Emri</label><input type="text" id="svcName" placeholder="p.sh. Manikyr Klasik"></div>
-            <div class="field"><label>Përshkrimi</label><textarea id="svcDesc" placeholder="Përshkrim i shkurtër..."></textarea></div>
-            <div class="field"><label>Çmimi ($)</label><input type="number" id="svcPrice" placeholder="0.00" min="0" step="0.01"></div>
-            <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="svcDuration" placeholder="60" min="1"></div>
-            <div class="modal-btns">
-                <button class="btn-cancel" onclick="closeModal()">Anulo</button>
-                <button class="btn-save" onclick="saveService()">Ruaj</button>
+            <h2 id="modalTitle" style="margin-bottom: 1.5rem; color: #993556;">Shto Takim</h2>
+            <div class="field">
+                <label>Zgjidh Klientin</label>
+                <select id="apptUser"></select>
+            </div>
+            <div class="field">
+                <label>Zgjidh Shërbimin</label>
+                <select id="apptService"></select>
+            </div>
+            <div class="field">
+                <label>Data dhe Ora</label>
+                <input type="datetime-local" id="apptDate">
+            </div>
+            <div class="field">
+                <label>Statusi</label>
+                <select id="apptStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Done">Done</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Shënime Shtesë</label>
+                <input type="text" id="apptNotes" placeholder="Psh: Alergji nga produktet...">
+            </div>
+            <div style="display:flex; gap:12px; margin-top:2rem;">
+                <button class="btn-primary" style="background: #F5F5F5; color: #555; flex:1; box-shadow:none;" onclick="closeModal()">Anulo</button>
+                <button class="btn-primary" style="flex:2;" onclick="saveAppt()">Ruaj Rezervimin</button>
             </div>
         </div>
     </div>
@@ -134,95 +237,170 @@ function closeSidebar() {
 
     <script src="../js/auth.js"></script>
     <script>
-        requireAuth();
-        loadUserBadge();
+        // Konfigurimi i API
+        const API = window.API_URL || "https://API_JUAJ_KETU.com"; 
 
-        let services = [], editingId = null;
-        const icons  = ['💅', '✨', '💎', '🌸', '🎀', '💄', '🌺', '⭐'];
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+        }
+
+        requireAuth();
+        let appts = [], users = [], services = [], editingId = null;
 
         async function load() {
             try {
-                const res = await authFetch(`${API}/services`);
-                services  = await res.json();
-                renderCards();
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+                // Supozojmë se authFetch është i definuar në auth.js
+                const [a, u, s] = await Promise.all([
+                    authFetch(`${API}/appointments`).then(r => r.json()),
+                    authFetch(`${API}/users`).then(r => r.json()),
+                    authFetch(`${API}/services`).then(r => r.json())
+                ]);
+                appts = a; users = u; services = s;
+                renderTable();
+                populateSelects();
+            } catch(e) { 
+                console.error(e);
+                showToast('Nuk u morën të dhënat nga serveri', 'error'); 
+            }
         }
 
-        function renderCards() {
-            const filter   = document.getElementById('filterName').value.toLowerCase();
-            const filtered = services.filter(s => !filter || s.name.toLowerCase().includes(filter));
-            const grid     = document.getElementById('servicesGrid');
-            if (!filtered.length) { grid.innerHTML = '<div style="color:#B4B2A9;">Nuk ka shërbime</div>'; return; }
-            grid.innerHTML = filtered.map((s, i) => `
-                <div class="service-card">
-                    <div class="service-icon">${icons[i % icons.length]}</div>
-                    <div class="service-name">${s.name}</div>
-                    <div class="service-desc">${s.description || 'Pa përshkrim'}</div>
-                    <div class="service-footer">
-                        <div>
-                            <div class="service-price">$${parseFloat(s.price).toFixed(2)}</div>
-                            <div class="service-duration">${s.durationMinutes} minuta</div>
-                        </div>
-                    </div>
-                    <div class="service-actions">
-                        <button class="btn-sm btn-edit" onclick="editService(${s.id})">Edito</button>
-                        <button class="btn-sm btn-delete" onclick="deleteService(${s.id})">Fshi</button>
-                    </div>
-                </div>
-            `).join('');
+        function populateSelects() {
+            const userSelect = document.getElementById('apptUser');
+            const svcSelect = document.getElementById('apptService');
+            if(userSelect) userSelect.innerHTML = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+            if(svcSelect) svcSelect.innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        }
+
+        function renderTable() {
+            const filterUser = document.getElementById('filterUser').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+            
+            const filtered = appts.filter(a => {
+                const user = users.find(u => u.id === a.userId);
+                const matchUser = !filterUser || (user && user.name.toLowerCase().includes(filterUser));
+                const matchStat = !filterStatus || a.status === filterStatus;
+                return matchUser && matchStat;
+            });
+
+            const tbody = document.getElementById('apptTable');
+            if (!filtered.length) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:3rem; color:#999;">Nuk u gjet asnjë rezultat.</td></tr>'; 
+                return; 
+            }
+
+            tbody.innerHTML = filtered.map(a => {
+                const user = users.find(u => u.id === a.userId);
+                const svc = services.find(s => s.id === a.serviceId);
+                const statusLabel = a.status || 'Pending';
+                
+                return `<tr>
+                    <td><span style="color:#888; font-size:0.8rem;">#${a.id}</span></td>
+                    <td><strong>${user ? user.name : 'I panjohur'}</strong></td>
+                    <td>${svc ? svc.name : 'Pa shërbim'}</td>
+                    <td>${a.appointmentDate ? new Date(a.appointmentDate).toLocaleString('sq-AL', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '–'}</td>
+                    <td><span class="badge badge-${statusLabel.toLowerCase()}">${statusLabel}</span></td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="editAppt(${a.id})" title="Edito">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn-action btn-delete" onclick="deleteAppt(${a.id})" title="Fshi">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
         }
 
         function openModal(id = null) {
             editingId = id;
-            document.getElementById('modalTitle').textContent = id ? 'Edito Shërbim' : 'Shto Shërbim të Ri';
-            if (!id) { document.getElementById('svcName').value = ''; document.getElementById('svcDesc').value = ''; document.getElementById('svcPrice').value = ''; document.getElementById('svcDuration').value = ''; }
-            document.getElementById('modalOverlay').classList.add('open');
+            const modal = document.getElementById('modalOverlay');
+            document.getElementById('modalTitle').textContent = id ? 'Edito Takimin' : 'Shto Takim të Ri';
+            
+            if (!id) {
+                document.getElementById('apptDate').value = '';
+                document.getElementById('apptNotes').value = '';
+                document.getElementById('apptStatus').value = 'Pending';
+            }
+            modal.classList.add('open');
         }
 
-        function editService(id) {
-            const s = services.find(x => x.id === id);
-            if (!s) return;
+        function editAppt(id) {
+            const a = appts.find(x => x.id === id);
+            if (!a) return;
             openModal(id);
-            document.getElementById('svcName').value     = s.name;
-            document.getElementById('svcDesc').value     = s.description || '';
-            document.getElementById('svcPrice').value    = s.price;
-            document.getElementById('svcDuration').value = s.durationMinutes;
+            document.getElementById('apptUser').value = a.userId;
+            document.getElementById('apptService').value = a.serviceId;
+            document.getElementById('apptStatus').value = a.status;
+            document.getElementById('apptNotes').value = a.notes || '';
+            if (a.appointmentDate) {
+                const date = new Date(a.appointmentDate);
+                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                document.getElementById('apptDate').value = date.toISOString().slice(0, 16);
+            }
         }
 
-        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
-
-        async function saveService() {
-            const name     = document.getElementById('svcName').value;
-            const desc     = document.getElementById('svcDesc').value;
-            const price    = parseFloat(document.getElementById('svcPrice').value);
-            const duration = parseInt(document.getElementById('svcDuration').value);
-            if (!name || isNaN(price) || isNaN(duration)) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
-            if (price <= 0) { showToast('Çmimi duhet të jetë > 0!', 'error'); return; }
-            const body = { name, description: desc, price, durationMinutes: duration };
-            try {
-                const res = editingId
-                    ? await authFetch(`${API}/services/${editingId}`, { method: 'PUT', body: JSON.stringify(body) })
-                    : await authFetch(`${API}/services`, { method: 'POST', body: JSON.stringify(body) });
-                if (res.ok) { showToast(editingId ? 'Shërbimi u përditësua!' : 'Shërbimi u shtua!', 'success'); closeModal(); load(); }
-                else { showToast('Gabim gjatë ruajtjes!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
+            editingId = null;
         }
 
-        async function deleteService(id) {
-            if (!confirm('A jeni i sigurt?')) return;
+        async function saveAppt() {
+            const body = {
+                userId: parseInt(document.getElementById('apptUser').value),
+                serviceId: parseInt(document.getElementById('apptService').value),
+                appointmentDate: document.getElementById('apptDate').value,
+                status: document.getElementById('apptStatus').value,
+                notes: document.getElementById('apptNotes').value
+            };
+
+            if(!body.appointmentDate) { showToast('Ju lutem zgjidhni datën!', 'error'); return; }
+
             try {
-                const res = await authFetch(`${API}/services/${id}`, { method: 'DELETE' });
-                if (res.ok) { showToast('Shërbimi u fshi!', 'success'); load(); }
-                else { showToast('Gabim gjatë fshirjes!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+                const method = editingId ? 'PUT' : 'POST';
+                const url = editingId ? `${API}/appointments/${editingId}` : `${API}/appointments`;
+                
+                const res = await authFetch(url, { 
+                    method: method, 
+                    body: JSON.stringify(body) 
+                });
+                
+                if (res.ok) {
+                    showToast(editingId ? 'Takimi u përditësua me sukses!' : 'Takimi u shtua!', 'success');
+                    closeModal();
+                    load();
+                } else {
+                    showToast('Ndodhi një gabim gjatë ruajtjes.', 'error');
+                }
+            } catch(e) {
+                showToast('Lidhja me serverin dështoi.', 'error');
+            }
+        }
+
+        async function deleteAppt(id) {
+            if (!confirm('A jeni të sigurt që dëshironi të fshini këtë takim?')) return;
+            try {
+                const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast('Takimi u fshi me sukses.', 'success');
+                    load();
+                }
+            } catch(e) { showToast('Dështoi fshirja.', 'error'); }
         }
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            t.textContent = msg; t.className = 'toast ' + type;
-            setTimeout(() => t.className = 'toast', 3000);
+            t.textContent = msg;
+            t.style.display = 'block';
+            t.style.background = type === 'success' ? '#1D9E75' : '#D85A30';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
         }
 
+        // Nis ngarkimin
         load();
     </script>
 </body>

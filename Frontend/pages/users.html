@@ -4,125 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow Book - Përdoruesit</title>
-    <link rel="stylesheet" href="../css/responsive.css">
-    <link rel="stylesheet" href="../css/premium-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* --- STILIMET BAZË --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
+        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- SIDEBAR (DESKTOP) --- */
+        .sidebar { 
+            position: fixed; left: 0; top: 0; bottom: 0; width: 240px; 
+            background: white; border-right: 1px solid #F4C0D1; 
+            padding: 1.5rem 1rem; display: flex; flex-direction: column; 
+            z-index: 1001; transition: transform 0.3s ease;
+        }
+        .main { margin-left: 240px; padding: 2rem; transition: all 0.3s ease; }
+
+        /* --- NAVIGATION MOBILE --- */
+        .mobile-nav {
+            display: none; background: white; padding: 1rem;
+            border-bottom: 1px solid #F4C0D1; justify-content: space-between;
+            align-items: center; position: sticky; top: 0; z-index: 999;
+        }
+        .hamburger { background: none; border: none; font-size: 1.4rem; color: #993556; cursor: pointer; }
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.3);
+            display: none; z-index: 1000; backdrop-filter: blur(2px);
+        }
+
+        /* --- ELEMENTET E DIZAJNIT --- */
         .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
+        .logo h2 { font-family: 'Poppins', sans-serif; font-size: 1.4rem; color: #993556; font-weight: 600; }
         .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
-        .nav-item:hover { background: #FBEAF0; color: #993556; }
-        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
-        .nav-bottom { margin-top: auto; }
-        .main { margin-left: 220px; padding: 2rem; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
-        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
-        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
-        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-mini { background: white; border-radius: 12px; padding: 1rem; border: 1px solid #F4C0D1; text-align: center; }
-        .stat-mini .val { font-size: 1.5rem; font-weight: 500; color: #993556; }
-        .stat-mini .lbl { font-size: 0.75rem; color: #B4B2A9; text-transform: uppercase; letter-spacing: 1px; }
-        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .filters input, .filters select { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; transition: all 0.2s; }
-        .filters input { flex: 1; }
-        .filters input:focus, .filters select:focus { border-color: #D4537E; }
-        .card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        thead { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); }
-        th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
-        td { padding: 12px 16px; font-size: 0.85rem; border-bottom: 1px solid #FBEAF0; color: #2C2C2A; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #FDFAF9; }
-        .user-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #F4C0D1, #EEEDFE); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500; color: #993556; flex-shrink: 0; }
-        .badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-        .badge-admin { background: #FCEBEB; color: #A32D2D; }
-        .badge-customer { background: #E1F5EE; color: #0F6E56; }
-        .btn-sm { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
+
+        .nav-item { 
+            display: flex; align-items: center; gap: 12px; padding: 12px; 
+            border-radius: 12px; font-size: 0.9rem; color: #888780; 
+            cursor: pointer; transition: 0.2s; text-decoration: none; margin-bottom: 5px;
+        }
+        .nav-item:hover, .nav-item.active { background: #FBEAF0; color: #993556; font-weight: 500; }
+        .nav-bottom { margin-top: auto; border-top: 1px solid #FBEAF0; padding-top: 1rem; }
+
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .topbar h1 { font-family: 'Poppins', sans-serif; font-size: 1.7rem; color: #993556; }
+
+        .btn-primary { 
+            padding: 12px 24px; background: linear-gradient(135deg, #D4537E, #993556); 
+            color: white; border: none; border-radius: 12px; font-weight: 500; 
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(212,83,126,0.2);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212,83,126,0.3); }
+
+        /* --- STATS --- */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-mini { background: white; border-radius: 16px; padding: 1.2rem; border: 1px solid #F4C0D1; text-align: center; }
+        .stat-mini .val { font-size: 1.6rem; font-weight: 700; color: #993556; }
+        .stat-mini .lbl { font-size: 0.7rem; color: #B4B2A9; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .filters input, .filters select { 
+            padding: 12px; border: 1.5px solid #F4C0D1; border-radius: 12px; 
+            outline: none; flex: 1; min-width: 200px; font-family: inherit;
+        }
+
+        /* --- TABLE --- */
+        .table-container { 
+            background: white; border-radius: 20px; border: 1px solid #F4C0D1; 
+            overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #FDF6F9; padding: 15px; text-align: left; font-size: 0.75rem; color: #993556; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 15px; border-bottom: 1px solid #FBEAF0; font-size: 0.9rem; vertical-align: middle; }
+
+        .user-avatar-sm { width: 36px; height: 36px; border-radius: 10px; background: #FBEAF0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #993556; }
+        
+        .badge { font-size: 0.7rem; padding: 4px 12px; border-radius: 50px; font-weight: 600; }
+        .badge-admin { background: #FEECEB; color: #D32F2F; }
+        .badge-customer { background: #E7F6EC; color: #0D8A43; }
+
+        .btn-sm { padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; border: none; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .btn-view { background: #F5F5F5; color: #555; }
         .btn-edit { background: #EEEDFE; color: #534AB7; }
         .btn-delete { background: #FCEBEB; color: #A32D2D; }
-        .btn-view { background: #FBEAF0; color: #993556; }
-        .btn-edit:hover { background: #CCC8F5; }
-        .btn-delete:hover { background: #F7C1C1; }
-        .btn-view:hover { background: #F4C0D1; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(153,53,86,0.15); display: none; align-items: center; justify-content: center; z-index: 100; }
+
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
         .modal-overlay.open { display: flex; }
-        .modal { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(212,83,126,0.15); }
-        .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: #993556; margin-bottom: 1.5rem; }
-        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
-        .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
-        .field input, .field select { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
-        .field input:focus, .field select:focus { border-color: #D4537E; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
-        .btn-cancel { flex: 1; padding: 10px; background: #FBEAF0; color: #993556; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .btn-save { flex: 2; padding: 10px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
-        .toast.success { background: #1D9E75; display: block; }
-        .toast.error { background: #D85A30; display: block; }
+        .modal { background: white; border-radius: 24px; padding: 2rem; width: 100%; max-width: 450px; }
+        .field { margin-bottom: 1.2rem; }
+        .field label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: #72243E; }
+        .field input, .field select { width: 100%; padding: 12px; border: 1.5px solid #F4C0D1; border-radius: 12px; outline: none; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .mobile-nav { display: flex; }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main { margin-left: 0; padding: 1.5rem 1rem; }
+            .topbar h1 { font-size: 1.4rem; }
+            .filters input, .filters select { min-width: 100%; }
+        }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 15px 25px; border-radius: 12px; color: white; display: none; z-index: 3000; }
     </style>
 </head>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
-</script>
 <body>
-    <!-- Mobile Navbar -->
-<div class="mobile-nav">
-    <button class="hamburger" onclick="toggleSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
-    <div style="width:40px;"></div>
-</div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="mobile-nav">
+        <button class="hamburger" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+        <span style="font-weight: 700; color: #993556; letter-spacing: 1px;">GLOW BOOK</span>
+        <div style="width: 24px;"></div>
+    </div>
 
-    <div style="display:flex; min-height:100vh;">
-        <div class="sidebar">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div style="display:flex;">
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
-                <div style="font-size:1.8rem;">💅</div>
+                <div style="font-size:2rem; margin-bottom: 0.5rem;">💅</div>
                 <h2>Glow Book</h2>
                 <p>Nail Salon</p>
             </div>
-            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-            <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-            <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-            <a class="nav-item active" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-            <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
+            <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a href="appointments.html" class="nav-item"><i class="fa-regular fa-calendar-check"></i> Takimet</a>
+            <a href="services.html" class="nav-item"><i class="fa-solid fa-wand-sparkles"></i> Shërbimet</a>
+            <a href="users.html" class="nav-item active"><i class="fa-solid fa-circle-user"></i> Përdoruesit</a>
+            <a href="gallery.html" class="nav-item"><i class="fa-regular fa-images"></i> Galeria</a>
             <div class="nav-bottom">
-                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+                <a onclick="logout()" class="nav-item" style="color: #D32F2F; cursor:pointer;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Dilni</a>
             </div>
-        </div>
+        </nav>
 
-        <div class="main">
+        <main class="main">
             <div class="topbar">
-                <div><h1>Përdoruesit</h1><p>Menaxho të gjithë përdoruesit</p></div>
+                <div>
+                    <h1>Përdoruesit</h1>
+                    <p style="color: #888;">Menaxhoni stafin dhe klientët e salonit</p>
+                </div>
                 <button class="btn-primary" onclick="openModal()">+ Shto Përdorues</button>
             </div>
 
             <div class="stats-row">
-                <div class="stat-mini"><div class="val" id="totalUsers">–</div><div class="lbl">Gjithsej</div></div>
-                <div class="stat-mini"><div class="val" id="totalAdmins">–</div><div class="lbl">Admin</div></div>
-                <div class="stat-mini"><div class="val" id="totalCustomers">–</div><div class="lbl">Customer</div></div>
+                <div class="stat-mini"><div class="val" id="totalUsers">0</div><div class="lbl">Gjithsej</div></div>
+                <div class="stat-mini"><div class="val" id="totalAdmins">0</div><div class="lbl">Admin</div></div>
+                <div class="stat-mini"><div class="val" id="totalCustomers">0</div><div class="lbl">Klientë</div></div>
             </div>
 
             <div class="filters">
-                <input type="text" id="filterName" placeholder="🔍 Kërko përdorues..." oninput="renderTable()">
+                <input type="text" id="filterName" placeholder="Kërko me emër ose email..." oninput="renderTable()">
                 <select id="filterRole" onchange="renderTable()">
                     <option value="">Të gjitha rolet</option>
                     <option value="Admin">Admin</option>
@@ -130,37 +162,42 @@ function closeSidebar() {
                 </select>
             </div>
 
-            <div class="card">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Përdoruesi</th><th>Email</th><th>Telefoni</th><th>Roli</th><th>Krijuar</th><th>Veprimet</th>
+                            <th>Përdoruesi</th>
+                            <th>Email</th>
+                            <th>Telefoni</th>
+                            <th>Roli</th>
+                            <th>Regjistruar</th>
+                            <th>Veprimet</th>
                         </tr>
                     </thead>
                     <tbody id="usersTable">
-                        <tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Duke ngarkuar...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding:3rem; color:#999;">Duke ngarkuar...</td></tr>
                     </tbody>
                 </table>
             </div>
-        </div>
+        </main>
     </div>
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <h2 id="modalTitle">Shto Përdorues të Ri</h2>
-            <div class="field"><label>Emri</label><input type="text" id="uName" placeholder="Ana Krasniqi"></div>
-            <div class="field"><label>Email</label><input type="email" id="uEmail" placeholder="ana@gmail.com"></div>
-            <div class="field"><label>Password</label><input type="password" id="uPassword" placeholder="Min. 4 karaktere"></div>
-            <div class="field"><label>Telefoni</label><input type="text" id="uPhone" placeholder="044 123 456"></div>
+            <h2 id="modalTitle">Shto Përdorues</h2>
+            <div class="field"><label>Emri i Plotë</label><input type="text" id="uName" placeholder="Psh. Filan Fisteku"></div>
+            <div class="field"><label>Email Adresa</label><input type="email" id="uEmail" placeholder="shembull@email.com"></div>
+            <div class="field"><label>Fjalëkalimi</label><input type="password" id="uPassword" placeholder="Lëreni bosh nëse nuk doni ta ndryshoni"></div>
+            <div class="field"><label>Numri i Telefonit</label><input type="text" id="uPhone" placeholder="04x xxx xxx"></div>
             <div class="field"><label>Roli</label>
                 <select id="uRole">
                     <option value="Customer">Customer</option>
                     <option value="Admin">Admin</option>
                 </select>
             </div>
-            <div class="modal-btns">
-                <button class="btn-cancel" onclick="closeModal()">Anulo</button>
-                <button class="btn-save" onclick="saveUser()">Ruaj</button>
+            <div style="display:flex; gap:12px; margin-top:1.5rem;">
+                <button class="btn-primary" style="background: #F5F5F5; color: #555; flex:1; box-shadow:none;" onclick="closeModal()">Anulo</button>
+                <button class="btn-primary" style="flex:2;" onclick="saveUser()">Ruaj të dhënat</button>
             </div>
         </div>
     </div>
@@ -169,9 +206,19 @@ function closeSidebar() {
 
     <script src="../js/auth.js"></script>
     <script>
-        requireAuth();
-        loadUserBadge();
+        // Konfigurimi i API nga auth.js ose manualisht
+        const API = window.API_URL || "https://API_JUAJ_KETU.com";
 
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+        }
+
+        requireAuth();
         let users = [], editingId = null;
 
         async function load() {
@@ -180,42 +227,46 @@ function closeSidebar() {
                 users = await res.json();
                 renderTable();
                 renderStats();
-            } catch(e) { showToast('Gabim në lidhje me serverin!', 'error'); }
+            } catch(e) { showToast('Gabim në ngarkimin e përdoruesve', 'error'); }
         }
 
         function renderStats() {
-            document.getElementById('totalUsers').textContent     = users.length;
-            document.getElementById('totalAdmins').textContent    = users.filter(u => u.role === 'Admin').length;
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalAdmins').textContent = users.filter(u => u.role === 'Admin').length;
             document.getElementById('totalCustomers').textContent = users.filter(u => u.role === 'Customer').length;
         }
 
         function renderTable() {
             const filterName = document.getElementById('filterName').value.toLowerCase();
             const filterRole = document.getElementById('filterRole').value;
-            const filtered   = users.filter(u => {
+            
+            const filtered = users.filter(u => {
                 const matchName = !filterName || u.name.toLowerCase().includes(filterName) || u.email.toLowerCase().includes(filterName);
                 const matchRole = !filterRole || u.role === filterRole;
                 return matchName && matchRole;
             });
+
             const tbody = document.getElementById('usersTable');
-            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka përdorues</td></tr>'; return; }
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">Nuk u gjet asnjë përdorues.</td></tr>'; return; }
+            
             tbody.innerHTML = filtered.map(u => {
-                const initials   = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const initials = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 const badgeClass = u.role === 'Admin' ? 'badge-admin' : 'badge-customer';
-                const date       = u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–';
                 return `<tr>
-                    <td style="display:flex;align-items:center;gap:10px;">
+                    <td style="display:flex; align-items:center; gap:12px;">
                         <div class="user-avatar-sm">${initials}</div>
                         <strong>${u.name}</strong>
                     </td>
                     <td>${u.email}</td>
                     <td>${u.phoneNumber || '–'}</td>
                     <td><span class="badge ${badgeClass}">${u.role}</span></td>
-                    <td>${date}</td>
-                    <td style="display:flex;gap:6px;">
-                        <button class="btn-sm btn-view" onclick="viewProfile(${u.id})">Profili</button>
-                        <button class="btn-sm btn-edit" onclick="editUser(${u.id})">Edito</button>
-                        <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})">Fshi</button>
+                    <td>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–'}</td>
+                    <td>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-sm btn-view" onclick="viewProfile(${u.id})"><i class="fa-solid fa-eye"></i></button>
+                            <button class="btn-sm btn-edit" onclick="editUser(${u.id})"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>`;
             }).join('');
@@ -223,8 +274,14 @@ function closeSidebar() {
 
         function openModal(id = null) {
             editingId = id;
-            document.getElementById('modalTitle').textContent = id ? 'Edito Përdorues' : 'Shto Përdorues të Ri';
-            if (!id) { document.getElementById('uName').value = ''; document.getElementById('uEmail').value = ''; document.getElementById('uPassword').value = ''; document.getElementById('uPhone').value = ''; document.getElementById('uRole').value = 'Customer'; }
+            document.getElementById('modalTitle').textContent = id ? 'Edito Përdoruesin' : 'Shto Përdorues të Ri';
+            if (!id) {
+                document.getElementById('uName').value = '';
+                document.getElementById('uEmail').value = '';
+                document.getElementById('uPassword').value = '';
+                document.getElementById('uPhone').value = '';
+                document.getElementById('uRole').value = 'Customer';
+            }
             document.getElementById('modalOverlay').classList.add('open');
         }
 
@@ -232,45 +289,59 @@ function closeSidebar() {
             const u = users.find(x => x.id === id);
             if (!u) return;
             openModal(id);
-            document.getElementById('uName').value  = u.name;
+            document.getElementById('uName').value = u.name;
             document.getElementById('uEmail').value = u.email;
             document.getElementById('uPhone').value = u.phoneNumber || '';
-            document.getElementById('uRole').value  = u.role;
+            document.getElementById('uRole').value = u.role;
         }
 
         function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
         async function saveUser() {
-            const name     = document.getElementById('uName').value;
-            const email    = document.getElementById('uEmail').value;
+            const data = {
+                name: document.getElementById('uName').value,
+                email: document.getElementById('uEmail').value,
+                phoneNumber: document.getElementById('uPhone').value,
+                role: document.getElementById('uRole').value
+            };
+            
             const password = document.getElementById('uPassword').value;
-            const phone    = document.getElementById('uPhone').value;
-            if (!name || !email || !phone) { showToast('Plotësoni fushat e detyrueshme!', 'error'); return; }
+            if (password) data.password = password;
+
+            if (!data.name || !data.email) { showToast('Emri dhe Email janë të detyrueshme!', 'error'); return; }
+
             try {
-                const res = editingId
-                    ? await authFetch(`${API}/users/${editingId}`, { method: 'PUT', body: JSON.stringify({ name, email, phoneNumber: phone }) })
-                    : await authFetch(`${API}/users`, { method: 'POST', body: JSON.stringify({ name, email, password, phoneNumber: phone }) });
-                if (res.ok) { showToast(editingId ? 'Përdoruesi u përditësua!' : 'Përdoruesi u shtua!', 'success'); closeModal(); load(); }
-                else { const err = await res.json(); showToast(err.message || 'Gabim!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+                const method = editingId ? 'PUT' : 'POST';
+                const url = editingId ? `${API}/users/${editingId}` : `${API}/users`;
+                const res = await authFetch(url, { method, body: JSON.stringify(data) });
+                
+                if (res.ok) {
+                    showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success');
+                    closeModal();
+                    load();
+                } else {
+                    const err = await res.json();
+                    showToast(err.message || 'Gabim!', 'error');
+                }
+            } catch(e) { showToast('Lidhja dështoi!', 'error'); }
         }
 
         async function deleteUser(id) {
-            const u = users.find(x => x.id === id);
-            if (!confirm(`A jeni i sigurt që doni të fshini "${u.name}"?`)) return;
+            if (!confirm('A jeni të sigurt?')) return;
             try {
                 const res = await authFetch(`${API}/users/${id}`, { method: 'DELETE' });
-                if (res.ok) { showToast('Përdoruesi u fshi!', 'success'); load(); }
-                else { showToast('Gabim gjatë fshirjes!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+                if (res.ok) { showToast('U fshi!', 'success'); load(); }
+            } catch(e) { showToast('Gabim!', 'error'); }
         }
 
         function viewProfile(id) { window.location.href = `profile.html?id=${id}`; }
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            t.textContent = msg; t.className = 'toast ' + type;
-            setTimeout(() => t.className = 'toast', 3000);
+            t.textContent = msg;
+            t.style.display = 'block';
+            t.style.background = type === 'success' ? '#1D9E75' : '#D85A30';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
         }
 
         load();
