@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using GlowBook.API.Contracts;
 using GlowBook.Application.Services;
 
 namespace GlowBook.API.Controllers;
@@ -17,43 +18,27 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        try { return Ok(_userService.GetUserById(id)); }
-        catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
-        catch (ArgumentException ex) { return BadRequest(new { message = ex.Message }); }
+        return Ok(_userService.GetUserById(id));
     }
 
     [HttpPost]
     public IActionResult Create([FromBody] CreateUserDto dto)
     {
-        try
-        {
-            var user = _userService.AddUser(dto.Name, dto.Email, dto.Password, dto.PhoneNumber);
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
-        }
-        catch (ArgumentException ex) { return BadRequest(new { message = ex.Message }); }
-        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+        var user = _userService.AddUser(dto.Name, dto.Email, dto.Password, dto.PhoneNumber);
+        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, [FromBody] UpdateUserDto dto)
     {
-        try
-        {
-            var user = _userService.UpdateUser(id, dto.Name, dto.Email, dto.PhoneNumber);
-            return Ok(user);
-        }
-        catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
-        catch (ArgumentException ex) { return BadRequest(new { message = ex.Message }); }
-        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+        var user = _userService.UpdateUser(id, dto.Name, dto.Email, dto.PhoneNumber);
+        return Ok(user);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        try { _userService.DeleteUser(id); return NoContent(); }
-        catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+        _userService.DeleteUser(id);
+        return NoContent();
     }
 }
-
-public record CreateUserDto(string Name, string Email, string Password, string PhoneNumber);
-public record UpdateUserDto(string Name, string Email, string PhoneNumber);

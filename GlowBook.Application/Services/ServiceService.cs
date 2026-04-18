@@ -53,7 +53,7 @@ public class ServiceService
     /// Kërkim i kombinuar: emri + çmimi + kohëzgjatja
     /// </summary>
     public List<Service> Search(
-        string name = null,
+        string? name = null,
         decimal? minPrice = null,
         decimal? maxPrice = null,
         int? maxDuration = null)
@@ -210,6 +210,6 @@ public class ServiceStatistics
     public decimal MaxPrice        { get; set; }
     public decimal MinPrice        { get; set; }
     public int     AverageDuration { get; set; }
-    public Service MostExpensive   { get; set; }
-    public Service Cheapest        { get; set; }
+    public Service? MostExpensive   { get; set; }
+    public Service? Cheapest        { get; set; }
 }

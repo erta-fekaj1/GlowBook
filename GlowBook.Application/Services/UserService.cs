@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GlowBook.Application.Security;
 using GlowBook.Core.Entities;
 using GlowBook.Core.Interfaces;
 
@@ -17,7 +18,7 @@ public class UserService
     }
 
     // 1. Listo me filtrim (sipas emrit ose rolit)
-    public List<User> GetAllUsers(string filterByName = null, string filterByRole = null)
+    public List<User> GetAllUsers(string? filterByName = null, string? filterByRole = null)
     {
         var users = _userRepository.GetAll().ToList();
 
@@ -100,7 +101,7 @@ public class UserService
         {
             Name = name,
             Email = email,
-            Password = password,
+            Password = PasswordSecurity.Hash(password),
             PhoneNumber = phoneNumber,
             Role = role,
             CreatedAt = DateTime.Now

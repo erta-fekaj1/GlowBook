@@ -31,8 +31,8 @@ public class AppointmentService
     /// </summary>
     public List<Appointment> GetAll(
         int?    userId    = null,
-        string  status    = null,
-        string  sortBy    = null)
+        string? status    = null,
+        string? sortBy    = null)
     {
         var appointments = _appointmentRepository.GetAll();
 

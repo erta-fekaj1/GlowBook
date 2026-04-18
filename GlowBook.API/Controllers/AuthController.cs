@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+using GlowBook.API.Contracts;
+using GlowBook.Application.Services;
 using System.Security.Claims;
-using System.Text;
-using GlowBook.Core.Interfaces;
-using GlowBook.Core.Entities;
 
 namespace GlowBook.API.Controllers;
 
@@ -12,39 +9,26 @@ namespace GlowBook.API.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IRepository<User> _userRepository;
-    private readonly IConfiguration    _configuration;
+    private readonly AuthService _authService;
 
-    public AuthController(
-        IRepository<User> userRepository,
-        IConfiguration    configuration)
+    public AuthController(AuthService authService)
     {
-        _userRepository = userRepository;
-        _configuration  = configuration;
+        _authService = authService;
     }
 
     // POST: api/auth/login
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginDto dto)
     {
-        if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-            return BadRequest(new { message = "Email dhe password janë të detyrueshme" });
+        if (dto == null)
+            throw new ArgumentException("Të dhënat janë të pavlefshme");
 
-        // Gjej userin
-        var user = _userRepository.GetAll()
-            .FirstOrDefault(u =>
-                u.Email.Equals(dto.Email, StringComparison.OrdinalIgnoreCase) &&
-                u.Password == dto.Password);
-
-        if (user == null)
-            return Unauthorized(new { message = "Email ose password i gabuar" });
-
-        // Gjenero JWT Token
-        var token = GenerateToken(user);
+        var result = _authService.Login(dto.Email, dto.Password);
+        var user = result.User;
 
         return Ok(new
         {
-            token   = token,
+            token   = result.Token,
             user    = new
             {
                 id          = user.Id,
@@ -62,43 +46,14 @@ public class AuthController : ControllerBase
     public IActionResult Register([FromBody] RegisterDto dto)
     {
         if (dto == null)
-            return BadRequest(new { message = "Të dhënat janë të pavlefshme" });
+            throw new ArgumentException("Të dhënat janë të pavlefshme");
 
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            return BadRequest(new { message = "Emri nuk mund të jetë bosh" });
-
-        if (string.IsNullOrWhiteSpace(dto.Email) || !dto.Email.Contains("@"))
-            return BadRequest(new { message = "Email nuk është valid" });
-
-        if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 4)
-            return BadRequest(new { message = "Password duhet të ketë min. 4 karaktere" });
-
-        // Kontrollo nëse email ekziston
-        var existing = _userRepository.GetAll()
-            .Any(u => u.Email.Equals(dto.Email, StringComparison.OrdinalIgnoreCase));
-
-        if (existing)
-            return Conflict(new { message = $"Email '{dto.Email}' është tashmë në përdorim" });
-
-        // Krijo userin
-        var user = new User
-        {
-            Name        = dto.Name,
-            Email       = dto.Email,
-            Password    = dto.Password,
-            PhoneNumber = dto.PhoneNumber ?? "",
-            Role        = "Customer",
-            CreatedAt   = DateTime.Now
-        };
-
-        _userRepository.Add(user);
-
-        // Gjenero token direkt
-        var token = GenerateToken(user);
+        var result = _authService.Register(dto.Name, dto.Email, dto.Password, dto.PhoneNumber);
+        var user = result.User;
 
         return Ok(new
         {
-            token   = token,
+            token   = result.Token,
             user    = new
             {
                 id          = user.Id,
@@ -117,10 +72,7 @@ public class AuthController : ControllerBase
     public IActionResult Me()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        var user   = _userRepository.GetById(userId);
-
-        if (user == null)
-            return NotFound(new { message = "Përdoruesi nuk u gjet" });
+        var user   = _authService.GetCurrentUser(userId);
 
         return Ok(new
         {
@@ -132,34 +84,4 @@ public class AuthController : ControllerBase
             createdAt   = user.CreatedAt
         });
     }
-
-    private string GenerateToken(User user)
-    {
-        var jwtKey    = _configuration["Jwt:Key"] ?? "GlowBookSecretKey2026!SuperSecret";
-        var jwtIssuer = _configuration["Jwt:Issuer"] ?? "GlowBookAPI";
-
-        var key   = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email,          user.Email),
-            new Claim(ClaimTypes.Name,           user.Name),
-            new Claim(ClaimTypes.Role,           user.Role)
-        };
-
-        var token = new JwtSecurityToken(
-            issuer:             jwtIssuer,
-            audience:           jwtIssuer,
-            claims:             claims,
-            expires:            DateTime.Now.AddHours(24),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
 }
-
-public record LoginDto(string Email, string Password);
-public record RegisterDto(string Name, string Email, string Password, string? PhoneNumber);

@@ -1,4 +1,5 @@
 ﻿using GlowBook.Application.Services;
+using GlowBook.API.Middleware;
 using GlowBook.Core.Entities;
 using GlowBook.Core.Interfaces;
 using GlowBook.Infrastructure.Repositories;
@@ -31,8 +32,10 @@ builder.Services.AddCors(options =>
 // ============================================================
 // JWT AUTHENTICATION
 // ============================================================
-var jwtKey    = builder.Configuration["Jwt:Key"]    ?? "GlowBookSecretKey2026!SuperSecret";
-var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "GlowBookAPI";
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("Jwt:Key mungon në konfigurim.");
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+    ?? throw new InvalidOperationException("Jwt:Issuer mungon në konfigurim.");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -75,6 +78,7 @@ builder.Services.AddSingleton<IRepository<Appointment>>(new FileRepository<Appoi
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<ServiceService>();
+builder.Services.AddScoped<AuthService>();
 
 // ============================================================
 // CONTROLLERS + SWAGGER me JWT support
@@ -124,6 +128,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
