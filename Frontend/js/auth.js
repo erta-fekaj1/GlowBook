@@ -30,13 +30,13 @@ function isLoggedIn() {
 function logout() {
     localStorage.removeItem('glowbook_token');
     localStorage.removeItem('glowbook_user');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }
 
 // Auth Guard — ridrejto te login nëse nuk është i kyçur
 function requireAuth() {
     if (!isLoggedIn()) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return false;
     }
     return true;
