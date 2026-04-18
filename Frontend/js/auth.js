@@ -26,17 +26,21 @@ function isLoggedIn() {
     return !!getToken();
 }
 
-// Dilni
+// Dilni (Logout)
 function logout() {
     localStorage.removeItem('glowbook_token');
     localStorage.removeItem('glowbook_user');
-    window.location.href = 'index.html';
+    
+    // RREGULLIMI: Përdorim "/" që të kthehet gjithmonë te faqja kryesore 
+    // pa marrë parasysh se në cilin folder ndodhet përdoruesi.
+    window.location.href = '../index.html'; 
 }
 
 // Auth Guard — ridrejto te login nëse nuk është i kyçur
 function requireAuth() {
     if (!isLoggedIn()) {
-        window.location.href = 'index.html';
+        // RREGULLIMI: Edhe këtu duhet të jetë ../ që të gjejë ballinën
+        window.location.href = '../index.html';
         return false;
     }
     return true;
@@ -54,18 +58,23 @@ async function authFetch(url, options = {}) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(url, {
-        ...options,
-        headers
-    });
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
 
-    // Nëse token ka skaduar, ridrejto te login
-    if (response.status === 401) {
-        logout();
+        // Nëse token ka skaduar (401), bëj logout automatik
+        if (response.status === 401) {
+            logout();
+            return null;
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Gabim gjatë kërkesës:', error);
         return null;
     }
-
-    return response;
 }
 
 // Shfaq emrin e userit në navbar
@@ -73,14 +82,17 @@ function loadUserBadge() {
     const user = getUser();
     if (!user) return;
 
-    const nameEl     = document.getElementById('userName');
+    const nameEl = document.getElementById('userName');
     const initialsEl = document.getElementById('userInitials');
 
-    if (nameEl)     nameEl.textContent     = user.name;
-    if (initialsEl) initialsEl.textContent = user.name
-        .split(' ')
-        .map(n => n[0])
-        .join('')
-        .substring(0, 2)
-        .toUpperCase();
+    if (nameEl) nameEl.textContent = user.name;
+    if (initialsEl && user.name) {
+        initialsEl.textContent = user.name
+            .split(' ')
+            .filter(n => n.length > 0)
+            .map(n => n[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase();
+    }
 }
