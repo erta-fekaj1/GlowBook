@@ -31,7 +31,7 @@
 
 ### 4. REST API
 - `UsersController`, `ServicesController`, `AppointmentsController`
-- Swagger UI: `http://localhost:5000/swagger`
+- Swagger UI: `https://glowbook-1.onrender.com/swagger`
 - CORS konfiguruar për frontend
 
 ### 5. Web Frontend
@@ -65,7 +65,7 @@
 
 ### Testet — 19/19 Kalojnë
 ### Swagger UI
-- URL: http://localhost:5000/swagger
+- URL: https://glowbook-1.onrender.com/swagger
 - Endpoints: /api/users, /api/services, /api/appointments
 
 ### Frontend Live

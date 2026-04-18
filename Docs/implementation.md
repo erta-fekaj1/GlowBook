@@ -89,7 +89,7 @@ Web frontend me tabelën e përdoruesve, filtrat dhe butonat Edit/Delete të lid
 ### 4. Terminal — API Running
 ![Terminal](screenshots/terminal.png)
 
-API po funksionon te `http://localhost:5000` me të gjitha shërbimet aktive.
+API po funksionon te `https://glowbook-1.onrender.com` me të gjitha shërbimet aktive.
 
 ---
 
