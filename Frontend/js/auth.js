@@ -2,7 +2,7 @@
 // AUTH HELPER - menaxhon JWT token në të gjitha faqet
 // ============================================================
 
-const API = 'http://localhost:5000/api';
+const API = 'https://glowbook-1.onrender.com';
 
 // Ruaj token pas login
 function saveAuth(data) {

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api/users';
+const API_URL = 'https://glowbook-1.onrender.com';
 
 let currentEditId = null;
 
