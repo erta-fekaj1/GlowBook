@@ -10,7 +10,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================================
-// CORS
+// CORS - Përditësuar me URL-në tënde të re në Render
 // ============================================================
 builder.Services.AddCors(options =>
 {
@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
                 "http://localhost:5500",
                 "http://127.0.0.1:5500",
                 "http://localhost:3000",
-                "https://glowbook-frontend.onrender.com",
+                "https://glowbook-2.onrender.com", // URL e Frontendit tënd
                 "null"
             )
             .AllowAnyHeader()
@@ -32,40 +32,36 @@ builder.Services.AddCors(options =>
 // ============================================================
 // JWT AUTHENTICATION
 // ============================================================
-var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("Jwt:Key mungon në konfigurim.");
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
-    ?? throw new InvalidOperationException("Jwt:Issuer mungon në konfigurim.");
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "Key_e_perkohshme_per_testim_12345";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "GlowBook";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer           = true,
-            ValidateAudience         = true,
-            ValidateLifetime         = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer              = jwtIssuer,
-            ValidAudience            = jwtIssuer,
-            IssuerSigningKey         = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey))
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtIssuer,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
 builder.Services.AddAuthorization();
 
 // ============================================================
-// CSV PATHS
+// CSV PATHS - Fix për Docker (Render)
 // ============================================================
-string basePath = Path.GetFullPath(Path.Combine(
-    Directory.GetCurrentDirectory(),
-    "..", "GlowBook.Infrastructure", "Data", "Database"
-));
+// Në Docker, folderat Infrastructure/Data mund të mos jenë në folderin prind
+// Kjo siguron që databaza krijohet saktë brenda kontejnerit
+string basePath = Path.Combine(Directory.GetCurrentDirectory(), "Database");
 Directory.CreateDirectory(basePath);
 
-string userPath        = Path.Combine(basePath, "users.csv");
-string servicePath     = Path.Combine(basePath, "services.csv");
+string userPath = Path.Combine(basePath, "users.csv");
+string servicePath = Path.Combine(basePath, "services.csv");
 string appointmentPath = Path.Combine(basePath, "appointments.csv");
 
 // ============================================================
@@ -80,52 +76,50 @@ builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<ServiceService>();
 builder.Services.AddScoped<AuthService>();
 
-// ============================================================
-// CONTROLLERS + SWAGGER me JWT support
-// ============================================================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// ============================================================
+// SWAGGER CONFIGURATION
+// ============================================================
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "GlowBook API", Version = "v1" });
-
-    // Shto JWT support në Swagger UI
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Name         = "Authorization",
-        Type         = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-        Scheme       = "Bearer",
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
         BearerFormat = "JWT",
-        In           = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description  = "Shkruaj tokenin JWT këtu. Shembull: Bearer {token}"
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Shkruaj tokenin JWT këtu. Shembull: Bearer {token}"
     });
-
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
             new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id   = "Bearer"
-                }
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference { Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
     });
 });
 
-// ============================================================
-// MIDDLEWARE PIPELINE
-// ============================================================
 var app = builder.Build();
 
+// ============================================================
+// MIDDLEWARE PIPELINE - Aktivizojmë Swagger për të gjithë
+// ============================================================
+
+// E lëmë Swagger-in të hapur edhe në Production që ta shohësh në Render
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "GlowBook API v1");
-    c.RoutePrefix = "swagger";
+    // Lere RoutePrefix bosh ("") nëse dëshiron që Swagger të jetë faqja kryesore
+    // Ose lere "swagger" që të hapet te url.com/swagger
+    c.RoutePrefix = "swagger"; 
 });
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -134,6 +128,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-Console.WriteLine($"GlowBook API duke filluar ne port: {port}");
+// Render përdor variablën e mjedisit PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Run($"http://0.0.0.0:{port}");
