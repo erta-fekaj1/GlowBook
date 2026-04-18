@@ -30,14 +30,15 @@ function isLoggedIn() {
     return !!getToken();
 }
 
-// Dilni (Logout)
+// Dilni (Logout) - Versioni i Sigurt
 function logout() {
-    localStorage.removeItem('glowbook_token');
-    localStorage.removeItem('glowbook_user');
-    
-    // RREGULLIMI KRYESOR: 
-    // Në Render, duke përdorur thjesht "./", ai të dërgon automatikisht te index.html
-    // i folderit që ke caktuar si Publish Directory.
+    // Fshijmë totalisht memorien e browser-it për këtë faqe
+    localStorage.clear();
+    sessionStorage.clear();
+
+    console.log("Duke dalë...");
+
+    // Përdorim replace që mos të ketë mundësi kthimi "Back"
     window.location.replace('./index.html');
 }
 
@@ -68,7 +69,7 @@ async function authFetch(url, options = {}) {
             headers
         });
 
-        // Nëse token ka skaduar (401), bëj logout
+        // Nëse token ka skaduar (401), bëj logout automatik
         if (response.status === 401) {
             logout();
             return null;
@@ -94,7 +95,7 @@ function loadUserBadge() {
     if (initialsEl) {
         const initials = user.name
             .split(' ')
-            .filter(part => part.length > 0) // Heq hapësirat e tepërta
+            .filter(part => part.length > 0)
             .map(n => n[0])
             .join('')
             .substring(0, 2)
