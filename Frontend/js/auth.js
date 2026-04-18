@@ -18,7 +18,11 @@ function getToken() {
 // Merr userin
 function getUser() {
     const user = localStorage.getItem('glowbook_user');
-    return user ? JSON.parse(user) : null;
+    try {
+        return user ? JSON.parse(user) : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 // Kontrollo nëse është i kyçur
@@ -31,16 +35,16 @@ function logout() {
     localStorage.removeItem('glowbook_token');
     localStorage.removeItem('glowbook_user');
     
-    // RREGULLIMI: Përdorim "/" që të kthehet gjithmonë te faqja kryesore 
-    // pa marrë parasysh se në cilin folder ndodhet përdoruesi.
-    window.location.href = '../index.html'; 
+    // RREGULLIMI KRYESOR: 
+    // Në Render, duke përdorur thjesht "./", ai të dërgon automatikisht te index.html
+    // i folderit që ke caktuar si Publish Directory.
+    window.location.replace('./index.html');
 }
 
 // Auth Guard — ridrejto te login nëse nuk është i kyçur
 function requireAuth() {
     if (!isLoggedIn()) {
-        // RREGULLIMI: Edhe këtu duhet të jetë ../ që të gjejë ballinën
-        window.location.href = '../index.html';
+        window.location.replace('./index.html');
         return false;
     }
     return true;
@@ -64,7 +68,7 @@ async function authFetch(url, options = {}) {
             headers
         });
 
-        // Nëse token ka skaduar (401), bëj logout automatik
+        // Nëse token ka skaduar (401), bëj logout
         if (response.status === 401) {
             logout();
             return null;
@@ -72,7 +76,7 @@ async function authFetch(url, options = {}) {
 
         return response;
     } catch (error) {
-        console.error('Gabim gjatë kërkesës:', error);
+        console.error("Gabim në kërkesë:", error);
         return null;
     }
 }
@@ -80,19 +84,21 @@ async function authFetch(url, options = {}) {
 // Shfaq emrin e userit në navbar
 function loadUserBadge() {
     const user = getUser();
-    if (!user) return;
+    if (!user || !user.name) return;
 
     const nameEl = document.getElementById('userName');
     const initialsEl = document.getElementById('userInitials');
 
     if (nameEl) nameEl.textContent = user.name;
-    if (initialsEl && user.name) {
-        initialsEl.textContent = user.name
+    
+    if (initialsEl) {
+        const initials = user.name
             .split(' ')
-            .filter(n => n.length > 0)
+            .filter(part => part.length > 0) // Heq hapësirat e tepërta
             .map(n => n[0])
             .join('')
             .substring(0, 2)
             .toUpperCase();
+        initialsEl.textContent = initials;
     }
 }
