@@ -7,100 +7,145 @@
     <link rel="stylesheet" href="../css/responsive.css">
     <link rel="stylesheet" href="../css/premium-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
- <style>
+    <style>
+        /* Stilimet Bazë */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
+
+        /* Sidebar - Desktop */
+        .sidebar { 
+            position: fixed; left: 0; top: 0; bottom: 0; width: 220px; 
+            background: white; border-right: 1px solid #F4C0D1; 
+            padding: 1.5rem 1rem; display: flex; flex-direction: column; 
+            z-index: 1000; transition: all 0.3s ease;
+        }
+        
+        /* Main Content - Desktop */
+        .main { margin-left: 220px; padding: 2rem; transition: all 0.3s ease; }
+
+        /* Mobile Navigation Bar (Fshehur në Desktop) */
+        .mobile-nav {
+            display: none;
+            background: white;
+            padding: 1rem;
+            border-bottom: 1px solid #F4C0D1;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #993556;
+            cursor: pointer;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            z-index: 998;
+        }
+
+        /* Elementet e dizajnit */
         .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
+        .logo h2 { font-family: 'Poppins', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
         .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
+        
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
         .nav-item:hover { background: #FBEAF0; color: #993556; }
         .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
         .nav-bottom { margin-top: auto; }
-        .main { margin-left: 220px; padding: 2rem; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
-        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
-        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .topbar h1 { font-size: 1.8rem; font-weight: 600; color: #993556; }
+        
+        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
-        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; }
-        .filters input, .filters select { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; background: white; color: #2C2C2A; transition: all 0.2s; }
-        .filters input:focus, .filters select:focus { border-color: #D4537E; }
-        .card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
+
+        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .filters input, .filters select { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; background: white; outline: none; flex: 1; min-width: 150px; }
+
+        /* Tabela Responsive Wrapper */
+        .table-container { width: 100%; overflow-x: auto; background: white; border-radius: 16px; border: 1px solid #F4C0D1; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         thead { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); }
-        th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
-        td { padding: 12px 16px; font-size: 0.85rem; border-bottom: 1px solid #FBEAF0; color: #2C2C2A; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #FDFAF9; }
+        th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 600; color: #72243E; text-transform: uppercase; }
+        td { padding: 12px 16px; font-size: 0.85rem; border-bottom: 1px solid #FBEAF0; }
+
+        /* Badges & Buttons */
         .badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
         .badge-pending { background: #FAEEDA; color: #854F0B; }
         .badge-confirmed { background: #EAF3DE; color: #3B6D11; }
         .badge-cancelled { background: #FCEBEB; color: #A32D2D; }
         .badge-done { background: #E1F5EE; color: #0F6E56; }
-        .btn-sm { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; }
-        .btn-edit { background: #EEEDFE; color: #534AB7; }
+        
+        .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; border: none; cursor: pointer; }
+        .btn-edit { background: #EEEDFE; color: #534AB7; margin-right: 4px; }
         .btn-delete { background: #FCEBEB; color: #A32D2D; }
-        .btn-edit:hover { background: #CCC8F5; }
-        .btn-delete:hover { background: #F7C1C1; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(153,53,86,0.15); display: none; align-items: center; justify-content: center; z-index: 100; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
         .modal-overlay.open { display: flex; }
-        .modal { background: white; border-radius: 20px; padding: 2rem; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(212,83,126,0.15); }
-        .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: #993556; margin-bottom: 1.5rem; }
-        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
-        .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
-        .field input, .field select { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
-        .field input:focus, .field select:focus { border-color: #D4537E; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 1.5rem; }
-        .btn-cancel { flex: 1; padding: 10px; background: #FBEAF0; color: #993556; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .btn-save { flex: 2; padding: 10px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
+        .modal { background: white; border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 460px; }
+        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
+        .field label { font-size: 0.75rem; font-weight: 600; color: #72243E; }
+        .field input, .field select { padding: 10px; border: 1.5px solid #F4C0D1; border-radius: 10px; }
+
+        /* --- MEDIA QUERIES PËR TELEFON --- */
+        @media (max-width: 768px) {
+            .mobile-nav { display: flex; }
+            .sidebar { 
+                transform: translateX(-100%); 
+                width: 260px;
+            }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main { margin-left: 0; padding: 1.5rem 1rem; }
+            .topbar h1 { font-size: 1.5rem; }
+            .filters { flex-direction: column; align-items: stretch; }
+            .filters input, .filters select { width: 100%; }
+            .modal { padding: 1rem; }
+        }
+
+        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; color: white; display: none; z-index: 3000; }
         .toast.success { background: #1D9E75; display: block; }
         .toast.error { background: #D85A30; display: block; }
     </style>
 </head>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
-</script>
 <body>
-    <!-- Mobile Navbar -->
-<div class="mobile-nav">
-    <button class="hamburger" onclick="toggleSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
-    <div style="width:40px;"></div>
-</div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="mobile-nav">
+        <button class="hamburger" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <span style="font-weight: 600; color: #993556;">💅 Glow Book</span>
+        <div style="width: 24px;"></div> </div>
 
-    <div style="display:flex; min-height:100vh;">
-        <div class="sidebar">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div style="display:flex;">
+        <div class="sidebar" id="sidebar">
             <div class="logo">
                 <div style="font-size:1.8rem;">💅</div>
                 <h2>Glow Book</h2>
                 <p>Nail Salon</p>
             </div>
-            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-            <a class="nav-item active" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-            <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-            <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-            <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
+            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a class="nav-item active" href="appointments.html"><i class="fa-regular fa-calendar-check"></i> Takimet</a>
+            <a class="nav-item" href="services.html"><i class="fa-solid fa-spa"></i> Shërbimet</a>
+            <a class="nav-item" href="users.html"><i class="fa-solid fa-users"></i> Përdoruesit</a>
+            <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images"></i> Galeria</a>
             <div class="nav-bottom">
-                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+                <a class="nav-item" onclick="logout()" style="color: #A32D2D;"><i class="fa-solid fa-right-from-bracket"></i> Dilni</a>
             </div>
         </div>
 
@@ -124,7 +169,7 @@ function closeSidebar() {
                 </select>
             </div>
 
-            <div class="card">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -141,11 +186,12 @@ function closeSidebar() {
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <h2 id="modalTitle">Shto Takim të Ri</h2>
+            <h2 id="modalTitle" style="margin-bottom: 1.5rem; color: #993556;">Shto Takim</h2>
             <div class="field"><label>Klienti</label><select id="apptUser"></select></div>
             <div class="field"><label>Shërbimi</label><select id="apptService"></select></div>
             <div class="field"><label>Data dhe Ora</label><input type="datetime-local" id="apptDate"></div>
-            <div class="field"><label>Statusi</label>
+            <div class="field">
+                <label>Statusi</label>
                 <select id="apptStatus">
                     <option value="Pending">Pending</option>
                     <option value="Confirmed">Confirmed</option>
@@ -153,10 +199,10 @@ function closeSidebar() {
                     <option value="Cancelled">Cancelled</option>
                 </select>
             </div>
-            <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime opsionale..."></div>
-            <div class="modal-btns">
-                <button class="btn-cancel" onclick="closeModal()">Anulo</button>
-                <button class="btn-save" onclick="saveAppt()">Ruaj</button>
+            <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime..."></div>
+            <div style="display:flex; gap:10px; margin-top:1.5rem;">
+                <button class="btn-primary" style="background: #FBEAF0; color: #993556; flex:1;" onclick="closeModal()">Anulo</button>
+                <button class="btn-primary" style="flex:2;" onclick="saveAppt()">Ruaj</button>
             </div>
         </div>
     </div>
@@ -165,10 +211,20 @@ function closeSidebar() {
 
     <script src="../js/auth.js"></script>
     <script>
-        requireAuth();
-        loadUserBadge();
+        // Funksionet e Navigimit Mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+        }
 
+        // Logjika e Backendit (pjesa jote ekzistuese)
+        requireAuth();
         let appts = [], users = [], services = [], editingId = null;
+        const API = "https://API_JUAJ_KETU.com"; // Sigurohu që variabla API është e definuar
 
         async function load() {
             try {
@@ -184,33 +240,39 @@ function closeSidebar() {
         }
 
         function populateSelects() {
-            document.getElementById('apptUser').innerHTML    = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+            document.getElementById('apptUser').innerHTML = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
             document.getElementById('apptService').innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         }
 
         function renderTable() {
-            const filterUser   = document.getElementById('filterUser').value.toLowerCase();
+            const filterUser = document.getElementById('filterUser').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
-            const filtered     = appts.filter(a => {
-                const user      = users.find(u => u.id === a.userId);
+            const filtered = appts.filter(a => {
+                const user = users.find(u => u.id === a.userId);
                 const matchUser = !filterUser || (user && user.name.toLowerCase().includes(filterUser));
                 const matchStat = !filterStatus || a.status === filterStatus;
                 return matchUser && matchStat;
             });
+
             const tbody = document.getElementById('apptTable');
-            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Nuk ka takime</td></tr>'; return; }
+            if (!filtered.length) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Nuk u gjet asnjë takim.</td></tr>'; 
+                return; 
+            }
+
             tbody.innerHTML = filtered.map(a => {
-                const user       = users.find(u => u.id === a.userId);
-                const svc        = services.find(s => s.id === a.serviceId);
-                const badgeClass = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : a.status === 'Cancelled' ? 'badge-cancelled' : 'badge-done';
-                const date       = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+                const user = users.find(u => u.id === a.userId);
+                const svc = services.find(s => s.id === a.serviceId);
+                const badgeClass = `badge-${a.status.toLowerCase()}`;
+                const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+                
                 return `<tr>
                     <td>#${a.id}</td>
-                    <td>${user ? user.name : '–'}</td>
+                    <td><b>${user ? user.name : '–'}</b></td>
                     <td>${svc ? svc.name : '–'}</td>
                     <td>${date}</td>
                     <td><span class="badge ${badgeClass}">${a.status}</span></td>
-                    <td style="display:flex;gap:6px;">
+                    <td>
                         <button class="btn-sm btn-edit" onclick="editAppt(${a.id})">Edito</button>
                         <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})">Fshi</button>
                     </td>
@@ -221,7 +283,11 @@ function closeSidebar() {
         function openModal(id = null) {
             editingId = id;
             document.getElementById('modalTitle').textContent = id ? 'Edito Takim' : 'Shto Takim të Ri';
-            if (!id) { document.getElementById('apptDate').value = ''; document.getElementById('apptNotes').value = ''; document.getElementById('apptStatus').value = 'Pending'; }
+            if (!id) { 
+                document.getElementById('apptDate').value = ''; 
+                document.getElementById('apptNotes').value = ''; 
+                document.getElementById('apptStatus').value = 'Pending'; 
+            }
             document.getElementById('modalOverlay').classList.add('open');
         }
 
@@ -229,39 +295,45 @@ function closeSidebar() {
             const a = appts.find(x => x.id === id);
             if (!a) return;
             openModal(id);
-            document.getElementById('apptUser').value    = a.userId;
+            document.getElementById('apptUser').value = a.userId;
             document.getElementById('apptService').value = a.serviceId;
-            document.getElementById('apptStatus').value  = a.status;
-            document.getElementById('apptNotes').value   = a.notes || '';
+            document.getElementById('apptStatus').value = a.status;
+            document.getElementById('apptNotes').value = a.notes || '';
             if (a.appointmentDate) document.getElementById('apptDate').value = new Date(a.appointmentDate).toISOString().slice(0, 16);
         }
 
-        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
+        function closeModal() { 
+            document.getElementById('modalOverlay').classList.remove('open'); 
+            editingId = null; 
+        }
 
         async function saveAppt() {
             const body = {
-                userId:          parseInt(document.getElementById('apptUser').value),
-                serviceId:       parseInt(document.getElementById('apptService').value),
+                userId: parseInt(document.getElementById('apptUser').value),
+                serviceId: parseInt(document.getElementById('apptService').value),
                 appointmentDate: document.getElementById('apptDate').value,
-                status:          document.getElementById('apptStatus').value,
-                notes:           document.getElementById('apptNotes').value
+                status: document.getElementById('apptStatus').value,
+                notes: document.getElementById('apptNotes').value
             };
             try {
                 const res = editingId
-                    ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT', body: JSON.stringify({ appointmentDate: body.appointmentDate, status: body.status, notes: body.notes }) })
+                    ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT', body: JSON.stringify(body) })
                     : await authFetch(`${API}/appointments`, { method: 'POST', body: JSON.stringify(body) });
-                if (res.ok) { showToast(editingId ? 'Takimi u përditësua!' : 'Takimi u shtua!', 'success'); closeModal(); load(); }
-                else { showToast('Gabim gjatë ruajtjes!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+                
+                if (res.ok) { 
+                    showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); 
+                    closeModal(); 
+                    load(); 
+                } else { showToast('Gabim!', 'error'); }
+            } catch(e) { showToast('Gabim lidhjeje!', 'error'); }
         }
 
         async function deleteAppt(id) {
             if (!confirm('A jeni i sigurt?')) return;
             try {
                 const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
-                if (res.ok) { showToast('Takimi u fshi!', 'success'); load(); }
-                else { showToast('Gabim gjatë fshirjes!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
+                if (res.ok) { showToast('U fshi!', 'success'); load(); }
+            } catch(e) { showToast('Gabim!', 'error'); }
         }
 
         function showToast(msg, type) {
