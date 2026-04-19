@@ -24,24 +24,16 @@ function isLoggedIn() {
     return !!getToken();
 }
 
-// DILNI (LOGOUT) - VERSIONI I BLINDUAR
 function logout() {
-    console.log("Duke dalë...");
-    
-    // 1. I tregojmë faqes tjetër që po dalim me qëllim (Flag)
-    sessionStorage.setItem('glowbook_logging_out', 'true');
-    
-    // 2. Pastrojmë memorien totalisht
-    localStorage.clear();
-    sessionStorage.removeItem('glowbook_token');
-    
-    // 3. Ridrejtimi i menjëhershëm
-    window.location.replace('./index.html');
+    localStorage.removeItem('glowbook_token');
+    localStorage.removeItem('glowbook_user');
+    sessionStorage.clear();
+    window.location.replace('login.html');
 }
 
 function requireAuth() {
     if (!isLoggedIn()) {
-        window.location.replace('./index.html');
+        window.location.replace('login.html');
         return false;
     }
     return true;
@@ -68,11 +60,16 @@ async function authFetch(url, options = {}) {
 function loadUserBadge() {
     const user = getUser();
     if (!user || !user.name) return;
-    const nameEl = document.getElementById('userName');
+    const nameEl     = document.getElementById('userName');
     const initialsEl = document.getElementById('userInitials');
     if (nameEl) nameEl.textContent = user.name;
     if (initialsEl) {
-        const initials = user.name.split(' ').filter(p => p.length > 0).map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        initialsEl.textContent = initials;
+        initialsEl.textContent = user.name
+            .split(' ')
+            .filter(p => p.length > 0)
+            .map(n => n[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase();
     }
 }
