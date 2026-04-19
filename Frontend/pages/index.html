@@ -1,100 +1,109 @@
 <script>
-        const API = 'https://glowbook-1.onrender.com/api';
+    const API = 'https://glowbook-1.onrender.com/api';
 
-        // 1. KONTROLLI I RIDREJTIMIT (Menjëherë sapo ngarkohet skripti)
-        (function() {
-            const token = localStorage.getItem('glowbook_token');
-            // Kontrollojmë nëse kemi një sinjal që sapo kemi bërë logout
-            const isLoggingOut = sessionStorage.getItem('glowbook_logging_out');
+    // 1. KONTROLLI I RIDREJTIMIT
+    (async function() {
+        const token = localStorage.getItem('glowbook_token');
+        
+        // Nëse nuk ka token, qëndroje te login
+        if (!token) return;
 
-            if (token && !isLoggingOut) {
-                // Nëse ka token dhe NUK jemi duke dalë, shko te dashboard
+        // Verifiko tokenin me API
+        try {
+            const res = await fetch(`${API}/auth/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                // Token është valid — shko te dashboard
                 window.location.replace('./dashboard.html');
-            } else if (isLoggingOut) {
-                // Nëse ishim duke dalë, fshijmë sinjalin që herën tjetër të punojë normalisht
-                sessionStorage.removeItem('glowbook_logging_out');
-                console.log("Logout i suksesshëm, qëndrojmë këtu.");
+            } else {
+                // Token ka skaduar ose është invalid — pastro dhe qëndroje te login
+                localStorage.removeItem('glowbook_token');
+                localStorage.removeItem('glowbook_user');
             }
-        })();
+        } catch(e) {
+            // Serveri nuk u përgjigj — qëndroje te login pa fshirë token
+            console.log('Serveri nuk u përgjigj, qëndroje te login');
+        }
+    })();
 
-        function switchTab(tab) {
-            document.querySelectorAll('.gb-tab').forEach((t, i) =>
-                t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
-            document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
-            document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
+    function switchTab(tab) {
+        document.querySelectorAll('.gb-tab').forEach((t, i) =>
+            t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
+        document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
+        document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
+    }
+
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.textContent = msg;
+        t.className = 'gb-toast ' + type;
+        setTimeout(() => t.className = 'gb-toast', 3000);
+    }
+
+    async function handleLogin() {
+        const email    = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        if (!email || !password) {
+            showToast('Plotësoni të gjitha fushat!', 'error');
+            return;
         }
 
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            if(!t) return;
-            t.textContent = msg;
-            t.className = 'gb-toast ' + type;
-            setTimeout(() => t.className = 'gb-toast', 3000);
+        try {
+            const res = await fetch(`${API}/auth/login`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ email, password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('glowbook_token', data.token);
+                localStorage.setItem('glowbook_user',  JSON.stringify(data.user));
+                showToast(`Mirë se vini, ${data.user.name}!`, 'success');
+                setTimeout(() => window.location.replace('./dashboard.html'), 500);
+            } else {
+                const err = await res.json();
+                showToast(err.message || 'Email ose password i gabuar!', 'error');
+            }
+        } catch(e) {
+            showToast('Nuk u lidh me serverin!', 'error');
+        }
+    }
+
+    async function handleRegister() {
+        const name     = document.getElementById('regName').value;
+        const email    = document.getElementById('regEmail').value;
+        const phone    = document.getElementById('regPhone').value;
+        const password = document.getElementById('regPassword').value;
+
+        if (!name || !email || !phone || !password) {
+            showToast('Plotësoni të gjitha fushat!', 'error');
+            return;
         }
 
-        async function handleLogin() {
-            const email     = document.getElementById('loginEmail').value;
-            const password  = document.getElementById('loginPassword').value;
+        try {
+            const res = await fetch(`${API}/auth/register`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ name, email, password, phoneNumber: phone })
+            });
 
-            if (!email || !password) {
-                showToast('Plotësoni të gjitha fushat!', 'error');
-                return;
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('glowbook_token', data.token);
+                localStorage.setItem('glowbook_user',  JSON.stringify(data.user));
+                showToast('Llogaria u krijua me sukses!', 'success');
+                setTimeout(() => window.location.replace('./dashboard.html'), 500);
+            } else {
+                const err = await res.json();
+                showToast(err.message || 'Gabim!', 'error');
             }
-
-            try {
-                const res = await fetch(`${API}/auth/login`, {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ email, password })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    localStorage.setItem('glowbook_token', data.token);
-                    localStorage.setItem('glowbook_user',  JSON.stringify(data.user));
-                    
-                    showToast(`Mirë se vini, ${data.user.name}!`, 'success');
-                    setTimeout(() => window.location.replace('./dashboard.html'), 500);
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || 'Email ose password i gabuar!', 'error');
-                }
-            } catch(e) {
-                showToast('Nuk u lidh me serverin!', 'error');
-            }
+        } catch(e) {
+            showToast('Nuk u lidh me serverin!', 'error');
         }
-
-        async function handleRegister() {
-            const name      = document.getElementById('regName').value;
-            const email     = document.getElementById('regEmail').value;
-            const phone     = document.getElementById('regPhone').value;
-            const password  = document.getElementById('regPassword').value;
-
-            if (!name || !email || !phone || !password) {
-                showToast('Plotësoni të gjitha fushat!', 'error');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API}/auth/register`, {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ name, email, password, phoneNumber: phone })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    localStorage.setItem('glowbook_token', data.token);
-                    localStorage.setItem('glowbook_user',  JSON.stringify(data.user));
-                    
-                    showToast('Llogaria u krijua me sukses!', 'success');
-                    setTimeout(() => window.location.replace('./dashboard.html'), 500);
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || 'Gabim!', 'error');
-                }
-            } catch(e) {
-                showToast('Nuk u lidh me serverin!', 'error');
-            }
-        }
-    </script>
+    }
+</script>
