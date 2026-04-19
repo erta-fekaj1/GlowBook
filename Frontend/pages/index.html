@@ -1,15 +1,21 @@
 <script>
         const API = 'https://glowbook-1.onrender.com/api';
 
-        // RREGULLIMI: Kontrolli i ridrejtimit
-        document.addEventListener('DOMContentLoaded', () => {
+        // 1. KONTROLLI I RIDREJTIMIT (Menjëherë sapo ngarkohet skripti)
+        (function() {
             const token = localStorage.getItem('glowbook_token');
-            // Vetëm nëse ka token, dërgoje te dashboard
-            // Por kontrollon që mos të jemi në një "loop" ridrejtimi
-            if (token && window.location.pathname.includes('index.html')) {
+            // Kontrollojmë nëse kemi një sinjal që sapo kemi bërë logout
+            const isLoggingOut = sessionStorage.getItem('glowbook_logging_out');
+
+            if (token && !isLoggingOut) {
+                // Nëse ka token dhe NUK jemi duke dalë, shko te dashboard
                 window.location.replace('./dashboard.html');
+            } else if (isLoggingOut) {
+                // Nëse ishim duke dalë, fshijmë sinjalin që herën tjetër të punojë normalisht
+                sessionStorage.removeItem('glowbook_logging_out');
+                console.log("Logout i suksesshëm, qëndrojmë këtu.");
             }
-        });
+        })();
 
         function switchTab(tab) {
             document.querySelectorAll('.gb-tab').forEach((t, i) =>
@@ -44,13 +50,11 @@
 
                 if (res.ok) {
                     const data = await res.json();
-                    // Sigurohemi që po përdorim emrat e saktë që përdor edhe auth.js
                     localStorage.setItem('glowbook_token', data.token);
                     localStorage.setItem('glowbook_user',  JSON.stringify(data.user));
                     
                     showToast(`Mirë se vini, ${data.user.name}!`, 'success');
-                    // Përdorim replace për të shmangur problemet me butonin Back
-                    setTimeout(() => window.location.replace('./dashboard.html'), 800);
+                    setTimeout(() => window.location.replace('./dashboard.html'), 500);
                 } else {
                     const err = await res.json();
                     showToast(err.message || 'Email ose password i gabuar!', 'error');
@@ -84,10 +88,10 @@
                     localStorage.setItem('glowbook_user',  JSON.stringify(data.user));
                     
                     showToast('Llogaria u krijua me sukses!', 'success');
-                    setTimeout(() => window.location.replace('./dashboard.html'), 800);
+                    setTimeout(() => window.location.replace('./dashboard.html'), 500);
                 } else {
                     const err = await res.json();
-                    showToast(err.message || 'Gabim gjatë regjistrimit!', 'error');
+                    showToast(err.message || 'Gabim!', 'error');
                 }
             } catch(e) {
                 showToast('Nuk u lidh me serverin!', 'error');
