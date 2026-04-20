@@ -1,158 +1,45 @@
 /* ============================================================
-   RESPONSIVE CSS - GlowBook
+   RESPONSIVE CSS — GlowBook
+   Mbulo të gjitha faqet: dashboard, appointments, services,
+   users, profile, gallery, index (login)
    ============================================================ */
 
-/* Tablet - 768px dhe më pak */
-@media (max-width: 768px) {
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap');
 
-    /* Sidebar fshihet, shfaqet navbar sipër */
-    .sidebar {
-        position: fixed;
-        left: -220px;
-        transition: left 0.3s ease;
-        z-index: 100;
-    }
-
-    .sidebar.open {
-        left: 0;
-        box-shadow: 4px 0 20px rgba(153,53,86,0.15);
-    }
-
-    /* Main content zgjerohet */
-    .main {
-        margin-left: 0 !important;
-        padding: 1rem !important;
-    }
-
-    /* Topbar */
-    .topbar {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 10px;
-    }
-
-    .topbar h1 {
-        font-size: 1.4rem !important;
-    }
-
-    /* Stats grid - 2 kolona */
-    .stats-grid,
-    .stats-row {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-
-    /* Grid 2 kolonash -> 1 kolonë */
-    .grid-2,
-    .profile-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    /* Gallery grid */
-    .gallery-grid,
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-
-    /* Filters wrap */
-    .filters {
-        flex-wrap: wrap !important;
-    }
-
-    .filters input,
-    .filters select,
-    .search-box {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-
-    /* Table scroll */
-    .card {
-        overflow-x: auto !important;
-    }
-
-    table {
-        min-width: 600px;
-    }
-
-    /* Modal full width */
-    .modal,
-    .modal-overlay .modal {
-        width: 95% !important;
-        max-width: 95% !important;
-        margin: 0 auto;
-    }
-
-    /* User badge compact */
-    .user-badge {
-        padding: 6px 10px !important;
-    }
-
-    /* Hamburger button */
-    .hamburger {
-        display: flex !important;
-    }
+/* ============================================================
+   MOBILE NAVBAR (shfaqet vetëm në mobile)
+   ============================================================ */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: white;
+    border-bottom: 1px solid #F4C0D1;
+    padding: 12px 1rem;
+    z-index: 200;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(212,83,126,0.08);
 }
 
-/* Mobile - 480px dhe më pak */
-@media (max-width: 480px) {
-
-    .main {
-        padding: 0.75rem !important;
-    }
-
-    /* Stats - 1 kolonë */
-    .stats-grid,
-    .stats-row {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 8px !important;
-    }
-
-    .stat-value,
-    .stat .n {
-        font-size: 1.4rem !important;
-    }
-
-    /* Gallery - 1 kolonë */
-    .gallery-grid,
-    .services-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    /* Topbar buttons */
-    .btn-primary {
-        width: 100%;
-        text-align: center;
-    }
-
-    /* Filter buttons wrap */
-    .filter-btn {
-        font-size: 0.75rem !important;
-        padding: 5px 12px !important;
-    }
-
-    /* Modal preview smaller */
-    .modal-preview {
-        height: 180px !important;
-        font-size: 4rem !important;
-    }
-
-    .topbar h1 {
-        font-size: 1.2rem !important;
-    }
+.mobile-nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: #993556;
+    font-weight: 600;
 }
 
 /* ============================================================
-   HAMBURGER MENU BUTTON
+   HAMBURGER BUTTON
    ============================================================ */
 .hamburger {
-    display: none;
+    display: flex;
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
-    padding: 8px;
+    padding: 6px;
     border: none;
     background: none;
-    margin-right: 10px;
 }
 
 .hamburger span {
@@ -164,47 +51,420 @@
     transition: all 0.3s;
 }
 
-/* Overlay kur sidebar është hapur */
+/* ============================================================
+   SIDEBAR OVERLAY
+   ============================================================ */
 .sidebar-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(153,53,86,0.2);
-    z-index: 99;
+    background: rgba(153,53,86,0.25);
+    z-index: 150;
 }
 
 .sidebar-overlay.open {
     display: block;
 }
 
-/* Mobile navbar sipër */
-.mobile-nav {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-bottom: 1px solid #F4C0D1;
-    padding: 12px 1rem;
-    z-index: 50;
-    align-items: center;
-    justify-content: space-between;
+/* ============================================================
+   TABLET — max 900px
+   ============================================================ */
+@media (max-width: 900px) {
+
+    /* Stats grid: 2 kolona */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Grid 2 -> 1 kolonë */
+    .grid-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Gallery & services: 2 kolona */
+    .gallery-grid,
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Profile grid */
+    .profile-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
 
-.mobile-nav-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
-    color: #993556;
-    font-weight: 600;
-}
-
+/* ============================================================
+   MOBILE — max 768px
+   ============================================================ */
 @media (max-width: 768px) {
+
+    /* Sidebar shkon jashtë ekranit */
+    .sidebar {
+        position: fixed !important;
+        left: -240px !important;
+        top: 0; bottom: 0;
+        width: 220px !important;
+        transition: left 0.3s ease !important;
+        z-index: 160 !important;
+        box-shadow: none;
+    }
+
+    .sidebar.open {
+        left: 0 !important;
+        box-shadow: 4px 0 24px rgba(153,53,86,0.15) !important;
+    }
+
+    /* Main content: pa margin majtas, me padding sipër */
+    .main {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+        padding-top: 5rem !important;
+    }
+
+    /* Mobile navbar shfaqet */
     .mobile-nav {
         display: flex !important;
     }
 
+    /* Topbar: stack vertikalisht */
+    .topbar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        margin-bottom: 1.2rem !important;
+    }
+
+    .topbar h1 {
+        font-size: 1.4rem !important;
+    }
+
+    /* User badge: kompakt */
+    .user-badge {
+        padding: 6px 12px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Stats: 2 kolona */
+    .stats-grid,
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+    }
+
+    /* Stat card: kompakt */
+    .stat-value,
+    .stat .n {
+        font-size: 1.5rem !important;
+    }
+
+    /* Grid 2 -> 1 kolonë */
+    .grid-2,
+    .profile-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Gallery & services: 1 kolonë */
+    .gallery-grid,
+    .services-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.8rem !important;
+    }
+
+    /* Filters: wrap */
+    .filters {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .filters input,
+    .filters select,
+    .search-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: unset !important;
+    }
+
+    .filter-btn {
+        font-size: 0.78rem !important;
+        padding: 6px 12px !important;
+    }
+
+    /* Tabela: scroll horizontal */
+    .card {
+        overflow-x: auto !important;
+    }
+
+    table {
+        min-width: 550px;
+    }
+
+    th, td {
+        padding: 10px 12px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Btn actions në tabelë: kompakt */
+    .btn-sm {
+        padding: 4px 8px !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Modal: gati full screen */
+    .modal-overlay,
+    .modal-bg {
+        padding: 1rem !important;
+        align-items: flex-end !important;
+    }
+
+    .modal,
+    .modal-overlay .modal,
+    .modal-bg .modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* Modal preview: më e vogël */
+    .modal-preview {
+        height: 180px !important;
+        font-size: 4rem !important;
+    }
+
+    /* Btn primary: full width */
+    .btn-primary {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Stats row (profile) */
+    .stats-mini {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    /* Bar chart labels */
+    .bar-label {
+        width: 60px !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Card padding: kompakt */
+    .card {
+        padding: 1rem !important;
+    }
+
+    /* Logo sidebar: kompakt */
+    .logo h2 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Nav items: kompakt */
+    .nav-item {
+        padding: 8px 10px !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* Profile grid: stack */
+    .right-col {
+        gap: 1rem !important;
+    }
+
+    /* Edit form */
+    .edit-form {
+        gap: 0.75rem !important;
+    }
+
+    /* Avatar big: smaller */
+    .avatar-big {
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 1.5rem !important;
+    }
+
+    /* Back button */
+    .btn-back {
+        font-size: 0.8rem !important;
+        padding: 6px 12px !important;
+    }
+
+    /* Gallery design preview */
+    .design-preview {
+        height: 140px !important;
+        font-size: 3rem !important;
+    }
+
+    /* Service card */
+    .service-card {
+        padding: 1rem !important;
+    }
+
+    .service-icon {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* Topbar buttons row */
+    .topbar > * {
+        width: 100%;
+    }
+
+    .topbar > div:last-child {
+        width: auto;
+    }
+}
+
+/* ============================================================
+   SMALL MOBILE — max 480px
+   ============================================================ */
+@media (max-width: 480px) {
+
     .main {
-        padding-top: 5rem !important;
+        padding: 0.75rem !important;
+        padding-top: 4.5rem !important;
+    }
+
+    /* Stats: 2 kolona të vogla */
+    .stats-grid,
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+
+    .stat-card {
+        padding: 0.9rem !important;
+    }
+
+    .stat-value {
+        font-size: 1.3rem !important;
+    }
+
+    .stat-label {
+        font-size: 0.65rem !important;
+    }
+
+    .stat-icon {
+        font-size: 1.2rem !important;
+    }
+
+    /* Topbar */
+    .topbar h1 {
+        font-size: 1.2rem !important;
+    }
+
+    .topbar p {
+        font-size: 0.78rem !important;
+    }
+
+    /* Gallery: 1 kolonë */
+    .gallery-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Stats mini (profile): kompakt */
+    .stats-mini {
+        gap: 6px !important;
+    }
+
+    .stat-box .n {
+        font-size: 1.1rem !important;
+    }
+
+    .stat-box .l {
+        font-size: 0.6rem !important;
+    }
+
+    /* Filter buttons: wrapping */
+    .filters {
+        gap: 6px !important;
+    }
+
+    /* Card title */
+    .card-title {
+        font-size: 0.82rem !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+
+    /* Profile info rows */
+    .info-row {
+        flex-direction: column !important;
+        gap: 2px !important;
+        padding: 8px 0 !important;
+    }
+
+    /* Modal */
+    .modal-body {
+        padding: 1rem !important;
+    }
+
+    .modal-body h2 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Modal footer */
+    .modal-footer {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: stretch !important;
+    }
+
+    .modal-footer > div:last-child {
+        display: flex !important;
+        gap: 8px !important;
+    }
+
+    .btn-book,
+    .btn-close-modal,
+    .btn-cancel,
+    .btn-save-modal {
+        flex: 1 !important;
+        text-align: center !important;
+    }
+
+    /* Login card */
+    .gb-card {
+        padding: 1.5rem !important;
+        border-radius: 16px !important;
+    }
+
+    .gb-logo h1 {
+        font-size: 1.6rem !important;
+    }
+}
+
+/* ============================================================
+   LOGIN PAGE RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+    body {
+        padding: 1rem !important;
+    }
+
+    .gb-field input {
+        padding: 10px 14px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .gb-btn {
+        padding: 11px !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+/* ============================================================
+   UTILITY: fsheh user-name në mobile shumë të vogël
+   ============================================================ */
+@media (max-width: 360px) {
+    .user-name {
+        display: none !important;
+    }
+
+    .user-badge {
+        padding: 6px 8px !important;
     }
 }
