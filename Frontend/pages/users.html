@@ -4,348 +4,232 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow Book - Përdoruesit</title>
-    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- STILIMET BAZË --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; overflow-x: hidden; }
-
-        /* --- SIDEBAR (DESKTOP) --- */
-        .sidebar { 
-            position: fixed; left: 0; top: 0; bottom: 0; width: 240px; 
-            background: white; border-right: 1px solid #F4C0D1; 
-            padding: 1.5rem 1rem; display: flex; flex-direction: column; 
-            z-index: 1001; transition: transform 0.3s ease;
-        }
-        .main { margin-left: 240px; padding: 2rem; transition: all 0.3s ease; }
-
-        /* --- NAVIGATION MOBILE --- */
-        .mobile-nav {
-            display: none; background: white; padding: 1rem;
-            border-bottom: 1px solid #F4C0D1; justify-content: space-between;
-            align-items: center; position: sticky; top: 0; z-index: 999;
-        }
-        .hamburger { background: none; border: none; font-size: 1.4rem; color: #993556; cursor: pointer; }
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.3);
-            display: none; z-index: 1000; backdrop-filter: blur(2px);
-        }
-
-        /* --- ELEMENTET E DIZAJNIT --- */
-        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Poppins', sans-serif; font-size: 1.4rem; color: #993556; font-weight: 600; }
-        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
-
-        .nav-item { 
-            display: flex; align-items: center; gap: 12px; padding: 12px; 
-            border-radius: 12px; font-size: 0.9rem; color: #888780; 
-            cursor: pointer; transition: 0.2s; text-decoration: none; margin-bottom: 5px;
-        }
-        .nav-item:hover, .nav-item.active { background: #FBEAF0; color: #993556; font-weight: 500; }
-        .nav-bottom { margin-top: auto; border-top: 1px solid #FBEAF0; padding-top: 1rem; }
-
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-        .topbar h1 { font-family: 'Poppins', sans-serif; font-size: 1.7rem; color: #993556; }
-
-        .btn-primary { 
-            padding: 12px 24px; background: linear-gradient(135deg, #D4537E, #993556); 
-            color: white; border: none; border-radius: 12px; font-weight: 500; 
-            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(212,83,126,0.2);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212,83,126,0.3); }
-
-        /* --- STATS --- */
-        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-mini { background: white; border-radius: 16px; padding: 1.2rem; border: 1px solid #F4C0D1; text-align: center; }
-        .stat-mini .val { font-size: 1.6rem; font-weight: 700; color: #993556; }
-        .stat-mini .lbl { font-size: 0.7rem; color: #B4B2A9; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-
-        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-        .filters input, .filters select { 
-            padding: 12px; border: 1.5px solid #F4C0D1; border-radius: 12px; 
-            outline: none; flex: 1; min-width: 200px; font-family: inherit;
-        }
-
-        /* --- TABLE --- */
-        .table-container { 
-            background: white; border-radius: 20px; border: 1px solid #F4C0D1; 
-            overflow-x: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-        }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: #FDF6F9; padding: 15px; text-align: left; font-size: 0.75rem; color: #993556; text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 15px; border-bottom: 1px solid #FBEAF0; font-size: 0.9rem; vertical-align: middle; }
-
-        .user-avatar-sm { width: 36px; height: 36px; border-radius: 10px; background: #FBEAF0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #993556; }
-        
-        .badge { font-size: 0.7rem; padding: 4px 12px; border-radius: 50px; font-weight: 600; }
-        .badge-admin { background: #FEECEB; color: #D32F2F; }
-        .badge-customer { background: #E7F6EC; color: #0D8A43; }
-
-        .btn-sm { padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; border: none; cursor: pointer; transition: 0.2s; font-weight: 500; }
-        .btn-view { background: #F5F5F5; color: #555; }
-        .btn-edit { background: #EEEDFE; color: #534AB7; }
-        .btn-delete { background: #FCEBEB; color: #A32D2D; }
-
-        /* --- MODAL --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
-        .modal-overlay.open { display: flex; }
-        .modal { background: white; border-radius: 24px; padding: 2rem; width: 100%; max-width: 450px; }
-        .field { margin-bottom: 1.2rem; }
-        .field label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: #72243E; }
-        .field input, .field select { width: 100%; padding: 12px; border: 1.5px solid #F4C0D1; border-radius: 12px; outline: none; }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .mobile-nav { display: flex; }
-            .sidebar { transform: translateX(-100%); width: 280px; }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay.open { display: block; }
-            .main { margin-left: 0; padding: 1.5rem 1rem; }
-            .topbar h1 { font-size: 1.4rem; }
-            .filters input, .filters select { min-width: 100%; }
-        }
-
-        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 15px 25px; border-radius: 12px; color: white; display: none; z-index: 3000; }
-    </style>
 </head>
 <body>
 
-    <div class="mobile-nav">
-        <button class="hamburger" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars-staggered"></i>
-        </button>
-        <span style="font-weight: 700; color: #993556; letter-spacing: 1px;">GLOW BOOK</span>
-        <div style="width: 24px;"></div>
-    </div>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <div style="width:40px;"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">💅</span>
+            <h2>Glow Book</h2>
+            <p>Nail Salon</p>
+        </div>
+        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
+        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
+        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
+        <a class="nav-item active" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
+        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
+        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
+        <div class="nav-bottom">
+            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+        </div>
+    </aside>
 
-    <div style="display:flex;">
-        <nav class="sidebar" id="sidebar">
-            <div class="logo">
-                <div style="font-size:2rem; margin-bottom: 0.5rem;">💅</div>
-                <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Përdoruesit</h1>
+                <p>Menaxho stafin dhe klientët e salonit</p>
             </div>
-            <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-            <a href="appointments.html" class="nav-item"><i class="fa-regular fa-calendar-check"></i> Takimet</a>
-            <a href="services.html" class="nav-item"><i class="fa-solid fa-wand-sparkles"></i> Shërbimet</a>
-            <a href="users.html" class="nav-item active"><i class="fa-solid fa-circle-user"></i> Përdoruesit</a>
-            <a href="gallery.html" class="nav-item"><i class="fa-regular fa-images"></i> Galeria</a>
-            <div class="nav-bottom">
-                <a onclick="logout()" class="nav-item" style="color: #D32F2F; cursor:pointer;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Dilni</a>
-            </div>
-        </nav>
+            <button class="btn-primary" onclick="openModal()">
+                <i class="fa-solid fa-plus"></i> Shto Përdorues
+            </button>
+        </div>
 
-        <main class="main">
-            <div class="topbar">
-                <div>
-                    <h1>Përdoruesit</h1>
-                    <p style="color: #888;">Menaxhoni stafin dhe klientët e salonit</p>
-                </div>
-                <button class="btn-primary" onclick="openModal()">+ Shto Përdorues</button>
-            </div>
+        <div class="stats-row">
+            <div class="stat-mini"><div class="val" id="totalUsers">0</div><div class="lbl">Gjithsej</div></div>
+            <div class="stat-mini"><div class="val" id="totalAdmins">0</div><div class="lbl">Admin</div></div>
+            <div class="stat-mini"><div class="val" id="totalCustomers">0</div><div class="lbl">Klientë</div></div>
+        </div>
 
-            <div class="stats-row">
-                <div class="stat-mini"><div class="val" id="totalUsers">0</div><div class="lbl">Gjithsej</div></div>
-                <div class="stat-mini"><div class="val" id="totalAdmins">0</div><div class="lbl">Admin</div></div>
-                <div class="stat-mini"><div class="val" id="totalCustomers">0</div><div class="lbl">Klientë</div></div>
-            </div>
+        <div class="filters">
+            <input type="text" id="filterName" placeholder="🔍 Kërko me emër ose email..." oninput="renderTable()">
+            <select id="filterRole" onchange="renderTable()">
+                <option value="">Të gjitha rolet</option>
+                <option value="Admin">Admin</option>
+                <option value="Customer">Customer</option>
+            </select>
+        </div>
 
-            <div class="filters">
-                <input type="text" id="filterName" placeholder="Kërko me emër ose email..." oninput="renderTable()">
-                <select id="filterRole" onchange="renderTable()">
-                    <option value="">Të gjitha rolet</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Customer">Customer</option>
-                </select>
-            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Përdoruesi</th>
+                        <th>Email</th>
+                        <th>Telefoni</th>
+                        <th>Roli</th>
+                        <th>Regjistruar</th>
+                        <th>Veprimet</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable">
+                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Duke ngarkuar...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Përdoruesi</th>
-                            <th>Email</th>
-                            <th>Telefoni</th>
-                            <th>Roli</th>
-                            <th>Regjistruar</th>
-                            <th>Veprimet</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTable">
-                        <tr><td colspan="6" style="text-align:center; padding:3rem; color:#999;">Duke ngarkuar...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h2 id="modalTitle">Shto Përdorues</h2>
-            <div class="field"><label>Emri i Plotë</label><input type="text" id="uName" placeholder="Psh. Filan Fisteku"></div>
-            <div class="field"><label>Email Adresa</label><input type="email" id="uEmail" placeholder="shembull@email.com"></div>
-            <div class="field"><label>Fjalëkalimi</label><input type="password" id="uPassword" placeholder="Lëreni bosh nëse nuk doni ta ndryshoni"></div>
-            <div class="field"><label>Numri i Telefonit</label><input type="text" id="uPhone" placeholder="04x xxx xxx"></div>
-            <div class="field"><label>Roli</label>
-                <select id="uRole">
-                    <option value="Customer">Customer</option>
-                    <option value="Admin">Admin</option>
-                </select>
-            </div>
-            <div style="display:flex; gap:12px; margin-top:1.5rem;">
-                <button class="btn-primary" style="background: #F5F5F5; color: #555; flex:1; box-shadow:none;" onclick="closeModal()">Anulo</button>
-                <button class="btn-primary" style="flex:2;" onclick="saveUser()">Ruaj të dhënat</button>
-            </div>
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 class="modal-title" id="modalTitle">Shto Përdorues</h2>
+        <div class="field"><label>Emri i Plotë</label><input type="text" id="uName" placeholder="Ana Krasniqi"></div>
+        <div class="field"><label>Email</label><input type="email" id="uEmail" placeholder="ana@example.com"></div>
+        <div class="field"><label>Fjalëkalimi</label><input type="password" id="uPassword" placeholder="Lëre bosh për të mbajtur të njëjtin"></div>
+        <div class="field"><label>Telefoni</label><input type="text" id="uPhone" placeholder="044 123 456"></div>
+        <div class="field">
+            <label>Roli</label>
+            <select id="uRole">
+                <option value="Customer">Customer</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Anulo</button>
+            <button class="btn-primary" style="flex:2;" onclick="saveUser()">Ruaj</button>
         </div>
     </div>
+</div>
 
-    <div class="toast" id="toast"></div>
+<div class="gb-toast" id="toast"></div>
 
-    <script src="../js/auth.js"></script>
-    <script>
-        // Konfigurimi i API nga auth.js ose manualisht
-        const API = window.API_URL || "https://API_JUAJ_KETU.com";
+<script src="../js/auth.js"></script>
+<script>
+const API = 'https://glowbook-1.onrender.com/api';
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('open');
-        }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('open');
-        }
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+});
 
-        requireAuth();
-        let users = [], editingId = null;
+requireAuth();
 
-        async function load() {
-            try {
-                const res = await authFetch(`${API}/users`);
-                users = await res.json();
-                renderTable();
-                renderStats();
-            } catch(e) { showToast('Gabim në ngarkimin e përdoruesve', 'error'); }
-        }
+let users = [], editingId = null;
 
-        function renderStats() {
-            document.getElementById('totalUsers').textContent = users.length;
-            document.getElementById('totalAdmins').textContent = users.filter(u => u.role === 'Admin').length;
-            document.getElementById('totalCustomers').textContent = users.filter(u => u.role === 'Customer').length;
-        }
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'gb-toast ' + type;
+    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
+}
 
-        function renderTable() {
-            const filterName = document.getElementById('filterName').value.toLowerCase();
-            const filterRole = document.getElementById('filterRole').value;
-            
-            const filtered = users.filter(u => {
-                const matchName = !filterName || u.name.toLowerCase().includes(filterName) || u.email.toLowerCase().includes(filterName);
-                const matchRole = !filterRole || u.role === filterRole;
-                return matchName && matchRole;
-            });
+async function load() {
+    try {
+        const res = await authFetch(`${API}/users`);
+        users = await res.json();
+        renderTable(); renderStats();
+    } catch { showToast('Gabim në ngarkimin e përdoruesve!', 'error'); }
+}
 
-            const tbody = document.getElementById('usersTable');
-            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">Nuk u gjet asnjë përdorues.</td></tr>'; return; }
-            
-            tbody.innerHTML = filtered.map(u => {
-                const initials = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                const badgeClass = u.role === 'Admin' ? 'badge-admin' : 'badge-customer';
-                return `<tr>
-                    <td style="display:flex; align-items:center; gap:12px;">
-                        <div class="user-avatar-sm">${initials}</div>
-                        <strong>${u.name}</strong>
-                    </td>
-                    <td>${u.email}</td>
-                    <td>${u.phoneNumber || '–'}</td>
-                    <td><span class="badge ${badgeClass}">${u.role}</span></td>
-                    <td>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–'}</td>
-                    <td>
-                        <div style="display:flex; gap:6px;">
-                            <button class="btn-sm btn-view" onclick="viewProfile(${u.id})"><i class="fa-solid fa-eye"></i></button>
-                            <button class="btn-sm btn-edit" onclick="editUser(${u.id})"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
+function renderStats() {
+    document.getElementById('totalUsers').textContent     = users.length;
+    document.getElementById('totalAdmins').textContent    = users.filter(u => u.role === 'Admin').length;
+    document.getElementById('totalCustomers').textContent = users.filter(u => u.role === 'Customer').length;
+}
 
-        function openModal(id = null) {
-            editingId = id;
-            document.getElementById('modalTitle').textContent = id ? 'Edito Përdoruesin' : 'Shto Përdorues të Ri';
-            if (!id) {
-                document.getElementById('uName').value = '';
-                document.getElementById('uEmail').value = '';
-                document.getElementById('uPassword').value = '';
-                document.getElementById('uPhone').value = '';
-                document.getElementById('uRole').value = 'Customer';
-            }
-            document.getElementById('modalOverlay').classList.add('open');
-        }
+function renderTable() {
+    const fn = document.getElementById('filterName').value.toLowerCase();
+    const fr = document.getElementById('filterRole').value;
+    const filtered = users.filter(u =>
+        (!fn || u.name.toLowerCase().includes(fn) || u.email.toLowerCase().includes(fn)) &&
+        (!fr || u.role === fr)
+    );
+    const tbody = document.getElementById('usersTable');
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Nuk u gjet asnjë përdorues.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = filtered.map(u => {
+        const ini = u.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+        const bc  = u.role === 'Admin' ? 'badge-admin' : 'badge-customer';
+        return `<tr>
+            <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="user-avatar-sm">${ini}</div>
+                    <strong>${u.name}</strong>
+                </div>
+            </td>
+            <td style="color:var(--text-subtle);">${u.email}</td>
+            <td style="color:var(--text-subtle);">${u.phoneNumber || '–'}</td>
+            <td><span class="badge ${bc}">${u.role}</span></td>
+            <td style="color:var(--text-subtle);font-size:.82rem;">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–'}</td>
+            <td>
+                <div style="display:flex;gap:6px;">
+                    <button class="btn-sm btn-view" onclick="viewProfile(${u.id})"><i class="fa-solid fa-eye"></i></button>
+                    <button class="btn-sm btn-edit" onclick="editUser(${u.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
 
-        function editUser(id) {
-            const u = users.find(x => x.id === id);
-            if (!u) return;
-            openModal(id);
-            document.getElementById('uName').value = u.name;
-            document.getElementById('uEmail').value = u.email;
-            document.getElementById('uPhone').value = u.phoneNumber || '';
-            document.getElementById('uRole').value = u.role;
-        }
+function openModal(id = null) {
+    editingId = id;
+    document.getElementById('modalTitle').textContent = id ? 'Edito Përdoruesin' : 'Shto Përdorues të Ri';
+    if (!id) {
+        ['uName','uEmail','uPassword','uPhone'].forEach(i => document.getElementById(i).value = '');
+        document.getElementById('uRole').value = 'Customer';
+    }
+    document.getElementById('modalOverlay').classList.add('open');
+}
 
-        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
+function editUser(id) {
+    const u = users.find(x => x.id === id);
+    if (!u) return;
+    openModal(id);
+    document.getElementById('uName').value  = u.name;
+    document.getElementById('uEmail').value = u.email;
+    document.getElementById('uPhone').value = u.phoneNumber || '';
+    document.getElementById('uRole').value  = u.role;
+}
 
-        async function saveUser() {
-            const data = {
-                name: document.getElementById('uName').value,
-                email: document.getElementById('uEmail').value,
-                phoneNumber: document.getElementById('uPhone').value,
-                role: document.getElementById('uRole').value
-            };
-            
-            const password = document.getElementById('uPassword').value;
-            if (password) data.password = password;
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
-            if (!data.name || !data.email) { showToast('Emri dhe Email janë të detyrueshme!', 'error'); return; }
+async function saveUser() {
+    const data = {
+        name: document.getElementById('uName').value.trim(),
+        email: document.getElementById('uEmail').value.trim(),
+        phoneNumber: document.getElementById('uPhone').value.trim(),
+        role: document.getElementById('uRole').value
+    };
+    const pw = document.getElementById('uPassword').value;
+    if (pw) data.password = pw;
+    if (!data.name || !data.email) { showToast('Emri dhe Email janë të detyrueshëm!', 'error'); return; }
+    try {
+        const res = editingId
+            ? await authFetch(`${API}/users/${editingId}`, { method: 'PUT',  body: JSON.stringify(data) })
+            : await authFetch(`${API}/users`,              { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
+        else { const e = await res.json(); showToast(e.message || 'Gabim!', 'error'); }
+    } catch { showToast('Lidhja dështoi!', 'error'); }
+}
 
-            try {
-                const method = editingId ? 'PUT' : 'POST';
-                const url = editingId ? `${API}/users/${editingId}` : `${API}/users`;
-                const res = await authFetch(url, { method, body: JSON.stringify(data) });
-                
-                if (res.ok) {
-                    showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success');
-                    closeModal();
-                    load();
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || 'Gabim!', 'error');
-                }
-            } catch(e) { showToast('Lidhja dështoi!', 'error'); }
-        }
+async function deleteUser(id) {
+    if (!confirm('A jeni të sigurt?')) return;
+    try {
+        const res = await authFetch(`${API}/users/${id}`, { method: 'DELETE' });
+        if (res.ok) { showToast('U fshi!', 'success'); load(); }
+    } catch { showToast('Gabim!', 'error'); }
+}
 
-        async function deleteUser(id) {
-            if (!confirm('A jeni të sigurt?')) return;
-            try {
-                const res = await authFetch(`${API}/users/${id}`, { method: 'DELETE' });
-                if (res.ok) { showToast('U fshi!', 'success'); load(); }
-            } catch(e) { showToast('Gabim!', 'error'); }
-        }
+function viewProfile(id) { window.location.href = `profile.html?id=${id}`; }
 
-        function viewProfile(id) { window.location.href = `profile.html?id=${id}`; }
-
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.style.display = 'block';
-            t.style.background = type === 'success' ? '#1D9E75' : '#D85A30';
-            setTimeout(() => { t.style.display = 'none'; }, 3000);
-        }
-
-        load();
-    </script>
+load();
+</script>
 </body>
 </html>

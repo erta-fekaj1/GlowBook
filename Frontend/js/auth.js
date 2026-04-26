@@ -28,12 +28,12 @@ function logout() {
     localStorage.removeItem('glowbook_token');
     localStorage.removeItem('glowbook_user');
     sessionStorage.clear();
-    window.location.replace('login.html');
+    window.location.replace('index.html');
 }
 
 function requireAuth() {
     if (!isLoggedIn()) {
-        window.location.replace('login.html');
+        window.location.replace('index.html');
         return false;
     }
     return true;

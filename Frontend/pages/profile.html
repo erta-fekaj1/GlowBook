@@ -4,253 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow Book - Profili</title>
-    <link rel="stylesheet" href="../css/responsive.css">
-    <link rel="stylesheet" href="../css/premium-theme.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
-        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
-        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
-        .nav-item:hover { background: #FBEAF0; color: #993556; }
-        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
-        .nav-bottom { margin-top: auto; }
-        .main { margin-left: 220px; padding: 2rem; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
-        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
-        .btn-back { padding: 8px 16px; background: #FBEAF0; color: #993556; border: 1px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-back:hover { background: #F4C0D1; }
-        .profile-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
-        .profile-card { background: white; border-radius: 20px; border: 1px solid #F4C0D1; padding: 2rem; text-align: center; }
-        .avatar-big { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #D4537E, #993556); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 500; color: white; margin: 0 auto 1rem; }
-        .profile-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #2C2C2A; font-weight: 600; margin-bottom: 4px; }
-        .profile-email { font-size: 0.85rem; color: #B4B2A9; margin-bottom: 1rem; }
-        .badge { font-size: 0.75rem; padding: 4px 14px; border-radius: 20px; font-weight: 500; }
-        .badge-admin { background: #FCEBEB; color: #A32D2D; }
-        .badge-customer { background: #E1F5EE; color: #0F6E56; }
-        .profile-info { margin-top: 1.5rem; text-align: left; }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #FBEAF0; font-size: 0.85rem; }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { color: #B4B2A9; }
-        .info-value { color: #2C2C2A; font-weight: 500; }
-        .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
-        .card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; padding: 1.5rem; }
-        .card-title { font-size: 0.9rem; font-weight: 500; color: #72243E; margin-bottom: 1rem; }
-        .appt-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #FBEAF0; }
-        .appt-item:last-child { border-bottom: none; }
-        .appt-dot { width: 8px; height: 8px; border-radius: 50%; background: #D4537E; flex-shrink: 0; }
-        .appt-info { flex: 1; }
-        .appt-name { font-size: 0.85rem; font-weight: 500; }
-        .appt-date { font-size: 0.75rem; color: #B4B2A9; }
-        .appt-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-        .badge-pending { background: #FAEEDA; color: #854F0B; }
-        .badge-confirmed { background: #EAF3DE; color: #3B6D11; }
-        .badge-done { background: #E1F5EE; color: #0F6E56; }
-        .edit-form { display: flex; flex-direction: column; gap: 1rem; }
-        .field { display: flex; flex-direction: column; gap: 6px; }
-        .field label { font-size: 0.75rem; font-weight: 500; color: #72243E; text-transform: uppercase; letter-spacing: 0.5px; }
-        .field input { padding: 10px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; }
-        .field input:focus { border-color: #D4537E; }
-        .btn-save { padding: 10px 24px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; align-self: flex-start; }
-        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
-        .stats-mini { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-        .stat-box { background: #FBEAF0; border-radius: 10px; padding: 12px; text-align: center; }
-        .stat-box .n { font-size: 1.3rem; font-weight: 500; color: #993556; }
-        .stat-box .l { font-size: 0.7rem; color: #B4B2A9; text-transform: uppercase; }
-        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
-        .toast.success { background: #1D9E75; display: block; }
-        .toast.error { background: #D85A30; display: block; }
-    </style>
 </head>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
-</script>
 <body>
-    <!-- Mobile Navbar -->
+
 <div class="mobile-nav">
-    <button class="hamburger" onclick="toggleSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
     <div style="width:40px;"></div>
 </div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">💅</span>
+            <h2>Glow Book</h2>
+            <p>Nail Salon</p>
+        </div>
+        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
+        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
+        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
+        <a class="nav-item active" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
+        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
+        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
+        <div class="nav-bottom">
+            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+        </div>
+    </aside>
 
-    <div style="display:flex; min-height:100vh;">
-        <div class="sidebar">
-            <div class="logo">
-                <div style="font-size:1.8rem;">💅</div>
-                <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1 id="pageTitle">Profili</h1>
+                <p>Detajet e plotë të përdoruesit</p>
             </div>
-            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-            <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-            <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-            <a class="nav-item active" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-            <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-            <div class="nav-bottom">
-                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-            </div>
+            <a class="btn-back" href="users.html"><i class="fa-solid fa-arrow-left"></i> Kthehu</a>
         </div>
 
-        <div class="main">
-            <div class="topbar">
-                <div>
-                    <h1 id="pageTitle">Profili</h1>
-                    <p>Detajet e plotë të përdoruesit</p>
+        <div class="profile-grid">
+            <!-- Left: profile card + stats -->
+            <div>
+                <div class="profile-card">
+                    <div class="avatar-big" id="avatar">?</div>
+                    <div class="profile-name" id="profileName">Duke ngarkuar...</div>
+                    <div class="profile-email" id="profileEmail">–</div>
+                    <span class="badge" id="profileBadge">–</span>
+                    <div class="profile-info">
+                        <div class="info-row"><span class="info-label">Telefoni</span><span class="info-value" id="profilePhone">–</span></div>
+                        <div class="info-row"><span class="info-label">Roli</span><span class="info-value" id="profileRole">–</span></div>
+                        <div class="info-row"><span class="info-label">Anëtar që nga</span><span class="info-value" id="profileDate">–</span></div>
+                    </div>
                 </div>
-                <a class="btn-back" href="users.html">← Kthehu</a>
+
+                <div class="card" style="margin-top:1.25rem;">
+                    <div class="card-title">Statistikat</div>
+                    <div class="stats-mini-3">
+                        <div class="stat-box"><div class="n" id="statTotal">0</div><div class="l">Takime</div></div>
+                        <div class="stat-box"><div class="n" id="statDone">0</div><div class="l">Kryer</div></div>
+                        <div class="stat-box"><div class="n" id="statPending">0</div><div class="l">Në pritje</div></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="profile-grid">
-                <div>
-                    <div class="profile-card">
-                        <div class="avatar-big" id="avatar">?</div>
-                        <div class="profile-name" id="profileName">Duke ngarkuar...</div>
-                        <div class="profile-email" id="profileEmail">–</div>
-                        <span class="badge" id="profileBadge">–</span>
-                        <div class="profile-info">
-                            <div class="info-row"><span class="info-label">Telefoni</span><span class="info-value" id="profilePhone">–</span></div>
-                            <div class="info-row"><span class="info-label">Roli</span><span class="info-value" id="profileRole">–</span></div>
-                            <div class="info-row"><span class="info-label">Anëtar që nga</span><span class="info-value" id="profileDate">–</span></div>
-                        </div>
-                    </div>
-
-                    <div class="card" style="margin-top:1.5rem;">
-                        <div class="card-title">Statistikat</div>
-                        <div class="stats-mini">
-                            <div class="stat-box"><div class="n" id="statTotal">0</div><div class="l">Takime</div></div>
-                            <div class="stat-box"><div class="n" id="statDone">0</div><div class="l">Kryer</div></div>
-                            <div class="stat-box"><div class="n" id="statPending">0</div><div class="l">Në pritje</div></div>
-                        </div>
+            <!-- Right: edit form + recent appointments -->
+            <div class="right-col">
+                <div class="card">
+                    <div class="card-title">Ndrysho të Dhënat</div>
+                    <div class="edit-form">
+                        <div class="field"><label>Emri</label><input type="text" id="editName"></div>
+                        <div class="field"><label>Email</label><input type="email" id="editEmail"></div>
+                        <div class="field"><label>Telefoni</label><input type="text" id="editPhone"></div>
+                        <button class="btn-save" onclick="saveChanges()">
+                            <i class="fa-solid fa-floppy-disk"></i> Ruaj Ndryshimet
+                        </button>
                     </div>
                 </div>
 
-                <div class="right-col">
-                    <div class="card">
-                        <div class="card-title">Ndrysho të Dhënat</div>
-                        <div class="edit-form">
-                            <div class="field"><label>Emri</label><input type="text" id="editName"></div>
-                            <div class="field"><label>Email</label><input type="email" id="editEmail"></div>
-                            <div class="field"><label>Telefoni</label><input type="text" id="editPhone"></div>
-                            <button class="btn-save" onclick="saveChanges()">Ruaj Ndryshimet</button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">Takimet e Fundit</div>
-                        <div id="apptList"><div style="color:#B4B2A9;font-size:0.85rem;">Duke ngarkuar...</div></div>
-                    </div>
+                <div class="card">
+                    <div class="card-title">Takimet e Fundit</div>
+                    <div id="apptList"><span style="color:var(--text-muted);font-size:.85rem;">Duke ngarkuar...</span></div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+</div>
 
-    <div class="toast" id="toast"></div>
+<div class="gb-toast" id="toast"></div>
 
-    <script src="../js/auth.js"></script>
-    <script>
-        requireAuth();
-        loadUserBadge();
+<script src="../js/auth.js"></script>
+<script>
+const API = 'https://glowbook-1.onrender.com/api';
 
-        let userId = 1;
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+});
 
-        async function load() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                userId       = parseInt(params.get('id') || 1);
+requireAuth();
 
-                const [usersRes, apptsRes, servicesRes] = await Promise.all([
-                    authFetch(`${API}/users`),
-                    authFetch(`${API}/appointments`),
-                    authFetch(`${API}/services`)
-                ]);
+let userId = 1;
 
-                const users    = await usersRes.json();
-                const appts    = await apptsRes.json();
-                const services = await servicesRes.json();
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'gb-toast ' + type;
+    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
+}
 
-                const userData = users.find(u => u.id === userId) || users[0];
-                if (!userData) return;
+async function load() {
+    try {
+        userId = parseInt(new URLSearchParams(window.location.search).get('id') || 1);
+        const [uRes, aRes, sRes] = await Promise.all([
+            authFetch(`${API}/users`),
+            authFetch(`${API}/appointments`),
+            authFetch(`${API}/services`)
+        ]);
+        const users    = await uRes.json();
+        const appts    = await aRes.json();
+        const services = await sRes.json();
+        const u = users.find(x => x.id === userId) || users[0];
+        if (!u) return;
 
-                const initials = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                document.getElementById('avatar').textContent      = initials;
-                document.getElementById('pageTitle').textContent   = userData.name;
-                document.getElementById('profileName').textContent = userData.name;
-                document.getElementById('profileEmail').textContent = userData.email;
-                document.getElementById('profilePhone').textContent = userData.phoneNumber || '–';
-                document.getElementById('profileRole').textContent  = userData.role;
-                document.getElementById('profileDate').textContent  = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('sq-AL') : '–';
+        const ini = u.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+        document.getElementById('avatar').textContent       = ini;
+        document.getElementById('pageTitle').textContent    = u.name;
+        document.getElementById('profileName').textContent  = u.name;
+        document.getElementById('profileEmail').textContent = u.email;
+        document.getElementById('profilePhone').textContent = u.phoneNumber || '–';
+        document.getElementById('profileRole').textContent  = u.role;
+        document.getElementById('profileDate').textContent  = u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–';
 
-                const badge       = document.getElementById('profileBadge');
-                badge.textContent = userData.role;
-                badge.className   = `badge ${userData.role === 'Admin' ? 'badge-admin' : 'badge-customer'}`;
+        const badge = document.getElementById('profileBadge');
+        badge.textContent = u.role;
+        badge.className   = `badge ${u.role === 'Admin' ? 'badge-admin' : 'badge-customer'}`;
 
-                document.getElementById('editName').value  = userData.name;
-                document.getElementById('editEmail').value = userData.email;
-                document.getElementById('editPhone').value = userData.phoneNumber || '';
+        document.getElementById('editName').value  = u.name;
+        document.getElementById('editEmail').value = u.email;
+        document.getElementById('editPhone').value = u.phoneNumber || '';
 
-                const userAppts = appts.filter(a => a.userId === userId);
-                document.getElementById('statTotal').textContent   = userAppts.length;
-                document.getElementById('statDone').textContent    = userAppts.filter(a => a.status === 'Done').length;
-                document.getElementById('statPending').textContent = userAppts.filter(a => a.status === 'Pending').length;
+        const ua = appts.filter(a => a.userId === userId);
+        document.getElementById('statTotal').textContent   = ua.length;
+        document.getElementById('statDone').textContent    = ua.filter(a => a.status === 'Done').length;
+        document.getElementById('statPending').textContent = ua.filter(a => a.status === 'Pending').length;
 
-                const apptList = document.getElementById('apptList');
-                if (!userAppts.length) { apptList.innerHTML = '<div style="color:#B4B2A9;font-size:0.85rem;">Nuk ka takime</div>'; return; }
-                apptList.innerHTML = userAppts.slice(0, 5).map(a => {
-                    const svc        = services.find(s => s.id === a.serviceId);
-                    const badgeClass = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
-                    const date       = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
-                    return `<div class="appt-item">
-                        <div class="appt-dot"></div>
-                        <div class="appt-info">
-                            <div class="appt-name">${svc ? svc.name : 'Shërbim'}</div>
-                            <div class="appt-date">${date}</div>
-                        </div>
-                        <span class="appt-badge ${badgeClass}">${a.status}</span>
-                    </div>`;
-                }).join('');
-            } catch(e) { showToast('Gabim në lidhje me serverin!', 'error'); }
-        }
+        const apptList = document.getElementById('apptList');
+        if (!ua.length) { apptList.innerHTML = '<span style="color:var(--text-muted);font-size:.85rem;">Nuk ka takime</span>'; return; }
+        apptList.innerHTML = ua.slice(0, 5).map(a => {
+            const svc = services.find(s => s.id === a.serviceId);
+            const bc  = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
+            const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+            return `<div class="appt-item">
+                <div class="appt-dot"></div>
+                <div class="appt-info">
+                    <div class="appt-name">${svc ? svc.name : 'Shërbim'}</div>
+                    <div class="appt-date">${date}</div>
+                </div>
+                <span class="badge ${bc}">${a.status}</span>
+            </div>`;
+        }).join('');
+    } catch { showToast('Gabim në lidhje me serverin!', 'error'); }
+}
 
-        async function saveChanges() {
-            const name  = document.getElementById('editName').value;
-            const email = document.getElementById('editEmail').value;
-            const phone = document.getElementById('editPhone').value;
-            if (!name || !email) { showToast('Plotësoni fushat e detyrueshme!', 'error'); return; }
-            try {
-                const res = await authFetch(`${API}/users/${userId}`, {
-                    method: 'PUT',
-                    body:   JSON.stringify({ name, email, phoneNumber: phone })
-                });
-                if (res.ok) { showToast('Të dhënat u përditësuan!', 'success'); load(); }
-                else { const err = await res.json(); showToast(err.message || 'Gabim!', 'error'); }
-            } catch(e) { showToast('Gabim në lidhje!', 'error'); }
-        }
+async function saveChanges() {
+    const name  = document.getElementById('editName').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    if (!name || !email) { showToast('Emri dhe Email janë të detyrueshëm!', 'error'); return; }
+    try {
+        const res = await authFetch(`${API}/users/${userId}`, {
+            method: 'PUT', body: JSON.stringify({ name, email, phoneNumber: phone })
+        });
+        if (res.ok) { showToast('Të dhënat u përditësuan!', 'success'); load(); }
+        else { const e = await res.json(); showToast(e.message || 'Gabim!', 'error'); }
+    } catch { showToast('Lidhja dështoi!', 'error'); }
+}
 
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            t.textContent = msg; t.className = 'toast ' + type;
-            setTimeout(() => t.className = 'toast', 3000);
-        }
-
-        load();
-    </script>
+load();
+</script>
 </body>
 </html>

@@ -3,269 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Book - Nail Art Gallery</title>
-    <link rel="stylesheet" href="../css/responsive.css">
-    <link rel="stylesheet" href="../css/premium-theme.css">
+    <title>Glow Book - Galeria</title>
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: white; border-right: 1px solid #F4C0D1; padding: 1.5rem 1rem; display: flex; flex-direction: column; z-index: 10; }
-        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
-        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
-        .nav-item:hover { background: #FBEAF0; color: #993556; }
-        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
-        .nav-bottom { margin-top: auto; }
-        .main { margin-left: 220px; padding: 2rem; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #993556; }
-        .topbar p { font-size: 0.85rem; color: #B4B2A9; margin-top: 2px; }
-        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
-        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat { background: white; border-radius: 12px; padding: 1rem; border: 1px solid #F4C0D1; text-align: center; }
-        .stat .n { font-size: 1.4rem; font-weight: 500; color: #993556; }
-        .stat .l { font-size: 0.7rem; color: #B4B2A9; text-transform: uppercase; letter-spacing: 1px; }
-        .filters { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
-        .filter-btn { padding: 7px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 1.5px solid #F4C0D1; background: white; color: #888780; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
-        .filter-btn.active { background: linear-gradient(135deg, #D4537E, #993556); color: white; border-color: transparent; }
-        .search-box { padding: 8px 16px; border: 1.5px solid #F4C0D1; border-radius: 20px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; outline: none; color: #2C2C2A; flex: 1; max-width: 300px; }
-        .search-box:focus { border-color: #D4537E; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.2rem; }
-        .design-card { background: white; border-radius: 16px; border: 1px solid #F4C0D1; overflow: hidden; cursor: pointer; transition: all 0.2s; }
-        .design-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(212,83,126,0.15); }
-        .design-preview { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
-        .design-card-body { padding: 1rem; }
-        .design-name { font-size: 0.9rem; font-weight: 500; color: #2C2C2A; margin-bottom: 4px; }
-        .design-desc { font-size: 0.75rem; color: #B4B2A9; margin-bottom: 10px; line-height: 1.4; }
-        .design-footer { display: flex; justify-content: space-between; align-items: center; }
-        .design-complexity { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-        .complexity-easy { background: #E1F5EE; color: #0F6E56; }
-        .complexity-medium { background: #FAEEDA; color: #854F0B; }
-        .complexity-hard { background: #FCEBEB; color: #A32D2D; }
-        .design-price { font-size: 0.85rem; font-weight: 500; color: #D4537E; }
-        .like-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 4px; transition: transform 0.2s; font-family: 'DM Sans', sans-serif; }
-        .like-btn:hover { transform: scale(1.3); }
-        .modal-bg { position: fixed; inset: 0; background: rgba(153,53,86,0.2); display: none; align-items: center; justify-content: center; z-index: 100; }
-        .modal-bg.open { display: flex; }
-        .modal { background: white; border-radius: 24px; width: 100%; max-width: 500px; overflow: hidden; }
-        .modal-preview { height: 260px; display: flex; align-items: center; justify-content: center; font-size: 7rem; }
-        .modal-body { padding: 1.5rem; }
-        .modal-body h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: #993556; margin-bottom: 6px; }
-        .modal-body p { font-size: 0.85rem; color: #888780; line-height: 1.6; margin-bottom: 1rem; }
-        .modal-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
-        .tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; background: #FBEAF0; color: #993556; }
-        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #FBEAF0; }
-        .btn-book { padding: 10px 24px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .btn-close-modal { padding: 8px 16px; background: #FBEAF0; color: #993556; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; color: white; display: none; z-index: 999; }
-        .toast.success { background: #1D9E75; display: block; }
-        .toast.error { background: #D85A30; display: block; }
-    </style>
 </head>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.querySelector('.sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
-</script>
 <body>
-    <!-- Mobile Navbar -->
+
 <div class="mobile-nav">
-    <button class="hamburger" onclick="toggleSidebar()">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
     <div style="width:40px;"></div>
 </div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">💅</span>
+            <h2>Glow Book</h2>
+            <p>Nail Salon</p>
+        </div>
+        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
+        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
+        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
+        <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
+        <a class="nav-item active" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
+        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
+        <div class="nav-bottom">
+            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+        </div>
+    </aside>
 
-    <div style="display:flex; min-height:100vh;">
-        <div class="sidebar">
-            <div class="logo">
-                <div style="font-size:1.8rem;">💅</div>
-                <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Nail Art Gallery</h1>
+                <p>Zbulo dizajnet më të bukura</p>
             </div>
-            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-            <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-            <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-            <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-            <a class="nav-item active" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-            <div class="nav-bottom">
-                <a class="nav-item" onclick="logout()" style="cursor:pointer;"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+            <button class="btn-primary" onclick="showToast('Funksionaliteti vjen së shpejti!','info')">
+                <i class="fa-solid fa-plus"></i> Shto Dizajn
+            </button>
+        </div>
+
+        <div class="gallery-stats">
+            <div class="gallery-stat"><div class="n" id="statTotal">0</div><div class="l">Dizajne</div></div>
+            <div class="gallery-stat"><div class="n" id="statEasy">0</div><div class="l">Të lehta</div></div>
+            <div class="gallery-stat"><div class="n" id="statMedium">0</div><div class="l">Mesatare</div></div>
+            <div class="gallery-stat"><div class="n" id="statHard">0</div><div class="l">Të vështira</div></div>
+        </div>
+
+        <div class="filters" style="margin-bottom:1.5rem;">
+            <div class="filter-pills">
+                <input class="search-box" type="text" placeholder="🔍 Kërko dizajn..." id="searchInput" oninput="renderGallery()">
+                <button class="pill active" onclick="setFilter('Të gjitha')">Të gjitha</button>
+                <button class="pill" onclick="setFilter('French')">French</button>
+                <button class="pill" onclick="setFilter('Gel')">Gel</button>
+                <button class="pill" onclick="setFilter('Ombre')">Ombre</button>
+                <button class="pill" onclick="setFilter('Floral')">Floral</button>
+                <button class="pill" onclick="setFilter('Glitter')">Glitter</button>
             </div>
         </div>
 
-        <div class="main">
-            <div class="topbar">
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </main>
+</div>
+
+<!-- Design Modal -->
+<div class="gallery-modal-bg" id="modalBg">
+    <div class="gallery-modal">
+        <div class="gallery-modal-preview" id="modalPreview"></div>
+        <div class="gallery-modal-body">
+            <h2 id="modalName">–</h2>
+            <p id="modalDesc">–</p>
+            <div class="modal-tags" id="modalTags"></div>
+            <div class="gallery-modal-footer">
                 <div>
-                    <h1>Nail Art Gallery</h1>
-                    <p>Zbulo dizajnet më të bukura</p>
+                    <div class="modal-price" id="modalPrice">–</div>
+                    <div class="modal-duration" id="modalDuration">–</div>
                 </div>
-                <button class="btn-primary" onclick="showToast('Funksionaliteti vjen së shpejti!', 'success')">+ Shto Dizajn</button>
-            </div>
-
-            <div class="stats-row">
-                <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Dizajne</div></div>
-                <div class="stat"><div class="n" id="statEasy">0</div><div class="l">Të lehta</div></div>
-                <div class="stat"><div class="n" id="statMedium">0</div><div class="l">Mesatare</div></div>
-                <div class="stat"><div class="n" id="statHard">0</div><div class="l">Të vështira</div></div>
-            </div>
-
-            <div class="filters">
-                <input class="search-box" type="text" placeholder="Kërko dizajn..." id="searchInput" oninput="renderGallery()">
-                <button class="filter-btn active" onclick="setFilter('Të gjitha')">Të gjitha</button>
-                <button class="filter-btn" onclick="setFilter('French')">French</button>
-                <button class="filter-btn" onclick="setFilter('Gel')">Gel</button>
-                <button class="filter-btn" onclick="setFilter('Ombre')">Ombre</button>
-                <button class="filter-btn" onclick="setFilter('Floral')">Floral</button>
-                <button class="filter-btn" onclick="setFilter('Glitter')">Glitter</button>
-            </div>
-
-            <div class="gallery-grid" id="galleryGrid"></div>
-        </div>
-    </div>
-
-    <div class="modal-bg" id="modalBg">
-        <div class="modal">
-            <div class="modal-preview" id="modalPreview"></div>
-            <div class="modal-body">
-                <h2 id="modalName">–</h2>
-                <p id="modalDesc">–</p>
-                <div class="modal-tags" id="modalTags"></div>
-                <div class="modal-footer">
-                    <div>
-                        <div style="font-size:1.2rem;font-weight:500;color:#D4537E;" id="modalPrice">–</div>
-                        <div style="font-size:0.75rem;color:#B4B2A9;" id="modalDuration">–</div>
-                    </div>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn-close-modal" onclick="closeModal()">Mbyll</button>
-                        <button class="btn-book" onclick="bookDesign()">Rezervo tani</button>
-                    </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-secondary" onclick="closeModal()">Mbyll</button>
+                    <button class="btn-primary" onclick="bookDesign()">
+                        <i class="fa-solid fa-calendar-check"></i> Rezervo tani
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="toast" id="toast"></div>
+<div class="gb-toast" id="toast"></div>
 
-    <script src="../js/auth.js"></script>
-    <script>
-        requireAuth();
-        loadUserBadge();
+<script src="../js/auth.js"></script>
+<script>
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+});
 
-        const designs = [
-            { id:1, name:'French Classic', emoji:'🤍', category:'French', complexity:'E lehtë', price:15, duration:30, desc:'Dizajni klasik francez me majë të bardhë elegante. Perfekt për çdo rast.', tags:['Klasik','Elegant','Casual'], likes:24, liked:false, bg:'#F8F4FF' },
-            { id:2, name:'Pink Ombre', emoji:'🌸', category:'Ombre', complexity:'Mesatare', price:25, duration:45, desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë. Romantike dhe femërore.', tags:['Romantike','Ombre','Pink'], likes:31, liked:false, bg:'#FFF0F5' },
-            { id:3, name:'Glitter Bomb', emoji:'✨', category:'Glitter', complexity:'E lehtë', price:20, duration:40, desc:'Shkëlqim dhe glamour në çdo gisht. Ideal për festa dhe ngjarje speciale.', tags:['Festë','Glamour','Shkëlqim'], likes:18, liked:false, bg:'#FFFBF0' },
-            { id:4, name:'Floral Dream', emoji:'🌺', category:'Floral', complexity:'E vështirë', price:40, duration:90, desc:'Lule të vogla të vizatuara me dorë. Punë artizanale e lartë.', tags:['Art','Lule','Handmade'], likes:45, liked:false, bg:'#F0FFF4' },
-            { id:5, name:'Gel Nude', emoji:'🍑', category:'Gel', complexity:'E lehtë', price:18, duration:35, desc:'Ngjyrë neutrale dhe naturale që i shkon çdo veshje dhe çdo rast.', tags:['Neutral','Natural','Gel'], likes:29, liked:false, bg:'#FFF5F0' },
-            { id:6, name:'Galaxy Nails', emoji:'🌌', category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta dhe shkëlqim si yje. Unike dhe mbresëlënëse.', tags:['Galaxy','Artsy','Unique'], likes:52, liked:false, bg:'#F0F0FF' },
-            { id:7, name:'Marble Effect', emoji:'🖤', category:'Gel', complexity:'E vështirë', price:38, duration:80, desc:'Efekt mermer luksoze me vija delikate. Sofistikate dhe moderne.', tags:['Luks','Marble','Modern'], likes:37, liked:false, bg:'#F8F8F8' },
-            { id:8, name:'Floral Ombre', emoji:'🌸', category:'Floral', complexity:'E vështirë', price:50, duration:120, desc:'Kombinim i ombre me lule të vizatuara. Dizajni më i popullarizuar i sezonit.', tags:['Trending','Lule','Ombre'], likes:61, liked:false, bg:'#FFF0F8' },
-            { id:9, name:'Red Glam', emoji:'❤️', category:'Gel', complexity:'E lehtë', price:16, duration:30, desc:'Ngjyrë e kuqe klasike e pasur. Ikonike dhe e fuqishme.', tags:['Klasik','Bold','Red'], likes:33, liked:false, bg:'#FFF0F0' },
-            { id:10, name:'Baby Blue', emoji:'💙', category:'Ombre', complexity:'Mesatare', price:22, duration:45, desc:'Kalim i butë në ngjyrë blu të çelët. Freskues dhe i ëmbël.', tags:['Pastel','Blue','Sweet'], likes:27, liked:false, bg:'#F0F8FF' },
-            { id:11, name:'Gold Tips', emoji:'⭐', category:'French', complexity:'Mesatare', price:28, duration:50, desc:'Majë të arta që i japin elegancë të veçantë çdo dorë.', tags:['Gold','Luks','French'], likes:41, liked:false, bg:'#FFFDF0' },
-            { id:12, name:'Lavender Gel', emoji:'💜', category:'Gel', complexity:'E lehtë', price:17, duration:30, desc:'Ngjyrë lavanderi e butë dhe qetësuese. Perfekte për pranverën.', tags:['Pastel','Purple','Spring'], likes:35, liked:false, bg:'#F8F0FF' },
-        ];
+requireAuth();
 
-        let currentFilter = 'Të gjitha';
-        let currentDesign = null;
+const designs = [
+    { id:1,  name:'French Classic',  emoji:'🤍', category:'French',  complexity:'E lehtë',     price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante. Perfekt për çdo rast.',              tags:['Klasik','Elegant','Casual'],   likes:24, liked:false, bg:'#F8F4FF' },
+    { id:2,  name:'Pink Ombre',       emoji:'🌸', category:'Ombre',   complexity:'Mesatare',    price:25, duration:45,  desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë. Romantike dhe femërore.',        tags:['Romantike','Ombre','Pink'],    likes:31, liked:false, bg:'#FFF0F5' },
+    { id:3,  name:'Glitter Bomb',     emoji:'✨', category:'Glitter', complexity:'E lehtë',     price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht. Ideal për festa dhe ngjarje speciale.',              tags:['Festë','Glamour','Shkëlqim'], likes:18, liked:false, bg:'#FFFBF0' },
+    { id:4,  name:'Floral Dream',     emoji:'🌺', category:'Floral',  complexity:'E vështirë',  price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë. Punë artizanale e lartë.',                         tags:['Art','Lule','Handmade'],       likes:45, liked:false, bg:'#F0FFF4' },
+    { id:5,  name:'Gel Nude',         emoji:'🍑', category:'Gel',     complexity:'E lehtë',     price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale që i shkon çdo veshje dhe çdo rast.',                    tags:['Neutral','Natural','Gel'],     likes:29, liked:false, bg:'#FFF5F0' },
+    { id:6,  name:'Galaxy Nails',     emoji:'🌌', category:'Glitter', complexity:'E vështirë',  price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta dhe shkëlqim si yje.',                              tags:['Galaxy','Artsy','Unique'],     likes:52, liked:false, bg:'#F0F0FF' },
+    { id:7,  name:'Marble Effect',    emoji:'🖤', category:'Gel',     complexity:'E vështirë',  price:38, duration:80,  desc:'Efekt mermer luksoz me vija delikate. Sofistikate dhe moderne.',                       tags:['Luks','Marble','Modern'],      likes:37, liked:false, bg:'#F8F8F8' },
+    { id:8,  name:'Floral Ombre',     emoji:'🌸', category:'Floral',  complexity:'E vështirë',  price:50, duration:120, desc:'Kombinim i ombre me lule të vizatuara. Dizajni më i popullarizuar i sezonit.',         tags:['Trending','Lule','Ombre'],     likes:61, liked:false, bg:'#FFF0F8' },
+    { id:9,  name:'Red Glam',         emoji:'❤️', category:'Gel',     complexity:'E lehtë',     price:16, duration:30,  desc:'Ngjyrë e kuqe klasike e pasur. Ikonike dhe e fuqishme.',                               tags:['Klasik','Bold','Red'],         likes:33, liked:false, bg:'#FFF0F0' },
+    { id:10, name:'Baby Blue',        emoji:'💙', category:'Ombre',   complexity:'Mesatare',    price:22, duration:45,  desc:'Kalim i butë në ngjyrë blu të çelët. Freskues dhe i ëmbël.',                           tags:['Pastel','Blue','Sweet'],       likes:27, liked:false, bg:'#F0F8FF' },
+    { id:11, name:'Gold Tips',        emoji:'⭐', category:'French',  complexity:'Mesatare',    price:28, duration:50,  desc:'Majë të arta që i japin elegancë të veçantë çdo dore.',                               tags:['Gold','Luks','French'],        likes:41, liked:false, bg:'#FFFDF0' },
+    { id:12, name:'Lavender Gel',     emoji:'💜', category:'Gel',     complexity:'E lehtë',     price:17, duration:30,  desc:'Ngjyrë lavanderi e butë dhe qetësuese. Perfekte për pranverën.',                      tags:['Pastel','Purple','Spring'],    likes:35, liked:false, bg:'#F8F0FF' },
+];
 
-        function setFilter(cat) {
-            currentFilter = cat;
-            document.querySelectorAll('.filter-btn').forEach(b =>
-                b.classList.toggle('active', b.textContent === cat));
-            renderGallery();
-        }
+let currentFilter = 'Të gjitha';
+let currentDesign = null;
 
-        function renderGallery() {
-            const search   = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = designs.filter(d => {
-                const matchCat    = currentFilter === 'Të gjitha' || d.category === currentFilter;
-                const matchSearch = !search || d.name.toLowerCase().includes(search) || d.category.toLowerCase().includes(search);
-                return matchCat && matchSearch;
-            });
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'gb-toast ' + type;
+    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
+}
 
-            document.getElementById('statTotal').textContent  = designs.length;
-            document.getElementById('statEasy').textContent   = designs.filter(d => d.complexity === 'E lehtë').length;
-            document.getElementById('statMedium').textContent = designs.filter(d => d.complexity === 'Mesatare').length;
-            document.getElementById('statHard').textContent   = designs.filter(d => d.complexity === 'E vështirë').length;
+function setFilter(cat) {
+    currentFilter = cat;
+    document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b.textContent.trim() === cat));
+    renderGallery();
+}
 
-            const grid = document.getElementById('galleryGrid');
-            if (!filtered.length) {
-                grid.innerHTML = '<div style="color:#B4B2A9;font-size:0.85rem;padding:2rem;">Nuk ka dizajne</div>';
-                return;
-            }
+function renderGallery() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = designs.filter(d =>
+        (currentFilter === 'Të gjitha' || d.category === currentFilter) &&
+        (!search || d.name.toLowerCase().includes(search) || d.category.toLowerCase().includes(search))
+    );
 
-            grid.innerHTML = filtered.map(d => {
-                const complexClass = d.complexity === 'E lehtë' ? 'complexity-easy' : d.complexity === 'Mesatare' ? 'complexity-medium' : 'complexity-hard';
-                return `<div class="design-card" onclick="openDesign(${d.id})">
-                    <div class="design-preview" style="background:${d.bg}; font-size:4rem;">${d.emoji}</div>
-                    <div class="design-card-body">
-                        <div class="design-name">${d.name}</div>
-                        <div class="design-desc">${d.desc.substring(0, 60)}...</div>
-                        <div class="design-footer">
-                            <span class="design-complexity ${complexClass}">${d.complexity}</span>
-                            <span class="design-price">$${d.price}</span>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-                            <span style="font-size:0.75rem;color:#B4B2A9;">${d.duration} min</span>
-                            <button class="like-btn" onclick="event.stopPropagation();toggleLike(${d.id})" id="like-${d.id}">${d.liked ? '❤️' : '🤍'} ${d.likes}</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
+    document.getElementById('statTotal').textContent  = designs.length;
+    document.getElementById('statEasy').textContent   = designs.filter(d => d.complexity === 'E lehtë').length;
+    document.getElementById('statMedium').textContent = designs.filter(d => d.complexity === 'Mesatare').length;
+    document.getElementById('statHard').textContent   = designs.filter(d => d.complexity === 'E vështirë').length;
 
-        function toggleLike(id) {
-            const d  = designs.find(x => x.id === id);
-            d.liked  = !d.liked;
-            d.likes += d.liked ? 1 : -1;
-            const btn       = document.getElementById(`like-${id}`);
-            btn.textContent = (d.liked ? '❤️' : '🤍') + ' ' + d.likes;
-        }
+    const grid = document.getElementById('galleryGrid');
+    if (!filtered.length) {
+        grid.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:2rem;">Nuk ka dizajne për këtë filtrim.</div>';
+        return;
+    }
+    grid.innerHTML = filtered.map(d => {
+        const cc = d.complexity === 'E lehtë' ? 'complexity-easy' : d.complexity === 'Mesatare' ? 'complexity-medium' : 'complexity-hard';
+        return `<div class="design-card" onclick="openDesign(${d.id})">
+            <div class="design-preview" style="background:${d.bg};">${d.emoji}</div>
+            <div class="design-card-body">
+                <div class="design-name">${d.name}</div>
+                <div class="design-desc">${d.desc.substring(0,60)}…</div>
+                <div class="design-footer">
+                    <span class="design-complexity ${cc}">${d.complexity}</span>
+                    <span class="design-price">€${d.price}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                    <span style="font-size:.75rem;color:var(--text-muted);">${d.duration} min</span>
+                    <button class="like-btn" onclick="event.stopPropagation();toggleLike(${d.id})" id="like-${d.id}">${d.liked?'❤️':'🤍'} ${d.likes}</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
 
-        function openDesign(id) {
-            currentDesign = designs.find(d => d.id === id);
-            document.getElementById('modalPreview').style.background = currentDesign.bg;
-            document.getElementById('modalPreview').style.fontSize   = '7rem';
-            document.getElementById('modalPreview').textContent      = currentDesign.emoji;
-            document.getElementById('modalName').textContent         = currentDesign.name;
-            document.getElementById('modalDesc').textContent         = currentDesign.desc;
-            document.getElementById('modalPrice').textContent        = '$' + currentDesign.price;
-            document.getElementById('modalDuration').textContent     = currentDesign.duration + ' minuta';
-            document.getElementById('modalTags').innerHTML           = currentDesign.tags.map(t => `<span class="tag">${t}</span>`).join('');
-            document.getElementById('modalBg').classList.add('open');
-        }
+function toggleLike(id) {
+    const d = designs.find(x => x.id === id);
+    d.liked = !d.liked; d.likes += d.liked ? 1 : -1;
+    const btn = document.getElementById(`like-${id}`);
+    btn.textContent = (d.liked ? '❤️' : '🤍') + ' ' + d.likes;
+}
 
-        function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function openDesign(id) {
+    currentDesign = designs.find(d => d.id === id);
+    const mp = document.getElementById('modalPreview');
+    mp.style.background = currentDesign.bg;
+    mp.textContent = currentDesign.emoji;
+    document.getElementById('modalName').textContent     = currentDesign.name;
+    document.getElementById('modalDesc').textContent     = currentDesign.desc;
+    document.getElementById('modalPrice').textContent    = '€' + currentDesign.price;
+    document.getElementById('modalDuration').textContent = currentDesign.duration + ' minuta';
+    document.getElementById('modalTags').innerHTML = currentDesign.tags.map(t => `<span class="tag">${t}</span>`).join('');
+    document.getElementById('modalBg').classList.add('open');
+}
 
-        function bookDesign() {
-            closeModal();
-            window.location.href = 'appointments.html';
-        }
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function bookDesign() { closeModal(); window.location.href = 'appointments.html'; }
 
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className   = 'toast ' + type;
-            setTimeout(() => t.className = 'toast', 3000);
-        }
+document.getElementById('modalBg').addEventListener('click', e => { if (e.target === document.getElementById('modalBg')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-        renderGallery();
-    </script>
+renderGallery();
+</script>
 </body>
 </html>

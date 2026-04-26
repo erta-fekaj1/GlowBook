@@ -4,345 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow Book - Takimet</title>
-    <link rel="stylesheet" href="../css/responsive.css">
-    <link rel="stylesheet" href="../css/premium-theme.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Stilimet Bazë */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #FDF6F9; color: #2C2C2A; min-height: 100vh; }
-
-        /* Sidebar - Desktop */
-        .sidebar { 
-            position: fixed; left: 0; top: 0; bottom: 0; width: 220px; 
-            background: white; border-right: 1px solid #F4C0D1; 
-            padding: 1.5rem 1rem; display: flex; flex-direction: column; 
-            z-index: 1000; transition: all 0.3s ease;
-        }
-        
-        /* Main Content - Desktop */
-        .main { margin-left: 220px; padding: 2rem; transition: all 0.3s ease; }
-
-        /* Mobile Navigation Bar (Fshehur në Desktop) */
-        .mobile-nav {
-            display: none;
-            background: white;
-            padding: 1rem;
-            border-bottom: 1px solid #F4C0D1;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .hamburger {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #993556;
-            cursor: pointer;
-        }
-
-        /* Sidebar Overlay */
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.3);
-            display: none;
-            z-index: 998;
-        }
-
-        /* Elementet e dizajnit */
-        .logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid #F4C0D1; margin-bottom: 1.5rem; }
-        .logo h2 { font-family: 'Poppins', serif; font-size: 1.5rem; color: #993556; font-weight: 600; }
-        .logo p { font-size: 0.7rem; color: #B4B2A9; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: #888780; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; text-decoration: none; }
-        .nav-item:hover { background: #FBEAF0; color: #993556; }
-        .nav-item.active { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); color: #993556; font-weight: 500; }
-        .nav-bottom { margin-top: auto; }
-
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-        .topbar h1 { font-size: 1.8rem; font-weight: 600; color: #993556; }
-        
-        .btn-primary { padding: 10px 20px; background: linear-gradient(135deg, #D4537E, #993556); color: white; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,83,126,0.35); }
-
-        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap; }
-        .filters input, .filters select { padding: 9px 14px; border: 1.5px solid #F4C0D1; border-radius: 10px; font-size: 0.85rem; background: white; outline: none; flex: 1; min-width: 150px; }
-
-        /* Tabela Responsive Wrapper */
-        .table-container { width: 100%; overflow-x: auto; background: white; border-radius: 16px; border: 1px solid #F4C0D1; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        thead { background: linear-gradient(135deg, #FBEAF0, #EEEDFE); }
-        th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 600; color: #72243E; text-transform: uppercase; }
-        td { padding: 12px 16px; font-size: 0.85rem; border-bottom: 1px solid #FBEAF0; }
-
-        /* Badges & Buttons */
-        .badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-        .badge-pending { background: #FAEEDA; color: #854F0B; }
-        .badge-confirmed { background: #EAF3DE; color: #3B6D11; }
-        .badge-cancelled { background: #FCEBEB; color: #A32D2D; }
-        .badge-done { background: #E1F5EE; color: #0F6E56; }
-        
-        .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; border: none; cursor: pointer; }
-        .btn-edit { background: #EEEDFE; color: #534AB7; margin-right: 4px; }
-        .btn-delete { background: #FCEBEB; color: #A32D2D; }
-
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
-        .modal-overlay.open { display: flex; }
-        .modal { background: white; border-radius: 20px; padding: 1.5rem; width: 100%; max-width: 460px; }
-        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
-        .field label { font-size: 0.75rem; font-weight: 600; color: #72243E; }
-        .field input, .field select { padding: 10px; border: 1.5px solid #F4C0D1; border-radius: 10px; }
-
-        /* --- MEDIA QUERIES PËR TELEFON --- */
-        @media (max-width: 768px) {
-            .mobile-nav { display: flex; }
-            .sidebar { 
-                transform: translateX(-100%); 
-                width: 260px;
-            }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay.open { display: block; }
-            .main { margin-left: 0; padding: 1.5rem 1rem; }
-            .topbar h1 { font-size: 1.5rem; }
-            .filters { flex-direction: column; align-items: stretch; }
-            .filters input, .filters select { width: 100%; }
-            .modal { padding: 1rem; }
-        }
-
-        .toast { position: fixed; top: 1.5rem; right: 1.5rem; padding: 12px 20px; border-radius: 10px; color: white; display: none; z-index: 3000; }
-        .toast.success { background: #1D9E75; display: block; }
-        .toast.error { background: #D85A30; display: block; }
-    </style>
 </head>
 <body>
 
-    <div class="mobile-nav">
-        <button class="hamburger" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-        <span style="font-weight: 600; color: #993556;">💅 Glow Book</span>
-        <div style="width: 24px;"></div> </div>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <div style="width:40px;"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">💅</span>
+            <h2>Glow Book</h2>
+            <p>Nail Salon</p>
+        </div>
+        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
+        <a class="nav-item active" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
+        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
+        <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
+        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
+        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
+        <div class="nav-bottom">
+            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
+        </div>
+    </aside>
 
-    <div style="display:flex;">
-        <div class="sidebar" id="sidebar">
-            <div class="logo">
-                <div style="font-size:1.8rem;">💅</div>
-                <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Takimet</h1>
+                <p>Menaxho të gjitha takimet</p>
             </div>
-            <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a class="nav-item active" href="appointments.html"><i class="fa-regular fa-calendar-check"></i> Takimet</a>
-            <a class="nav-item" href="services.html"><i class="fa-solid fa-spa"></i> Shërbimet</a>
-            <a class="nav-item" href="users.html"><i class="fa-solid fa-users"></i> Përdoruesit</a>
-            <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images"></i> Galeria</a>
-            <div class="nav-bottom">
-                <a class="nav-item" onclick="logout()" style="color: #A32D2D;"><i class="fa-solid fa-right-from-bracket"></i> Dilni</a>
-            </div>
+            <button class="btn-primary" onclick="openModal()">
+                <i class="fa-solid fa-plus"></i> Shto Takim
+            </button>
         </div>
 
-        <div class="main">
-            <div class="topbar">
-                <div>
-                    <h1>Takimet</h1>
-                    <p>Menaxho të gjitha takimet</p>
-                </div>
-                <button class="btn-primary" onclick="openModal()">+ Shto Takim</button>
-            </div>
+        <div class="filters">
+            <input type="text" id="filterUser" placeholder="🔍 Kërko klient..." oninput="renderTable()">
+            <select id="filterStatus" onchange="renderTable()">
+                <option value="">Të gjitha statuset</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Done">Done</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
 
-            <div class="filters">
-                <input type="text" id="filterUser" placeholder="🔍 Kërko klient..." oninput="renderTable()">
-                <select id="filterStatus" onchange="renderTable()">
-                    <option value="">Të gjitha statuset</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Done">Done</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Klienti</th>
+                        <th>Shërbimi</th>
+                        <th>Data &amp; Ora</th>
+                        <th>Statusi</th>
+                        <th>Veprimet</th>
+                    </tr>
+                </thead>
+                <tbody id="apptTable">
+                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Duke ngarkuar...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th><th>Klienti</th><th>Shërbimi</th><th>Data</th><th>Statusi</th><th>Veprimet</th>
-                        </tr>
-                    </thead>
-                    <tbody id="apptTable">
-                        <tr><td colspan="6" style="text-align:center;color:#B4B2A9;padding:2rem;">Duke ngarkuar...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 class="modal-title" id="modalTitle">Shto Takim</h2>
+        <div class="field"><label>Klienti</label><select id="apptUser"></select></div>
+        <div class="field"><label>Shërbimi</label><select id="apptService"></select></div>
+        <div class="field"><label>Data dhe Ora</label><input type="datetime-local" id="apptDate"></div>
+        <div class="field">
+            <label>Statusi</label>
+            <select id="apptStatus">
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Done">Done</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime..."></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Anulo</button>
+            <button class="btn-primary" style="flex:2;" onclick="saveAppt()">Ruaj</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h2 id="modalTitle" style="margin-bottom: 1.5rem; color: #993556;">Shto Takim</h2>
-            <div class="field"><label>Klienti</label><select id="apptUser"></select></div>
-            <div class="field"><label>Shërbimi</label><select id="apptService"></select></div>
-            <div class="field"><label>Data dhe Ora</label><input type="datetime-local" id="apptDate"></div>
-            <div class="field">
-                <label>Statusi</label>
-                <select id="apptStatus">
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Done">Done</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-            </div>
-            <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime..."></div>
-            <div style="display:flex; gap:10px; margin-top:1.5rem;">
-                <button class="btn-primary" style="background: #FBEAF0; color: #993556; flex:1;" onclick="closeModal()">Anulo</button>
-                <button class="btn-primary" style="flex:2;" onclick="saveAppt()">Ruaj</button>
-            </div>
-        </div>
-    </div>
+<div class="gb-toast" id="toast"></div>
 
-    <div class="toast" id="toast"></div>
+<script src="../js/auth.js"></script>
+<script>
+const API = 'https://glowbook-1.onrender.com/api';
 
-    <script src="../js/auth.js"></script>
-    <script>
-        // Funksionet e Navigimit Mobile
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('open');
-        }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('open');
-        }
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+});
 
-        // Logjika e Backendit (pjesa jote ekzistuese)
-        requireAuth();
-        let appts = [], users = [], services = [], editingId = null;
-        const API = "https://API_JUAJ_KETU.com"; // Sigurohu që variabla API është e definuar
+requireAuth();
 
-        async function load() {
-            try {
-                const [a, u, s] = await Promise.all([
-                    authFetch(`${API}/appointments`).then(r => r.json()),
-                    authFetch(`${API}/users`).then(r => r.json()),
-                    authFetch(`${API}/services`).then(r => r.json())
-                ]);
-                appts = a; users = u; services = s;
-                renderTable();
-                populateSelects();
-            } catch(e) { showToast('Gabim në lidhje me serverin!', 'error'); }
-        }
+let appts = [], users = [], services = [], editingId = null;
 
-        function populateSelects() {
-            document.getElementById('apptUser').innerHTML = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
-            document.getElementById('apptService').innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        }
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'gb-toast ' + type;
+    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
+}
 
-        function renderTable() {
-            const filterUser = document.getElementById('filterUser').value.toLowerCase();
-            const filterStatus = document.getElementById('filterStatus').value;
-            const filtered = appts.filter(a => {
-                const user = users.find(u => u.id === a.userId);
-                const matchUser = !filterUser || (user && user.name.toLowerCase().includes(filterUser));
-                const matchStat = !filterStatus || a.status === filterStatus;
-                return matchUser && matchStat;
-            });
+async function load() {
+    try {
+        const [a, u, s] = await Promise.all([
+            authFetch(`${API}/appointments`).then(r => r.json()),
+            authFetch(`${API}/users`).then(r => r.json()),
+            authFetch(`${API}/services`).then(r => r.json())
+        ]);
+        appts = a; users = u; services = s;
+        renderTable(); populateSelects();
+    } catch { showToast('Gabim në lidhje me serverin!', 'error'); }
+}
 
-            const tbody = document.getElementById('apptTable');
-            if (!filtered.length) { 
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Nuk u gjet asnjë takim.</td></tr>'; 
-                return; 
-            }
+function populateSelects() {
+    document.getElementById('apptUser').innerHTML    = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+    document.getElementById('apptService').innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
 
-            tbody.innerHTML = filtered.map(a => {
-                const user = users.find(u => u.id === a.userId);
-                const svc = services.find(s => s.id === a.serviceId);
-                const badgeClass = `badge-${a.status.toLowerCase()}`;
-                const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
-                
-                return `<tr>
-                    <td>#${a.id}</td>
-                    <td><b>${user ? user.name : '–'}</b></td>
-                    <td>${svc ? svc.name : '–'}</td>
-                    <td>${date}</td>
-                    <td><span class="badge ${badgeClass}">${a.status}</span></td>
-                    <td>
-                        <button class="btn-sm btn-edit" onclick="editAppt(${a.id})">Edito</button>
-                        <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})">Fshi</button>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
+function renderTable() {
+    const fu = document.getElementById('filterUser').value.toLowerCase();
+    const fs = document.getElementById('filterStatus').value;
+    const filtered = appts.filter(a => {
+        const user = users.find(u => u.id === a.userId);
+        return (!fu || (user && user.name.toLowerCase().includes(fu))) &&
+               (!fs || a.status === fs);
+    });
+    const tbody = document.getElementById('apptTable');
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Nuk u gjet asnjë takim.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = filtered.map(a => {
+        const user = users.find(u => u.id === a.userId);
+        const svc  = services.find(s => s.id === a.serviceId);
+        const bc   = `badge-${(a.status || 'pending').toLowerCase()}`;
+        const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleString('sq-AL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '–';
+        return `<tr>
+            <td style="color:var(--text-muted);font-size:.8rem;">#${a.id}</td>
+            <td><strong>${user ? user.name : '–'}</strong></td>
+            <td>${svc ? svc.name : '–'}</td>
+            <td>${date}</td>
+            <td><span class="badge ${bc}">${a.status}</span></td>
+            <td style="display:flex;gap:6px;">
+                <button class="btn-sm btn-edit" onclick="editAppt(${a.id})"><i class="fa-solid fa-pen"></i> Edito</button>
+                <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})"><i class="fa-solid fa-trash"></i> Fshi</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
 
-        function openModal(id = null) {
-            editingId = id;
-            document.getElementById('modalTitle').textContent = id ? 'Edito Takim' : 'Shto Takim të Ri';
-            if (!id) { 
-                document.getElementById('apptDate').value = ''; 
-                document.getElementById('apptNotes').value = ''; 
-                document.getElementById('apptStatus').value = 'Pending'; 
-            }
-            document.getElementById('modalOverlay').classList.add('open');
-        }
+function openModal(id = null) {
+    editingId = id;
+    document.getElementById('modalTitle').textContent = id ? 'Edito Takim' : 'Shto Takim të Ri';
+    if (!id) {
+        document.getElementById('apptDate').value = '';
+        document.getElementById('apptNotes').value = '';
+        document.getElementById('apptStatus').value = 'Pending';
+    }
+    document.getElementById('modalOverlay').classList.add('open');
+}
 
-        function editAppt(id) {
-            const a = appts.find(x => x.id === id);
-            if (!a) return;
-            openModal(id);
-            document.getElementById('apptUser').value = a.userId;
-            document.getElementById('apptService').value = a.serviceId;
-            document.getElementById('apptStatus').value = a.status;
-            document.getElementById('apptNotes').value = a.notes || '';
-            if (a.appointmentDate) document.getElementById('apptDate').value = new Date(a.appointmentDate).toISOString().slice(0, 16);
-        }
+function editAppt(id) {
+    const a = appts.find(x => x.id === id);
+    if (!a) return;
+    openModal(id);
+    document.getElementById('apptUser').value    = a.userId;
+    document.getElementById('apptService').value = a.serviceId;
+    document.getElementById('apptStatus').value  = a.status;
+    document.getElementById('apptNotes').value   = a.notes || '';
+    if (a.appointmentDate) {
+        const d = new Date(a.appointmentDate);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        document.getElementById('apptDate').value = d.toISOString().slice(0, 16);
+    }
+}
 
-        function closeModal() { 
-            document.getElementById('modalOverlay').classList.remove('open'); 
-            editingId = null; 
-        }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
-        async function saveAppt() {
-            const body = {
-                userId: parseInt(document.getElementById('apptUser').value),
-                serviceId: parseInt(document.getElementById('apptService').value),
-                appointmentDate: document.getElementById('apptDate').value,
-                status: document.getElementById('apptStatus').value,
-                notes: document.getElementById('apptNotes').value
-            };
-            try {
-                const res = editingId
-                    ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT', body: JSON.stringify(body) })
-                    : await authFetch(`${API}/appointments`, { method: 'POST', body: JSON.stringify(body) });
-                
-                if (res.ok) { 
-                    showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); 
-                    closeModal(); 
-                    load(); 
-                } else { showToast('Gabim!', 'error'); }
-            } catch(e) { showToast('Gabim lidhjeje!', 'error'); }
-        }
+async function saveAppt() {
+    const body = {
+        userId: parseInt(document.getElementById('apptUser').value),
+        serviceId: parseInt(document.getElementById('apptService').value),
+        appointmentDate: document.getElementById('apptDate').value,
+        status: document.getElementById('apptStatus').value,
+        notes: document.getElementById('apptNotes').value
+    };
+    if (!body.appointmentDate) { showToast('Zgjidhni datën!', 'error'); return; }
+    try {
+        const res = editingId
+            ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT',  body: JSON.stringify(body) })
+            : await authFetch(`${API}/appointments`,              { method: 'POST', body: JSON.stringify(body) });
+        if (res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
+        else showToast('Gabim gjatë ruajtjes!', 'error');
+    } catch { showToast('Lidhja dështoi!', 'error'); }
+}
 
-        async function deleteAppt(id) {
-            if (!confirm('A jeni i sigurt?')) return;
-            try {
-                const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
-                if (res.ok) { showToast('U fshi!', 'success'); load(); }
-            } catch(e) { showToast('Gabim!', 'error'); }
-        }
+async function deleteAppt(id) {
+    if (!confirm('A jeni i sigurt?')) return;
+    try {
+        const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
+        if (res.ok) { showToast('U fshi!', 'success'); load(); }
+    } catch { showToast('Gabim!', 'error'); }
+}
 
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            t.textContent = msg; t.className = 'toast ' + type;
-            setTimeout(() => t.className = 'toast', 3000);
-        }
-
-        load();
-    </script>
+load();
+</script>
 </body>
 </html>
