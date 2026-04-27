@@ -17,22 +17,7 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="layout-wrap">
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <span class="logo-icon">💅</span>
-            <h2>Glow Book</h2>
-            <p>Nail Salon</p>
-        </div>
-        <a class="nav-item active" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-        <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
-        <div class="nav-bottom">
-            <a class="nav-item nav-logout" href="index.html"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-        </div>
-    </aside>
+    <aside class="sidebar" id="sidebar"><!-- built by role.js --></aside>
 
     <main class="main">
         <div class="topbar">
@@ -41,15 +26,17 @@
                 <p>Mirë se vini! Ja përmbledhja e ditës.</p>
             </div>
             <div class="user-badge">
-                <div class="user-avatar" id="userInitials">AD</div>
-                <span class="user-name" id="userName">Admin</span>
+                <div class="user-avatar" id="userInitials">–</div>
+                <span class="user-name" id="userName">–</span>
+                <span class="role-tag" id="userRoleTag"></span>
             </div>
         </div>
 
+        <!-- Stats — admins see all, clients see only their own -->
         <div class="stats-grid">
             <div class="stat-card pink">
                 <div class="stat-icon">👥</div>
-                <div class="stat-label">Klientë</div>
+                <div class="stat-label" id="lblUsers">Klientë</div>
                 <div class="stat-value" id="totalUsers">–</div>
                 <div class="stat-sub">totali</div>
             </div>
@@ -73,6 +60,24 @@
             </div>
         </div>
 
+        <!-- Admin-only quick links -->
+        <div data-admin class="card" style="margin-bottom:1rem;background:linear-gradient(135deg,#FBEAF0,#EEEDFE);">
+            <div class="card-title" style="margin-bottom:.75rem;">
+                <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:6px;"></i>Admin Shortcuts</span>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <a href="admin.html" class="btn-primary" style="font-size:.82rem;">
+                    <i class="fa-solid fa-shield-halved"></i> Admin Panel
+                </a>
+                <a href="users.html" class="btn-secondary" style="font-size:.82rem;">
+                    <i class="fa-solid fa-users"></i> Përdoruesit
+                </a>
+                <a href="appointments.html" class="btn-secondary" style="font-size:.82rem;">
+                    <i class="fa-regular fa-calendar-check"></i> Të gjitha Takimet
+                </a>
+            </div>
+        </div>
+
         <div class="grid-2">
             <div class="card">
                 <div class="card-title">Takimet e fundit <a href="appointments.html">Shiko të gjitha →</a></div>
@@ -84,34 +89,22 @@
             </div>
         </div>
 
-        <div class="card">
+        <!-- Admin-only bar chart -->
+        <div class="card" data-admin>
             <div class="card-title">Klientët sipas rolit</div>
             <div class="bar-wrap" id="roleChart"></div>
         </div>
+
     </main>
 </div>
 
 <div class="gb-toast" id="toast"></div>
 
+<script src="../js/role.js"></script>
 <script>
+gbInitPage({ page: 'dashboard' });
+
 const API = 'https://glowbook-1.onrender.com/api';
-
-document.getElementById('hamburgerBtn').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-});
-document.getElementById('sidebarOverlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-});
-
-try {
-    const u = JSON.parse(localStorage.getItem('glowbook_user') || '{}');
-    if (u.name) {
-        document.getElementById('userName').textContent = u.name;
-        document.getElementById('userInitials').textContent = u.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-    }
-} catch {}
 
 function showToast(msg, type) {
     const t = document.getElementById('toast');
@@ -124,16 +117,22 @@ async function loadDashboard() {
         const [uRes, aRes, sRes] = await Promise.all([
             fetch(`${API}/users`), fetch(`${API}/appointments`), fetch(`${API}/services`)
         ]);
-        const users = await uRes.json();
-        const appts = await aRes.json();
+        const users    = await uRes.json();
+        const appts    = await aRes.json();
         const services = await sRes.json();
 
-        document.getElementById('totalUsers').textContent    = users.length;
-        document.getElementById('totalAppts').textContent    = appts.length;
-        document.getElementById('totalServices').textContent = services.length;
-        document.getElementById('pendingAppts').textContent  = appts.filter(a => a.status === 'Pending').length;
+        /* For clients, filter their own appointments */
+        const me      = gbGetUser();
+        const myAppts = gbIsAdmin() ? appts : appts.filter(a => a.userId === me?.id);
 
-        document.getElementById('apptList').innerHTML = appts.slice(0, 4).map(a => {
+        document.getElementById('totalUsers').textContent    = gbIsAdmin() ? users.length : '–';
+        document.getElementById('totalAppts').textContent    = myAppts.length;
+        document.getElementById('totalServices').textContent = services.length;
+        document.getElementById('pendingAppts').textContent  = myAppts.filter(a => a.status === 'Pending').length;
+        if (!gbIsAdmin()) document.getElementById('lblUsers').textContent = 'Shërbime';
+
+        const displayAppts = (gbIsAdmin() ? appts : myAppts).slice(0, 4);
+        document.getElementById('apptList').innerHTML = displayAppts.map(a => {
             const user = users.find(u => u.id === a.userId);
             const svc  = services.find(s => s.id === a.serviceId);
             const ini  = user ? user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : '?';
@@ -155,13 +154,15 @@ async function loadDashboard() {
             </div>`
         ).join('') || '<span style="color:var(--text-muted);font-size:.85rem;">Nuk ka shërbime</span>';
 
-        const admins = users.filter(u => u.role === 'Admin').length;
-        const customers = users.filter(u => u.role === 'Customer').length;
-        const total = users.length || 1;
-        document.getElementById('roleChart').innerHTML = `
-            <div class="bar-row"><span class="bar-label">Admin</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(admins/total*100)}%"></div></div><span class="bar-val">${admins}</span></div>
-            <div class="bar-row"><span class="bar-label">Customer</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#7F77DD,#534AB7)"></div></div><span class="bar-val">${customers}</span></div>`;
-    } catch(e) { console.error(e); showToast('Gabim në lidhje me serverin!', 'error'); }
+        if (gbIsAdmin()) {
+            const admins    = users.filter(u => u.role === 'Admin').length;
+            const customers = users.filter(u => u.role === 'Customer').length;
+            const total     = users.length || 1;
+            document.getElementById('roleChart').innerHTML = `
+                <div class="bar-row"><span class="bar-label">Admin</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(admins/total*100)}%"></div></div><span class="bar-val">${admins}</span></div>
+                <div class="bar-row"><span class="bar-label">Customer</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#7F77DD,#534AB7)"></div></div><span class="bar-val">${customers}</span></div>`;
+        }
+    } catch(e) { console.error(e); showToast('Gabim në lidhje!', 'error'); }
 }
 loadDashboard();
 </script>
