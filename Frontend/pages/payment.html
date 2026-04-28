@@ -4,580 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow Book — Pagesa</title>
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
- 
-:root {
-    --pink-primary:  #D4537E;
-    --pink-deep:     #993556;
-    --pink-light:    #FBEAF0;
-    --pink-border:   #F4C0D1;
-    --purple-light:  #EEEDFE;
-    --purple-mid:    #7F77DD;
-    --green-teal:    #1D9E75;
-    --text-dark:     #2C2C2A;
-    --text-mid:      #72243E;
-    --text-muted:    #B4B2A9;
-    --text-subtle:   #888780;
-    --bg-main:       #FDF6F9;
-    --white:         #ffffff;
-    --radius-card:   16px;
-    --radius-input:  10px;
-    --shadow-card:   0 4px 24px rgba(212,83,126,0.09);
-    --shadow-hover:  0 8px 32px rgba(212,83,126,0.18);
-    --ease:          all 0.22s ease;
-}
- 
-body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg-main);
-    color: var(--text-dark);
-    min-height: 100vh;
-}
- 
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-.sidebar {
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    width: 220px;
-    background: var(--white);
-    border-right: 1px solid var(--pink-border);
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
-}
- 
-.logo { text-align: center; padding-bottom: 1.5rem; border-bottom: 1px solid var(--pink-border); margin-bottom: 1.5rem; }
-.logo h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--pink-deep); font-weight: 600; }
-.logo p  { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
- 
-.nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; border-radius: 10px;
-    font-size: 0.85rem; color: var(--text-subtle);
-    cursor: pointer; transition: var(--ease);
-    margin-bottom: 4px; text-decoration: none;
-}
-.nav-item:hover  { background: var(--pink-light); color: var(--pink-deep); }
-.nav-item.active { background: linear-gradient(135deg, var(--pink-light), var(--purple-light)); color: var(--pink-deep); font-weight: 500; }
-.nav-icon { font-size: 1rem; width: 20px; text-align: center; }
-.nav-bottom { margin-top: auto; }
- 
-/* ============================================================
-   MOBILE NAV
-   ============================================================ */
-.mobile-nav {
-    display: none;
-    position: fixed; top: 0; left: 0; right: 0;
-    background: var(--white);
-    border-bottom: 1px solid var(--pink-border);
-    padding: 12px 1rem; z-index: 200;
-    align-items: center; justify-content: space-between;
-    box-shadow: 0 2px 12px rgba(212,83,126,0.08);
-}
-.mobile-nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--pink-deep); font-weight: 600; }
-.hamburger { display: flex; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; border: none; background: none; }
-.hamburger span { display: block; width: 22px; height: 2px; background: var(--pink-deep); border-radius: 2px; transition: var(--ease); }
- 
-.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(153,53,86,0.25); z-index: 150; }
-.sidebar-overlay.open { display: block; }
- 
-/* ============================================================
-   MAIN CONTENT
-   ============================================================ */
-.layout-wrap { display: flex; min-height: 100vh; }
- 
-.main {
-    margin-left: 220px;
-    padding: 2rem;
-    flex: 1;
-}
- 
-/* ============================================================
-   TOPBAR
-   ============================================================ */
-.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-.topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: var(--pink-deep); }
-.topbar p  { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
- 
-.user-badge { display: flex; align-items: center; gap: 10px; background: var(--white); padding: 8px 16px; border-radius: 50px; border: 1px solid var(--pink-border); }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--pink-primary), var(--pink-deep)); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem; font-weight: 500; }
-.user-name   { font-size: 0.85rem; font-weight: 500; color: var(--text-mid); }
- 
-/* ============================================================
-   PAYMENT LAYOUT
-   ============================================================ */
-.payment-layout {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 1.5rem;
-    align-items: start;
-}
- 
-.payment-form-col { display: flex; flex-direction: column; gap: 1.25rem; }
-.payment-summary-col { position: sticky; top: 1.5rem; }
- 
-/* ============================================================
-   PAYMENT CARD (white box)
-   ============================================================ */
-.payment-card {
-    background: var(--white);
-    border-radius: var(--radius-card);
-    border: 1px solid var(--pink-border);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-card);
-    transition: var(--ease);
-}
-.payment-card:hover { box-shadow: var(--shadow-hover); }
- 
-.section-heading {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem; font-weight: 600;
-    color: var(--pink-deep);
-    margin-bottom: 1.25rem;
-    display: flex; align-items: center; gap: 0.5rem;
-}
-.section-heading i { font-size: 1rem; color: var(--pink-primary); }
- 
-/* ============================================================
-   PAYMENT METHOD SELECTOR
-   ============================================================ */
-.payment-methods { display: flex; flex-direction: column; gap: 0.75rem; }
- 
-.method-option { cursor: pointer; display: block; }
-.method-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
- 
-.method-card-inner {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 1rem 1.1rem;
-    border-radius: var(--radius-card);
-    border: 1.5px solid var(--pink-border);
-    background: var(--white);
-    transition: var(--ease);
-    cursor: pointer; user-select: none;
-}
-.method-option input[type="radio"]:checked + .method-card-inner {
-    border-color: var(--pink-primary);
-    background: var(--pink-light);
-    box-shadow: 0 0 0 3px rgba(212,83,126,0.12);
-}
-.method-card-inner:hover { border-color: var(--pink-primary); background: var(--pink-light); }
- 
-.method-icon-wrap { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-.method-icon-pink  { background: linear-gradient(135deg, #FBEAF0, #F4C0D1); color: var(--pink-primary); }
-.method-icon-blue  { background: linear-gradient(135deg, #E8F4FD, #BEE3F8); color: #1E6FBB; }
-.method-icon-green { background: linear-gradient(135deg, #E6F7F1, #B7EAD9); color: var(--green-teal); }
- 
-.method-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.method-name { font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
-.method-desc { font-size: 0.75rem; color: var(--text-muted); }
- 
-.method-check { color: var(--pink-border); font-size: 1.1rem; transition: var(--ease); }
-.method-option input[type="radio"]:checked + .method-card-inner .method-check { color: var(--pink-primary); }
- 
-/* ============================================================
-   CARD PREVIEW
-   ============================================================ */
-.card-preview { margin-bottom: 1.5rem; }
- 
-.card-preview-inner {
-    background: linear-gradient(135deg, #993556 0%, #D4537E 55%, #7F77DD 100%);
-    border-radius: 16px;
-    padding: 1.4rem 1.5rem;
-    color: white;
-    min-height: 168px;
-    display: flex; flex-direction: column; justify-content: space-between;
-    box-shadow: 0 12px 40px rgba(153,53,86,0.35);
-    position: relative; overflow: hidden;
-}
-.card-preview-inner::before {
-    content: ''; position: absolute;
-    top: -40px; right: -40px;
-    width: 180px; height: 180px;
-    border-radius: 50%; background: rgba(255,255,255,0.08);
-    pointer-events: none;
-}
-.card-preview-inner::after {
-    content: ''; position: absolute;
-    bottom: -60px; left: -40px;
-    width: 200px; height: 200px;
-    border-radius: 50%; background: rgba(255,255,255,0.06);
-    pointer-events: none;
-}
- 
-.card-chip { font-size: 1.5rem; margin-bottom: 0.75rem; opacity: 0.9; }
- 
-.card-number-display {
-    font-size: 1.15rem; letter-spacing: 3px;
-    font-family: 'Courier New', monospace; font-weight: 500;
-    margin-bottom: 1rem; text-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
- 
-.card-bottom-row { display: flex; align-items: flex-end; gap: 1.5rem; }
-.card-label-small { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 2px; }
-.card-name-display   { font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; min-width: 120px; }
-.card-expiry-display { font-size: 0.85rem; font-weight: 500; letter-spacing: 1px; }
-.card-brand-logo     { margin-left: auto; font-size: 2rem; opacity: 0.85; }
- 
-/* ============================================================
-   FORM FIELDS
-   ============================================================ */
-.form-field {
-    display: flex; flex-direction: column; gap: 6px;
-    margin-bottom: 1.1rem;
-}
-.form-field label {
-    font-size: 0.78rem; font-weight: 500;
-    color: var(--text-mid); letter-spacing: 0.5px;
-    text-transform: uppercase;
-    display: flex; align-items: center; gap: 6px;
-}
- 
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
- 
-.input-wrap { position: relative; display: flex; align-items: center; }
- 
-.input-icon {
-    position: absolute; left: 14px;
-    color: var(--pink-border); font-size: 0.85rem;
-    pointer-events: none; transition: var(--ease);
-}
-.input-wrap:focus-within .input-icon { color: var(--pink-primary); }
- 
-.input-wrap input {
-    width: 100%;
-    padding: 12px 14px 12px 40px;
-    border: 1.5px solid var(--pink-border);
-    border-radius: var(--radius-input);
-    font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
-    color: var(--text-dark); background: var(--white);
-    outline: none; transition: var(--ease);
-}
-.input-wrap input::placeholder { color: #D3D1C7; }
-.input-wrap input:focus {
-    border-color: var(--pink-primary);
-    box-shadow: 0 0 0 3px rgba(212,83,126,0.1);
-}
-.input-wrap input.input-error {
-    border-color: #D85A30;
-    box-shadow: 0 0 0 3px rgba(216,90,48,0.1);
-}
-.input-wrap input.input-valid {
-    border-color: var(--green-teal);
-    box-shadow: 0 0 0 3px rgba(29,158,117,0.08);
-}
- 
-.field-error { font-size: 0.75rem; color: #D85A30; min-height: 16px; display: block; }
- 
-/* ============================================================
-   CVV HINT
-   ============================================================ */
-.cvv-hint-btn {
-    background: none; border: none;
-    color: var(--pink-primary); cursor: pointer;
-    padding: 0; font-size: 0.85rem;
-    display: flex; align-items: center; transition: var(--ease);
-}
-.cvv-hint-btn:hover { color: var(--pink-deep); }
- 
-.cvv-tooltip {
-    background: var(--pink-light);
-    border: 1px solid var(--pink-border);
-    border-radius: 10px; padding: 10px 14px;
-    font-size: 0.8rem; color: var(--text-mid);
-    display: flex; align-items: flex-start; gap: 8px;
-    margin-top: -0.5rem; margin-bottom: 0.75rem;
-    line-height: 1.5;
-}
-.cvv-tooltip i { color: var(--pink-primary); margin-top: 2px; flex-shrink: 0; }
-.cvv-tooltip[hidden] { display: none; }
- 
-/* ============================================================
-   SAVE CARD CHECKBOX
-   ============================================================ */
-.save-card-label {
-    display: flex; align-items: center; gap: 10px;
-    cursor: pointer; font-size: 0.85rem;
-    color: var(--text-subtle); user-select: none;
-    margin-top: 0.25rem;
-}
-.save-card-label input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
-.custom-check {
-    width: 20px; height: 20px;
-    border: 1.5px solid var(--pink-border); border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: var(--ease); background: white;
-}
-.custom-check i { font-size: 0.65rem; color: white; opacity: 0; transition: var(--ease); }
-.save-card-label input[type="checkbox"]:checked + .custom-check { background: var(--pink-primary); border-color: var(--pink-primary); }
-.save-card-label input[type="checkbox"]:checked + .custom-check i { opacity: 1; }
- 
-/* ============================================================
-   PAYPAL PANEL
-   ============================================================ */
-.paypal-logo-big {
-    font-size: 2.4rem; color: #1E6FBB; font-weight: 700;
-    margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;
-}
-.paypal-panel p { font-size: 0.88rem; color: var(--text-subtle); line-height: 1.6; margin-bottom: 1.25rem; }
-.paypal-features { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.paypal-features span {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.8rem; color: var(--text-mid);
-    background: var(--pink-light); padding: 6px 12px; border-radius: 20px;
-}
-.paypal-features span i { color: var(--pink-primary); }
- 
-/* ============================================================
-   CASH PANEL
-   ============================================================ */
-.cash-icon-big { font-size: 3rem; margin-bottom: 1rem; }
-.cash-panel p  { font-size: 0.88rem; color: var(--text-subtle); line-height: 1.6; margin-bottom: 1rem; }
-.cash-note {
-    display: flex; align-items: flex-start; gap: 8px;
-    background: #FAEEDA; color: #854F0B;
-    padding: 10px 14px; border-radius: 10px;
-    font-size: 0.82rem; line-height: 1.5;
-}
-.cash-note i { margin-top: 2px; flex-shrink: 0; }
- 
-/* ============================================================
-   ORDER SUMMARY
-   ============================================================ */
-.summary-items { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.1rem; }
- 
-.summary-item { display: flex; align-items: center; gap: 0.75rem; }
-.summary-item-icon {
-    font-size: 1.3rem; width: 40px; height: 40px;
-    background: var(--pink-light); border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.summary-item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.summary-item-name { font-size: 0.88rem; font-weight: 500; color: var(--text-dark); }
-.summary-item-sub  { font-size: 0.73rem; color: var(--text-muted); }
-.summary-item-price{ font-size: 0.9rem; font-weight: 500; color: var(--pink-deep); }
- 
-.summary-divider { border: none; border-top: 1px solid var(--pink-border); margin: 1rem 0; }
- 
-.summary-totals { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem; }
-.summary-row {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 0.84rem; color: var(--text-subtle);
-}
-.discount-row { color: var(--green-teal); }
- 
-.summary-total-final {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 1.25rem;
-}
-.summary-total-final span:first-child { font-size: 0.9rem; font-weight: 500; color: var(--text-dark); }
-.total-amount { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--pink-deep); }
- 
-/* ============================================================
-   PROMO CODE
-   ============================================================ */
-.promo-section { margin-bottom: 1.25rem; }
-.promo-label {
-    font-size: 0.78rem; font-weight: 500;
-    color: var(--text-mid); letter-spacing: 0.5px;
-    text-transform: uppercase; display: block; margin-bottom: 6px;
-}
-.promo-row { display: flex; gap: 8px; }
-.promo-input {
-    flex: 1; padding: 10px 14px;
-    border: 1.5px solid var(--pink-border); border-radius: var(--radius-input);
-    font-size: 0.88rem; font-family: 'DM Sans', sans-serif;
-    color: var(--text-dark); outline: none; transition: var(--ease);
-    background: var(--white); text-transform: uppercase; letter-spacing: 1px;
-}
-.promo-input::placeholder { text-transform: none; letter-spacing: 0; color: #D3D1C7; }
-.promo-input:focus { border-color: var(--pink-primary); box-shadow: 0 0 0 3px rgba(212,83,126,0.1); }
-.promo-btn {
-    padding: 10px 16px;
-    background: var(--pink-light); color: var(--pink-deep);
-    border: 1.5px solid var(--pink-border); border-radius: var(--radius-input);
-    font-size: 0.82rem; font-weight: 500; font-family: 'DM Sans', sans-serif;
-    cursor: pointer; transition: var(--ease); white-space: nowrap;
-}
-.promo-btn:hover { background: var(--pink-primary); color: white; border-color: var(--pink-primary); }
-.promo-message { display: block; font-size: 0.75rem; margin-top: 5px; min-height: 16px; }
-.promo-success { color: var(--green-teal); }
-.promo-error   { color: #D85A30; }
- 
-/* ============================================================
-   PAY BUTTON
-   ============================================================ */
-.pay-btn {
-    width: 100%; padding: 14px;
-    background: linear-gradient(135deg, #D4537E, #993556);
-    color: white; border: none; border-radius: var(--radius-input);
-    font-size: 0.95rem; font-weight: 500; font-family: 'DM Sans', sans-serif;
-    cursor: pointer; transition: var(--ease);
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-bottom: 1rem;
-}
-.pay-btn:hover    { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,83,126,0.38); }
-.pay-btn:active   { transform: translateY(0); }
-.pay-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
-.pay-btn-loader   { display: flex; align-items: center; gap: 8px; }
- 
-/* ============================================================
-   SECURITY BADGES
-   ============================================================ */
-.security-badges {
-    display: flex; align-items: center; justify-content: center;
-    gap: 1rem; flex-wrap: wrap;
-    font-size: 0.75rem; color: var(--text-muted);
-}
-.security-badges span { display: flex; align-items: center; gap: 4px; }
-.security-badges i { font-size: 1.1rem; }
- 
-/* ============================================================
-   SUCCESS MODAL
-   ============================================================ */
-.modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(153,53,86,0.4);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 300; padding: 1rem; backdrop-filter: blur(4px);
-}
-.modal-bg[hidden] { display: none; }
- 
-.modal {
-    background: var(--white); border-radius: 20px; padding: 2rem;
-    max-width: 400px; width: 100%; text-align: center;
-    box-shadow: 0 20px 60px rgba(153,53,86,0.25);
-    animation: modalIn 0.35s ease;
-}
-@keyframes modalIn {
-    from { transform: scale(0.9) translateY(20px); opacity: 0; }
-    to   { transform: scale(1)   translateY(0);    opacity: 1; }
-}
- 
-.success-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-.modal h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.6rem; color: var(--pink-deep); margin-bottom: 0.6rem;
-}
-.modal p { font-size: 0.88rem; color: var(--text-subtle); line-height: 1.6; margin-bottom: 1.25rem; }
- 
-.success-details { background: var(--pink-light); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem; }
-.success-detail-row {
-    display: flex; justify-content: space-between;
-    font-size: 0.85rem; padding: 4px 0; color: var(--text-subtle);
-}
-.success-detail-row span:last-child { font-weight: 500; color: var(--pink-deep); }
- 
-/* ============================================================
-   TOAST
-   ============================================================ */
-.gb-toast {
-    position: fixed; top: 1.5rem; right: 1.5rem;
-    padding: 12px 20px; border-radius: 10px;
-    font-size: 0.85rem; font-weight: 500; color: white;
-    display: none; z-index: 400; font-family: 'DM Sans', sans-serif;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    animation: toastIn 0.3s ease;
-}
-@keyframes toastIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to   { transform: translateX(0);    opacity: 1; }
-}
-.gb-toast.success { background: #1D9E75; display: block; }
-.gb-toast.error   { background: #D85A30; display: block; }
-.gb-toast.info    { background: var(--pink-primary); display: block; }
- 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width: 1024px) {
-    .payment-layout { grid-template-columns: 1fr 300px; }
-}
- 
-@media (max-width: 860px) {
-    .payment-layout { grid-template-columns: 1fr; }
-    .payment-summary-col { position: static; order: -1; }
-}
- 
-@media (max-width: 768px) {
-    .sidebar {
-        position: fixed; left: -240px; top: 0; bottom: 0;
-        width: 220px; transition: left 0.3s ease; z-index: 160;
-    }
-    .sidebar.open { left: 0; box-shadow: 4px 0 24px rgba(153,53,86,0.15); }
-    .main { margin-left: 0; padding: 1rem; padding-top: 5rem; }
-    .mobile-nav { display: flex; }
-    .topbar { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; }
-    .topbar h1 { font-size: 1.4rem; }
-}
- 
-@media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; gap: 0; }
-    .payment-card { padding: 1.1rem; }
-    .card-number-display { font-size: 0.95rem; letter-spacing: 2px; }
-    .card-brand-logo { font-size: 1.5rem; }
-}
- 
-@media (max-width: 480px) {
-    .total-amount { font-size: 1.3rem; }
-    .pay-btn { font-size: 0.88rem; padding: 12px; }
-    .card-preview-inner { padding: 1rem 1.1rem; min-height: 145px; }
-    .promo-row { flex-direction: column; }
-    .promo-btn { width: 100%; }
-    .security-badges { gap: 0.6rem; font-size: 0.7rem; }
-}
-    </style>
 </head>
- 
 <body>
- 
-<!-- ============================================================
-     MOBILE NAV
-     ============================================================ -->
+
 <div class="mobile-nav">
-    <button class="hamburger" id="hamburgerBtn" aria-label="Hap menunë">
-        <span></span><span></span><span></span>
-    </button>
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
     <div style="width:40px;"></div>
 </div>
- 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
- 
-<!-- ============================================================
-     LAYOUT
-     ============================================================ -->
+
 <div class="layout-wrap">
- 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <div style="font-size:1.8rem;">💅</div>
-            <h2>Glow Book</h2>
-            <p>Nail Salon</p>
-        </div>
-        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-        <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-        <a class="nav-item active" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
-        <div class="nav-bottom">
-            <a class="nav-item" href="index.html"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-        </div>
-    </aside>
- 
-    <!-- MAIN -->
+    <aside class="sidebar" id="sidebar"></aside>
+
     <main class="main">
- 
+
         <!-- Topbar -->
         <div class="topbar">
             <div>
@@ -585,23 +28,23 @@ body {
                 <p>Zgjidhni mënyrën tuaj të preferuar të pagesës</p>
             </div>
             <div class="user-badge">
-                <div class="user-avatar" id="userInitials">AD</div>
-                <span class="user-name" id="userName">Admin</span>
+                <div class="user-avatar" id="userInitials">–</div>
+                <span class="user-name" id="userName">–</span>
+                <span class="role-tag" id="userRoleTag"></span>
             </div>
         </div>
- 
-        <!-- Payment Grid -->
+
+        <!-- Payment layout -->
         <div class="payment-layout">
- 
-            <!-- ── LEFT COLUMN ── -->
+
+            <!-- Left: method + form -->
             <section class="payment-form-col">
- 
-                <!-- 1. Method Selector -->
-                <div class="payment-card">
+
+                <!-- Method selector -->
+                <div class="card">
                     <h2 class="section-heading"><i class="fa-solid fa-wallet"></i> Zgjidhni Metodën</h2>
- 
-                    <div class="payment-methods" role="group" aria-label="Metodat e pagesës">
- 
+                    <div class="payment-methods" role="group">
+
                         <label class="method-option" for="method-card">
                             <input type="radio" id="method-card" name="paymentMethod" value="card" checked>
                             <div class="method-card-inner">
@@ -613,7 +56,7 @@ body {
                                 <div class="method-check"><i class="fa-solid fa-circle-check"></i></div>
                             </div>
                         </label>
- 
+
                         <label class="method-option" for="method-paypal">
                             <input type="radio" id="method-paypal" name="paymentMethod" value="paypal">
                             <div class="method-card-inner">
@@ -625,7 +68,7 @@ body {
                                 <div class="method-check"><i class="fa-solid fa-circle-check"></i></div>
                             </div>
                         </label>
- 
+
                         <label class="method-option" for="method-cash">
                             <input type="radio" id="method-cash" name="paymentMethod" value="cash">
                             <div class="method-card-inner">
@@ -637,15 +80,14 @@ body {
                                 <div class="method-check"><i class="fa-solid fa-circle-check"></i></div>
                             </div>
                         </label>
- 
+
                     </div>
                 </div>
- 
-                <!-- 2a. Credit Card Form -->
-                <div class="payment-card" id="cardFormSection">
+
+                <!-- Card form -->
+                <div class="card" id="cardFormSection">
                     <h2 class="section-heading"><i class="fa-solid fa-lock"></i> Detajet e Kartës</h2>
- 
-                    <!-- Live card visual -->
+
                     <div class="card-preview" aria-hidden="true">
                         <div class="card-preview-inner">
                             <div class="card-chip"><i class="fa-solid fa-microchip"></i></div>
@@ -665,101 +107,97 @@ body {
                             </div>
                         </div>
                     </div>
- 
-                    <!-- Form -->
+
                     <form id="paymentForm" novalidate>
- 
                         <div class="form-field">
                             <label for="fullName">Emri i Plotë</label>
                             <div class="input-wrap">
                                 <i class="fa-solid fa-user input-icon"></i>
-                                <input type="text" id="fullName" placeholder="Ana Krasniqi"
-                                    autocomplete="cc-name" maxlength="40" required>
+                                <input type="text" id="fullName" placeholder="Ana Krasniqi" maxlength="40" required>
                             </div>
                             <span class="field-error" id="fullNameError"></span>
                         </div>
- 
+
                         <div class="form-field">
                             <label for="cardNumber">Numri i Kartës</label>
                             <div class="input-wrap">
                                 <i class="fa-solid fa-credit-card input-icon"></i>
-                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456"
-                                    autocomplete="cc-number" inputmode="numeric" maxlength="19" required>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" maxlength="19" required>
                             </div>
                             <span class="field-error" id="cardNumberError"></span>
                         </div>
- 
+
                         <div class="form-row">
                             <div class="form-field">
                                 <label for="expiryDate">Data e Skadimit</label>
                                 <div class="input-wrap">
                                     <i class="fa-regular fa-calendar input-icon"></i>
-                                    <input type="text" id="expiryDate" placeholder="MM/VV"
-                                        autocomplete="cc-exp" inputmode="numeric" maxlength="5" required>
+                                    <input type="text" id="expiryDate" placeholder="MM/VV" inputmode="numeric" maxlength="5" required>
                                 </div>
                                 <span class="field-error" id="expiryDateError"></span>
                             </div>
- 
                             <div class="form-field">
                                 <label for="cvv">
                                     CVV
-                                    <button type="button" class="cvv-hint-btn" id="cvvHintBtn" aria-label="Info CVV">
+                                    <button type="button" class="cvv-hint-btn" id="cvvHintBtn">
                                         <i class="fa-solid fa-circle-question"></i>
                                     </button>
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-shield-halved input-icon"></i>
-                                    <input type="password" id="cvv" placeholder="•••"
-                                        autocomplete="cc-csc" inputmode="numeric" maxlength="4" required>
+                                    <input type="password" id="cvv" placeholder="•••" inputmode="numeric" maxlength="4" required>
                                 </div>
                                 <span class="field-error" id="cvvError"></span>
                             </div>
                         </div>
- 
-                        <div class="cvv-tooltip" id="cvvTooltip" role="tooltip" hidden>
+
+                        <div class="cvv-tooltip" id="cvvTooltip" hidden>
                             <i class="fa-solid fa-circle-info"></i>
-                            CVV janë 3 shifrat e fundit në anën e pasme të kartës. Për AMEX: 4 shifra në anën e përparme.
+                            CVV janë 3 shifrat e fundit në anën e pasme të kartës. Për AMEX: 4 shifra.
                         </div>
- 
+
                         <label class="save-card-label">
                             <input type="checkbox" id="saveCard">
                             <span class="custom-check"><i class="fa-solid fa-check"></i></span>
                             Ruaj kartën për herën tjetër
                         </label>
- 
                     </form>
                 </div>
- 
-                <!-- 2b. PayPal Panel -->
-                <div class="payment-card" id="paypalSection" hidden>
+
+                <!-- PayPal panel -->
+                <div class="card" id="paypalSection" hidden>
                     <h2 class="section-heading"><i class="fa-brands fa-paypal"></i> Pagesa me PayPal</h2>
                     <div class="paypal-logo-big"><i class="fa-brands fa-paypal"></i> PayPal</div>
-                    <p>Do të ridrejtoheni te PayPal për të kompletuar pagesën tuaj në mënyrë të sigurt dhe të shpejtë.</p>
+                    <p style="font-size:.88rem;color:var(--text-subtle);line-height:1.6;margin-bottom:1.25rem;">
+                        Do të ridrejtoheni te PayPal për të kompletuar pagesën në mënyrë të sigurt.
+                    </p>
                     <div class="paypal-features">
-                        <span><i class="fa-solid fa-shield-halved"></i> 100% i Sigurt</span>
-                        <span><i class="fa-solid fa-bolt"></i> Pagesë e Shpejtë</span>
-                        <span><i class="fa-solid fa-rotate-left"></i> Kthim i Lehtë</span>
+                        <span><i class="fa-solid fa-shield-halved"></i> 100% Sigurt</span>
+                        <span><i class="fa-solid fa-bolt"></i> Pagim i shpejtë</span>
+                        <span><i class="fa-solid fa-rotate-left"></i> Kthim i lehtë</span>
                     </div>
                 </div>
- 
-                <!-- 2c. Cash Panel -->
-                <div class="payment-card" id="cashSection" hidden>
+
+                <!-- Cash panel -->
+                <div class="card" id="cashSection" hidden>
                     <h2 class="section-heading"><i class="fa-solid fa-money-bill-wave"></i> Cash në Dorëzim</h2>
                     <div class="cash-icon-big">💵</div>
-                    <p>Paguani me para kesh kur të vini në takim. Ju lutemi të keni shumën e saktë me vete.</p>
+                    <p style="font-size:.88rem;color:var(--text-subtle);line-height:1.6;margin-bottom:1rem;">
+                        Paguani kesh kur të vini në takim. Ju lutemi të keni shumën e saktë.
+                    </p>
                     <div class="cash-note">
                         <i class="fa-solid fa-triangle-exclamation"></i>
-                        Konfirmoni takimin tuaj online dhe paguani drejtpërdrejt në sallon.
+                        Konfirmoni takimin online dhe paguani drejtpërdrejt në sallon.
                     </div>
                 </div>
- 
+
             </section>
- 
-            <!-- ── RIGHT COLUMN: Summary ── -->
+
+            <!-- Right: Order summary -->
             <aside class="payment-summary-col">
-                <div class="payment-card">
+                <div class="card">
                     <h2 class="section-heading"><i class="fa-solid fa-receipt"></i> Përmbledhja</h2>
- 
+
                     <div class="summary-items">
                         <div class="summary-item">
                             <div class="summary-item-icon">💅</div>
@@ -778,26 +216,25 @@ body {
                             <span class="summary-item-price">€15.00</span>
                         </div>
                     </div>
- 
+
                     <div class="summary-divider"></div>
- 
+
                     <div class="summary-totals">
                         <div class="summary-row"><span>Nëntotali</span><span>€40.00</span></div>
                         <div class="summary-row"><span>TVSH (18%)</span><span>€7.20</span></div>
                         <div class="summary-row discount-row">
-                            <span><i class="fa-solid fa-tag"></i> Zbritje</span>
-                            <span>−€5.00</span>
+                            <span><i class="fa-solid fa-tag"></i> Zbritje</span><span>−€5.00</span>
                         </div>
                     </div>
- 
+
                     <div class="summary-divider"></div>
- 
+
                     <div class="summary-total-final">
                         <span>Totali</span>
                         <span class="total-amount">€42.20</span>
                     </div>
- 
-                    <!-- Promo -->
+
+                    <!-- Promo code -->
                     <div class="promo-section">
                         <label for="promoCode" class="promo-label">Kodi Promocional</label>
                         <div class="promo-row">
@@ -806,16 +243,14 @@ body {
                         </div>
                         <span class="promo-message" id="promoMessage"></span>
                     </div>
- 
-                    <!-- Pay button -->
+
                     <button type="button" class="pay-btn" id="payBtn">
                         <span id="payBtnText"><i class="fa-solid fa-lock"></i> Konfirmo Pagesën · €42.20</span>
                         <span class="pay-btn-loader" id="payBtnLoader" hidden>
                             <i class="fa-solid fa-circle-notch fa-spin"></i> Duke procesuar...
                         </span>
                     </button>
- 
-                    <!-- Security -->
+
                     <div class="security-badges">
                         <span><i class="fa-solid fa-shield-halved"></i> SSL 256-bit</span>
                         <span><i class="fa-solid fa-lock"></i> Sigurt</span>
@@ -824,331 +259,173 @@ body {
                     </div>
                 </div>
             </aside>
- 
-        </div><!-- /.payment-layout -->
- 
+
+        </div>
     </main>
-</div><!-- /.layout-wrap -->
- 
-<!-- ============================================================
-     SUCCESS MODAL
-     ============================================================ -->
-<div class="modal-bg" id="successModal" hidden role="dialog" aria-modal="true" aria-labelledby="successTitle">
-    <div class="modal">
+</div>
+
+<!-- Success modal -->
+<div class="modal-bg" id="successModal" hidden role="dialog" aria-modal="true">
+    <div class="success-modal">
         <div class="success-icon">✅</div>
-        <h2 id="successTitle">Pagesa u Krye!</h2>
-        <p>Takimi juaj u konfirmua me sukses. Do të merrni një email konfirmimi së shpejti.</p>
+        <h2>Pagesa u Krye!</h2>
+        <p>Takimi juaj u konfirmua. Do të merrni një email konfirmimi së shpejti.</p>
         <div class="success-details">
-            <div class="success-detail-row">
-                <span>ID e Transaksionit</span>
-                <span id="transactionId">#GB-2024-0001</span>
-            </div>
-            <div class="success-detail-row">
-                <span>Shuma e Paguar</span>
-                <span>€42.20</span>
-            </div>
-            <div class="success-detail-row">
-                <span>Statusi</span>
-                <span style="color:#1D9E75;">✓ Konfirmuar</span>
-            </div>
+            <div class="success-detail-row"><span>ID Transaksionit</span><span id="transactionId">#GB-0001</span></div>
+            <div class="success-detail-row"><span>Shuma</span><span>€42.20</span></div>
+            <div class="success-detail-row"><span>Statusi</span><span style="color:var(--green);">✓ Konfirmuar</span></div>
         </div>
         <button class="pay-btn" onclick="window.location.href='dashboard.html'">
             <i class="fa-solid fa-house"></i> Kthehu te Dashboard
         </button>
     </div>
 </div>
- 
-<!-- Toast -->
+
 <div class="gb-toast" id="toast"></div>
- 
-<!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
+
+<script src="../js/role.js"></script>
 <script>
-'use strict';
- 
-/* ── State ──────────────────────────────────────────────── */
+gbInitPage({ page: 'payment' });
+
+/* ── State ────────────────────────────────────────────────── */
 const state = { method: 'card', submitting: false };
- 
-/* ── Card brand patterns ─────────────────────────────────── */
+
 const BRANDS = [
-    { re: /^4/,              icon: 'fa-brands fa-cc-visa',        name: 'Visa'       },
-    { re: /^5[1-5]|^2[2-7]/, icon: 'fa-brands fa-cc-mastercard',  name: 'Mastercard' },
-    { re: /^3[47]/,          icon: 'fa-brands fa-cc-amex',        name: 'Amex'       },
-    { re: /^6(?:011|5)/,     icon: 'fa-brands fa-cc-discover',    name: 'Discover'   },
+    { re: /^4/,              icon: 'fa-brands fa-cc-visa',       name: 'Visa'       },
+    { re: /^5[1-5]|^2[2-7]/, icon: 'fa-brands fa-cc-mastercard', name: 'Mastercard' },
+    { re: /^3[47]/,          icon: 'fa-brands fa-cc-amex',       name: 'Amex'       },
+    { re: /^6(?:011|5)/,     icon: 'fa-brands fa-cc-discover',   name: 'Discover'   },
 ];
-const getBrand = v => BRANDS.find(b => b.re.test(v.replace(/\s/g,''))) || null;
- 
-/* ── Promo codes ─────────────────────────────────────────── */
-const PROMOS = {
-    GLOW10: { label: 'Zbritje 10%', save: '€4.22' },
-    NAIL20: { label: 'Zbritje 20%', save: '€8.44' },
-    SALON5: { label: 'Zbritje €5',  save: '€5.00' },
-};
- 
-/* ── Formatters ──────────────────────────────────────────── */
-function fmtCard(v)   { return v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim(); }
-function fmtExpiry(v) {
-    const d = v.replace(/\D/g,'').slice(0,4);
-    return d.length >= 3 ? d.slice(0,2)+'/'+d.slice(2) : d;
-}
- 
-/* ── Validators ──────────────────────────────────────────── */
-function luhn(n) {
-    let s=0, even=false;
-    for(let i=n.length-1;i>=0;i--){
-        let d=+n[i]; if(even){ d*=2; if(d>9) d-=9; } s+=d; even=!even;
-    }
-    return s%10===0;
-}
-function vName(v) {
-    if(!v.trim())         return 'Emri i plotë është i detyrueshëm.';
-    if(v.trim().length<3) return 'Emri duhet të ketë të paktën 3 karaktere.';
-    if(!/^[a-zA-ZÀ-öø-ÿ\s\'-]+$/.test(v.trim())) return 'Emri mund të përmbajë vetëm shkronja.';
-    return '';
-}
-function vCard(v) {
-    const d=v.replace(/\s/g,'');
-    if(!d)                   return 'Numri i kartës është i detyrueshëm.';
-    if(!/^\d+$/.test(d))     return 'Vetëm shifra lejohen.';
-    if(d.length<13||d.length>16) return 'Numri duhet të ketë 13–16 shifra.';
-    if(!luhn(d))             return 'Numri i kartës nuk është valid.';
-    return '';
-}
-function vExpiry(v) {
-    if(!v)                    return 'Data e skadimit është e detyrueshme.';
-    const m=v.match(/^(\d{2})\/(\d{2})$/);
-    if(!m)                    return 'Formati duhet të jetë MM/VV.';
-    const mo=+m[1], yr=+(('20')+m[2]);
-    if(mo<1||mo>12)           return 'Muaji nuk është valid (01–12).';
-    if(new Date(yr,mo-1)<new Date(new Date().getFullYear(),new Date().getMonth()))
-                               return 'Karta është skaduar.';
-    return '';
-}
-function vCVV(v,amex) {
-    if(!v)               return 'CVV është i detyrueshëm.';
-    if(!/^\d+$/.test(v)) return 'Vetëm shifra lejohen.';
-    const n=amex?4:3;
-    if(v.length!==n)     return `CVV duhet të ketë ${n} shifra.`;
-    return '';
-}
- 
-/* ── Field UI helpers ────────────────────────────────────── */
+const getBrand = v => BRANDS.find(b => b.re.test(v.replace(/\s/g, ''))) || null;
+
+const PROMOS = { GLOW10: '€4.22', NAIL20: '€8.44', SALON5: '€5.00' };
+
+function fmtCard(v) { return v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim(); }
+function fmtExpiry(v) { const d=v.replace(/\D/g,'').slice(0,4); return d.length>=3?d.slice(0,2)+'/'+d.slice(2):d; }
+
+/* Luhn */
+function luhn(n) { let s=0,e=false; for(let i=n.length-1;i>=0;i--){let d=+n[i];if(e){d*=2;if(d>9)d-=9;}s+=d;e=!e;}return s%10===0; }
+
+function vName(v) { if(!v.trim()) return 'Emri është i detyrueshëm.'; if(v.trim().length<3) return 'Emri duhet të ketë ≥ 3 karaktere.'; return ''; }
+function vCard(v) { const d=v.replace(/\s/g,''); if(!d) return 'Numri i kartës është i detyrueshëm.'; if(!/^\d+$/.test(d)) return 'Vetëm shifra.'; if(d.length<13||d.length>16) return '13–16 shifra.'; if(!luhn(d)) return 'Numri nuk është valid.'; return ''; }
+function vExpiry(v) { if(!v) return 'Data e skadimit mungon.'; const m=v.match(/^(\d{2})\/(\d{2})$/); if(!m) return 'Format: MM/VV'; const mo=+m[1],yr=+(('20')+m[2]); if(mo<1||mo>12) return 'Muaj invalid.'; if(new Date(yr,mo-1)<new Date(new Date().getFullYear(),new Date().getMonth())) return 'Karta skadoi.'; return ''; }
+function vCVV(v, amex) { if(!v) return 'CVV mungon.'; if(!/^\d+$/.test(v)) return 'Vetëm shifra.'; const n=amex?4:3; if(v.length!==n) return `CVV duhet ${n} shifra.`; return ''; }
+
 function setErr(inputId, errId, msg) {
-    const inp = document.getElementById(inputId);
-    const err = document.getElementById(errId);
-    if(!inp||!err) return;
-    err.textContent = msg;
-    inp.classList.toggle('input-error', !!msg);
-    inp.classList.toggle('input-valid', !msg);
-    inp.setAttribute('aria-invalid', msg?'true':'false');
+    document.getElementById(inputId)?.classList.toggle('input-error', !!msg);
+    document.getElementById(inputId)?.classList.toggle('input-valid', !msg);
+    if (document.getElementById(errId)) document.getElementById(errId).textContent = msg;
 }
 function clearErr(inputId, errId) {
-    const inp = document.getElementById(inputId);
-    const err = document.getElementById(errId);
-    if(!inp||!err) return;
-    err.textContent='';
-    inp.classList.remove('input-error','input-valid');
-    inp.removeAttribute('aria-invalid');
+    document.getElementById(inputId)?.classList.remove('input-error','input-valid');
+    if (document.getElementById(errId)) document.getElementById(errId).textContent = '';
 }
- 
-/* ── Toast ───────────────────────────────────────────────── */
-function toast(msg, type='info') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'gb-toast '+type;
-    clearTimeout(el._t);
-    el._t = setTimeout(()=>{ el.className='gb-toast'; }, 3500);
-}
- 
-/* ── Live card preview ───────────────────────────────────── */
+
 function updatePreview() {
-    const name   = (document.getElementById('fullName')?.value||'').trim().toUpperCase()||'EMRI MBIEMRI';
-    const num    = document.getElementById('cardNumber')?.value||'';
-    const expiry = document.getElementById('expiryDate')?.value||'';
+    const name   = (document.getElementById('fullName')?.value || '').trim().toUpperCase() || 'EMRI MBIEMRI';
+    const num    = document.getElementById('cardNumber')?.value || '';
+    const expiry = document.getElementById('expiryDate')?.value || '';
     const brand  = getBrand(num);
- 
-    document.getElementById('previewName').textContent = name;
-    document.getElementById('previewExpiry').textContent = expiry||'MM/VV';
- 
-    const clean  = num.replace(/\s/g,'');
-    const padded = clean.padEnd(16,'•');
-    document.getElementById('previewCardNumber').textContent =
-        padded.replace(/(.{4})/g,'$1 ').trim();
- 
-    document.getElementById('cardBrandLogo').innerHTML =
-        brand ? `<i class="${brand.icon}"></i>` : `<i class="fa-brands fa-cc-visa"></i>`;
+    document.getElementById('previewName').textContent   = name;
+    document.getElementById('previewExpiry').textContent = expiry || 'MM/VV';
+    const clean = num.replace(/\s/g,'').padEnd(16,'•');
+    document.getElementById('previewCardNumber').textContent = clean.replace(/(.{4})/g,'$1 ').trim();
+    document.getElementById('cardBrandLogo').innerHTML = `<i class="${brand ? brand.icon : 'fa-brands fa-cc-visa'}"></i>`;
 }
- 
-/* ── Method switching ────────────────────────────────────── */
+
 function switchMethod(m) {
     state.method = m;
-    document.getElementById('cardFormSection').hidden  = m!=='card';
-    document.getElementById('paypalSection').hidden    = m!=='paypal';
-    document.getElementById('cashSection').hidden      = m!=='cash';
- 
-    const labels = {
-        card:   '<i class="fa-solid fa-lock"></i> Konfirmo Pagesën · €42.20',
-        paypal: '<i class="fa-brands fa-paypal"></i> Vazhdo me PayPal',
-        cash:   '<i class="fa-solid fa-check"></i> Konfirmo Takimin',
-    };
+    document.getElementById('cardFormSection').hidden   = m !== 'card';
+    document.getElementById('paypalSection').hidden     = m !== 'paypal';
+    document.getElementById('cashSection').hidden       = m !== 'cash';
+    const labels = { card: '<i class="fa-solid fa-lock"></i> Konfirmo Pagesën · €42.20', paypal: '<i class="fa-brands fa-paypal"></i> Vazhdo me PayPal', cash: '<i class="fa-solid fa-check"></i> Konfirmo Takimin' };
     document.getElementById('payBtnText').innerHTML = labels[m];
 }
- 
-/* ── Full form validation ────────────────────────────────── */
+
 function validateAll() {
-    if(state.method !== 'card') return true;
-    const brand = getBrand(document.getElementById('cardNumber')?.value||'');
-    const amex  = brand?.name==='Amex';
-    const n1 = vName(document.getElementById('fullName')?.value||'');
-    const n2 = vCard(document.getElementById('cardNumber')?.value||'');
-    const n3 = vExpiry(document.getElementById('expiryDate')?.value||'');
-    const n4 = vCVV(document.getElementById('cvv')?.value||'', amex);
-    setErr('fullName','fullNameError',n1);
-    setErr('cardNumber','cardNumberError',n2);
-    setErr('expiryDate','expiryDateError',n3);
-    setErr('cvv','cvvError',n4);
+    if (state.method !== 'card') return true;
+    const brand = getBrand(document.getElementById('cardNumber')?.value || '');
+    const amex  = brand?.name === 'Amex';
+    const n1 = vName(document.getElementById('fullName')?.value || '');
+    const n2 = vCard(document.getElementById('cardNumber')?.value || '');
+    const n3 = vExpiry(document.getElementById('expiryDate')?.value || '');
+    const n4 = vCVV(document.getElementById('cvv')?.value || '', amex);
+    setErr('fullName','fullNameError',n1); setErr('cardNumber','cardNumberError',n2);
+    setErr('expiryDate','expiryDateError',n3); setErr('cvv','cvvError',n4);
     return !n1&&!n2&&!n3&&!n4;
 }
- 
-/* ── Submit ──────────────────────────────────────────────── */
+
 function handleSubmit() {
-    if(state.submitting) return;
-    if(!validateAll()){
-        toast('Ju lutemi plotësoni të gjitha fushat saktë.','error');
-        document.querySelector('.input-error')?.focus();
-        return;
-    }
+    if (state.submitting) return;
+    if (!validateAll()) { showToast('Plotësoni të gjitha fushat saktë.', 'error'); document.querySelector('.input-error')?.focus(); return; }
     state.submitting = true;
-    const btn    = document.getElementById('payBtn');
-    const btnTxt = document.getElementById('payBtnText');
-    const loader = document.getElementById('payBtnLoader');
-    btn.disabled = true; btnTxt.hidden = true; loader.hidden = false;
- 
-    setTimeout(()=>{
-        state.submitting = false;
-        btn.disabled = false; btnTxt.hidden = false; loader.hidden = true;
-        const txId = '#GB-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);
-        document.getElementById('transactionId').textContent = txId;
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    document.getElementById('payBtnText').hidden = true;
+    document.getElementById('payBtnLoader').hidden = false;
+    setTimeout(() => {
+        state.submitting = false; btn.disabled = false;
+        document.getElementById('payBtnText').hidden = false;
+        document.getElementById('payBtnLoader').hidden = true;
+        document.getElementById('transactionId').textContent = '#GB-' + new Date().getFullYear() + '-' + (Math.floor(Math.random()*9000)+1000);
         document.getElementById('successModal').hidden = false;
-    }, 2200);
+    }, 2000);
 }
- 
-/* ── Promo ───────────────────────────────────────────────── */
+
 function applyPromo() {
-    const code = (document.getElementById('promoCode')?.value||'').trim().toUpperCase();
+    const code = (document.getElementById('promoCode')?.value || '').trim().toUpperCase();
     const msg  = document.getElementById('promoMessage');
-    if(!code){ msg.textContent='Shkruani një kod.'; msg.className='promo-message promo-error'; return; }
-    const promo = PROMOS[code];
-    if(promo){
-        msg.textContent=`✓ ${promo.label} u aplikua! Kurseni ${promo.save}`;
-        msg.className='promo-message promo-success';
-        toast(`Kodi "${code}" u aplikua!`,'success');
+    if (!code) { msg.textContent = 'Shkruani një kod.'; msg.className = 'promo-message promo-error'; return; }
+    const saving = PROMOS[code];
+    if (saving) {
+        msg.textContent = `✓ Kodi "${code}" u aplikua! Kurseni ${saving}`; msg.className = 'promo-message promo-success';
+        showToast(`Kodi u aplikua! Kurseni ${saving}`, 'success');
     } else {
-        msg.textContent='Kodi nuk është valid. Provoni: GLOW10';
-        msg.className='promo-message promo-error';
-        toast('Kodi nuk u gjet.','error');
+        msg.textContent = 'Kodi nuk është valid. Provo: GLOW10'; msg.className = 'promo-message promo-error';
     }
 }
- 
-/* ── User badge ──────────────────────────────────────────── */
-function loadUser() {
-    try {
-        const u = JSON.parse(localStorage.getItem('glowbook_user')||'{}');
-        if(u.name){
-            document.getElementById('userName').textContent = u.name;
-            document.getElementById('userInitials').textContent =
-                u.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-        }
-    } catch(_){}
-}
- 
-/* ── Mobile sidebar ──────────────────────────────────────── */
-function toggleSidebar(){
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar(){
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
- 
-/* ── Init ────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', ()=>{
-    loadUser();
-    updatePreview();
-    switchMethod('card');
- 
-    /* Method radios */
-    document.querySelectorAll('input[name="paymentMethod"]').forEach(r=>{
-        r.addEventListener('change', e=>switchMethod(e.target.value));
-    });
- 
-    /* Name */
-    const nameEl = document.getElementById('fullName');
-    nameEl?.addEventListener('input', updatePreview);
-    nameEl?.addEventListener('blur',  ()=>setErr('fullName','fullNameError',vName(nameEl.value)));
-    nameEl?.addEventListener('focus', ()=>clearErr('fullName','fullNameError'));
- 
-    /* Card number */
-    const cardEl = document.getElementById('cardNumber');
-    cardEl?.addEventListener('input', e=>{
-        e.target.value = fmtCard(e.target.value);
-        updatePreview();
-    });
-    cardEl?.addEventListener('blur',  ()=>setErr('cardNumber','cardNumberError',vCard(cardEl.value)));
-    cardEl?.addEventListener('focus', ()=>clearErr('cardNumber','cardNumberError'));
- 
-    /* Expiry */
-    const expEl = document.getElementById('expiryDate');
-    expEl?.addEventListener('input', e=>{
-        e.target.value = fmtExpiry(e.target.value);
-        updatePreview();
-    });
-    expEl?.addEventListener('blur',  ()=>setErr('expiryDate','expiryDateError',vExpiry(expEl.value)));
-    expEl?.addEventListener('focus', ()=>clearErr('expiryDate','expiryDateError'));
- 
-    /* CVV */
-    const cvvEl = document.getElementById('cvv');
-    cvvEl?.addEventListener('input',  e=>{ e.target.value=e.target.value.replace(/\D/g,''); });
-    cvvEl?.addEventListener('blur', ()=>{
-        const amex = getBrand(cardEl?.value||'')?.name==='Amex';
-        setErr('cvv','cvvError',vCVV(cvvEl.value,amex));
-    });
-    cvvEl?.addEventListener('focus', ()=>clearErr('cvv','cvvError'));
- 
-    /* CVV tooltip */
-    document.getElementById('cvvHintBtn')?.addEventListener('click', ()=>{
-        const t=document.getElementById('cvvTooltip');
-        t.hidden=!t.hidden;
-    });
- 
-    /* Promo */
-    document.getElementById('applyPromoBtn')?.addEventListener('click', applyPromo);
-    document.getElementById('promoCode')?.addEventListener('keydown', e=>{ if(e.key==='Enter') applyPromo(); });
- 
-    /* Pay */
-    document.getElementById('payBtn')?.addEventListener('click', handleSubmit);
- 
-    /* Mobile nav */
-    document.getElementById('hamburgerBtn')?.addEventListener('click', toggleSidebar);
-    document.getElementById('sidebarOverlay')?.addEventListener('click', closeSidebar);
- 
-    /* Modal backdrop */
-    document.getElementById('successModal')?.addEventListener('click', e=>{
-        if(e.target===document.getElementById('successModal'))
-            document.getElementById('successModal').hidden=true;
-    });
- 
-    /* Esc key */
-    document.addEventListener('keydown', e=>{
-        if(e.key==='Escape'){
-            document.getElementById('successModal').hidden=true;
-            document.getElementById('cvvTooltip').hidden=true;
-        }
-    });
+
+/* ── Event bindings ─────────────────────────────────────────── */
+document.querySelectorAll('input[name="paymentMethod"]').forEach(r =>
+    r.addEventListener('change', e => switchMethod(e.target.value))
+);
+
+const nameEl = document.getElementById('fullName');
+nameEl?.addEventListener('input', updatePreview);
+nameEl?.addEventListener('blur', () => setErr('fullName','fullNameError', vName(nameEl.value)));
+nameEl?.addEventListener('focus', () => clearErr('fullName','fullNameError'));
+
+const cardEl = document.getElementById('cardNumber');
+cardEl?.addEventListener('input', e => { e.target.value = fmtCard(e.target.value); updatePreview(); });
+cardEl?.addEventListener('blur', () => setErr('cardNumber','cardNumberError', vCard(cardEl.value)));
+cardEl?.addEventListener('focus', () => clearErr('cardNumber','cardNumberError'));
+
+const expEl = document.getElementById('expiryDate');
+expEl?.addEventListener('input', e => { e.target.value = fmtExpiry(e.target.value); updatePreview(); });
+expEl?.addEventListener('blur', () => setErr('expiryDate','expiryDateError', vExpiry(expEl.value)));
+expEl?.addEventListener('focus', () => clearErr('expiryDate','expiryDateError'));
+
+const cvvEl = document.getElementById('cvv');
+cvvEl?.addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,''); });
+cvvEl?.addEventListener('blur', () => { const amex = getBrand(cardEl?.value||'')?.name==='Amex'; setErr('cvv','cvvError', vCVV(cvvEl.value,amex)); });
+cvvEl?.addEventListener('focus', () => clearErr('cvv','cvvError'));
+
+document.getElementById('cvvHintBtn')?.addEventListener('click', () => {
+    const t = document.getElementById('cvvTooltip'); t.hidden = !t.hidden;
 });
+document.getElementById('applyPromoBtn')?.addEventListener('click', applyPromo);
+document.getElementById('promoCode')?.addEventListener('keydown', e => { if(e.key==='Enter') applyPromo(); });
+document.getElementById('payBtn')?.addEventListener('click', handleSubmit);
+
+document.getElementById('successModal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('successModal')) document.getElementById('successModal').hidden = true;
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { document.getElementById('successModal').hidden = true; document.getElementById('cvvTooltip').hidden = true; }
+});
+
+updatePreview();
+switchMethod('card');
 </script>
- 
 </body>
 </html>

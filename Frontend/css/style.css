@@ -511,3 +511,97 @@ tbody tr:hover td { background: #fdf9fa; }
     .pay-btn { font-size: .88rem; padding: 12px; }
     .login-card { padding: 1.5rem; }
 }
+
+/* ================================================================
+   ROLE-BASED UI  (appended — do not remove)
+   body.role-admin  → admin sees everything
+   body.role-client → client sees only [data-client] elements
+   ================================================================ */
+
+/* Role tag in topbar */
+.role-tag {
+    font-size: .68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
+.role-tag-admin  { background: #FCEBEB; color: #A32D2D; }
+.role-tag-client { background: #E1F5EE; color: #0F6E56; }
+
+/* Hide admin-only elements from clients */
+body.role-client [data-admin]         { display: none !important; }
+
+/* Hide client-only elements from admins (optional) */
+body.role-admin  [data-client-only]   { display: none !important; }
+
+/* Admin panel accent in sidebar */
+.nav-item.admin-link { color: #A32D2D; }
+.nav-item.admin-link:hover { background: #FCEBEB; color: #A32D2D; }
+.nav-item.admin-link.active { background: linear-gradient(135deg,#FCEBEB,#FBEAF0); color: #A32D2D; }
+
+/* ── Admin Dashboard ─────────────────────────────────────────── */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.admin-action-card {
+    background: var(--white);
+    border-radius: var(--r-card);
+    border: 1px solid var(--pink-border);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--ease);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    display: block;
+}
+.admin-action-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.admin-action-card .aci { font-size: 2.2rem; margin-bottom: .75rem; }
+.admin-action-card h3 { font-family: 'Cormorant Garamond',serif; font-size: 1.1rem; color: var(--pink-deep); margin-bottom: 4px; }
+.admin-action-card p  { font-size: .78rem; color: var(--text-muted); line-height: 1.4; }
+
+.admin-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--pink-deep);
+    margin-bottom: 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--pink-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Gallery admin controls */
+.design-admin-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--pink-light);
+}
+
+/* Access denied banner */
+.access-denied {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 2rem;
+}
+.access-denied .ad-icon { font-size: 4rem; }
+.access-denied h2 { font-family: 'Cormorant Garamond',serif; font-size: 2rem; color: var(--pink-deep); }
+.access-denied p  { color: var(--text-subtle); font-size: .9rem; max-width: 360px; line-height: 1.6; }
+
+/* Responsive admin grid */
+@media (max-width: 900px) { .admin-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px) { .admin-grid { grid-template-columns: 1fr; } }

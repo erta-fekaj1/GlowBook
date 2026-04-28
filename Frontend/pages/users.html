@@ -17,22 +17,7 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="layout-wrap">
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <span class="logo-icon">💅</span>
-            <h2>Glow Book</h2>
-            <p>Nail Salon</p>
-        </div>
-        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-        <a class="nav-item active" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
-        <div class="nav-bottom">
-            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-        </div>
-    </aside>
+    <aside class="sidebar" id="sidebar"></aside>
 
     <main class="main">
         <div class="topbar">
@@ -97,28 +82,21 @@
         </div>
         <div class="modal-footer">
             <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Anulo</button>
-            <button class="btn-primary" style="flex:2;" onclick="saveUser()">Ruaj</button>
+            <button class="btn-primary" style="flex:2;" onclick="saveUser()">
+                <i class="fa-solid fa-floppy-disk"></i> Ruaj
+            </button>
         </div>
     </div>
 </div>
 
 <div class="gb-toast" id="toast"></div>
 
-<script src="../js/auth.js"></script>
+<script src="../js/role.js"></script>
 <script>
+/* Admin-only page — clients get redirected */
+gbInitPage({ page: 'users', adminOnly: true });
+
 const API = 'https://glowbook-1.onrender.com/api';
-
-document.getElementById('hamburgerBtn').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-});
-document.getElementById('sidebarOverlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-});
-
-requireAuth();
-
 let users = [], editingId = null;
 
 function showToast(msg, type) {
@@ -169,9 +147,15 @@ function renderTable() {
             <td style="color:var(--text-subtle);font-size:.82rem;">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–'}</td>
             <td>
                 <div style="display:flex;gap:6px;">
-                    <button class="btn-sm btn-view" onclick="viewProfile(${u.id})"><i class="fa-solid fa-eye"></i></button>
-                    <button class="btn-sm btn-edit" onclick="editUser(${u.id})"><i class="fa-solid fa-pen"></i></button>
-                    <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn-sm btn-view" onclick="viewProfile(${u.id})" title="Shiko profilin">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button class="btn-sm btn-edit" onclick="editUser(${u.id})" title="Edito">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="btn-sm btn-delete" onclick="deleteUser(${u.id})" title="Fshi">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
             </td>
         </tr>`;
@@ -214,7 +198,7 @@ async function saveUser() {
         const res = editingId
             ? await authFetch(`${API}/users/${editingId}`, { method: 'PUT',  body: JSON.stringify(data) })
             : await authFetch(`${API}/users`,              { method: 'POST', body: JSON.stringify(data) });
-        if (res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
+        if (res && res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
         else { const e = await res.json(); showToast(e.message || 'Gabim!', 'error'); }
     } catch { showToast('Lidhja dështoi!', 'error'); }
 }
@@ -223,7 +207,7 @@ async function deleteUser(id) {
     if (!confirm('A jeni të sigurt?')) return;
     try {
         const res = await authFetch(`${API}/users/${id}`, { method: 'DELETE' });
-        if (res.ok) { showToast('U fshi!', 'success'); load(); }
+        if (res && res.ok) { showToast('U fshi!', 'success'); load(); }
     } catch { showToast('Gabim!', 'error'); }
 }
 

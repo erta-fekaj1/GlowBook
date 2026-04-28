@@ -6,18 +6,28 @@
     <title>Glow Book - Kyçu</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .demo-hint { margin-top: 1.25rem; background: var(--pink-light); border: 1px solid var(--pink-border); border-radius: 12px; padding: 12px 14px; font-size: .78rem; }
+        .demo-hint-title { font-weight: 600; color: var(--pink-deep); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .demo-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 3px 0; flex-wrap: wrap; }
+        .demo-row span { color: var(--text-mid); font-weight: 500; }
+        .demo-row code { background: white; border: 1px solid var(--pink-border); padding: 2px 8px; border-radius: 6px; color: var(--text-subtle); font-size: .72rem; font-family: monospace; }
+    </style>
 </head>
 <body>
 
 <div class="login-wrap">
     <div class="login-card">
+
         <div class="login-logo">
             <div class="login-logo-icon">💅</div>
             <h1>Glow Book</h1>
             <p>Nail Salon Management</p>
         </div>
 
-        <div id="loadingMsg" class="login-loading">Duke verifikuar...</div>
+        <div id="loadingMsg" class="login-loading">
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Duke verifikuar...
+        </div>
 
         <div id="loginContent">
             <div class="login-tabs">
@@ -28,17 +38,29 @@
             <div id="loginPanel" class="panel active">
                 <div class="login-field">
                     <label>Email</label>
-                    <input type="email" id="loginEmail" placeholder="emri@example.com">
+                    <input type="email" id="loginEmail" placeholder="emri@example.com" autocomplete="email">
                 </div>
                 <div class="login-field">
                     <label>Fjalëkalimi</label>
                     <input type="password" id="loginPassword" placeholder="••••••••"
-                        onkeydown="if(event.key==='Enter') handleLogin()">
+                        onkeydown="if(event.key==='Enter') handleLogin()" autocomplete="current-password">
                 </div>
                 <div class="login-forgot"><a href="#">Keni harruar fjalëkalimin?</a></div>
-                <button class="login-btn" onclick="handleLogin()">
-                    <i class="fa-solid fa-right-to-bracket"></i> Kyçu në llogarinë tuaj
+                <button class="login-btn" id="loginBtn" onclick="handleLogin()">
+                    <i class="fa-solid fa-right-to-bracket"></i> Kyçu
                 </button>
+
+                <div class="demo-hint">
+                    <div class="demo-hint-title"><i class="fa-solid fa-circle-info"></i> Kredencialet Demo</div>
+                    <div class="demo-row">
+                        <span>👑 Admin</span>
+                        <code>admin@glowbook.com · admin123</code>
+                    </div>
+                    <div class="demo-row">
+                        <span>🙋 Klient</span>
+                        <code>Çdo email tjetër · çdo fjalëkalim</code>
+                    </div>
+                </div>
             </div>
 
             <div id="registerPanel" class="panel">
@@ -68,22 +90,26 @@
 
 <div class="gb-toast" id="toast"></div>
 
+<script src="../js/role.js"></script>
 <script>
-const API = 'https://glowbook-1.onrender.com/api';
-
+/* Auto-redirect if valid session exists */
 (async function () {
-    const token = localStorage.getItem('glowbook_token');
+    const token = gbGetToken();
     if (!token) return;
     const lm = document.getElementById('loadingMsg');
     const lc = document.getElementById('loginContent');
     lm.classList.add('show'); lc.style.display = 'none';
     try {
-        const res = await fetch(`${API}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-        if (res.ok) { window.location.replace('./dashboard.html'); return; }
-        localStorage.removeItem('glowbook_token'); localStorage.removeItem('glowbook_user');
+        const res = await fetch(`${GB.API}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) { redirectByRole(); return; }
+        [GB.KEY_TOKEN, GB.KEY_USER, GB.KEY_ROLE].forEach(k => localStorage.removeItem(k));
     } catch {}
     lm.classList.remove('show'); lc.style.display = 'block';
 })();
+
+function redirectByRole() {
+    window.location.replace(gbIsAdmin() ? './admin.html' : './dashboard.html');
+}
 
 function switchTab(tab) {
     document.querySelectorAll('.login-tab').forEach((t, i) =>
@@ -92,32 +118,68 @@ function switchTab(tab) {
     document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
 }
 
-function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'gb-toast ' + type;
-    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
+/* Demo users for offline/testing */
+const DEMO_USERS = [
+    { id: 1, name: 'Admin GlowBook', email: 'admin@glowbook.com', password: 'admin123', role: 'Admin' },
+    { id: 2, name: 'Admin',          email: 'admin@gmail.com',    password: 'admin123', role: 'Admin' },
+];
+
+function tryDemoLogin(email, password) {
+    const demo = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+    if (demo) {
+        const fakeToken = 'demo-admin-' + Date.now();
+        const role = saveSession(fakeToken, demo);
+        showToast(`Demo Admin — Mirë se vini, ${demo.name}!`, 'success');
+        setTimeout(redirectByRole, 600);
+        return true;
+    }
+    /* Any other email/password → client */
+    if (email && password && password.length >= 1) {
+        const user = { id: 0, name: email.split('@')[0], email, role: 'Customer' };
+        const fakeToken = 'demo-client-' + Date.now();
+        saveSession(fakeToken, user);
+        showToast(`Demo Klient — Mirë se vini, ${user.name}!`, 'success');
+        setTimeout(redirectByRole, 600);
+        return true;
+    }
+    return false;
 }
 
 async function handleLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
+    const email    = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     if (!email || !password) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
+
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Duke u kyçur...';
+
+    let done = false;
     try {
-        const res = await fetch(`${API}/auth/login`, {
+        const res = await fetch(`${GB.API}/auth/login`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
         if (res.ok) {
             const data = await res.json();
-            localStorage.setItem('glowbook_token', data.token);
-            localStorage.setItem('glowbook_user', JSON.stringify(data.user));
-            showToast(`Mirë se vini, ${data.user.name}!`, 'success');
-            setTimeout(() => window.location.replace('./dashboard.html'), 500);
+            const role = saveSession(data.token, data.user);
+            showToast(`Mirë se vini, ${data.user.name}! (${role === 'admin' ? 'Admin' : 'Klient'})`, 'success');
+            setTimeout(redirectByRole, 600);
+            done = true;
         } else {
-            const err = await res.json();
+            const err = await res.json().catch(() => ({}));
             showToast(err.message || 'Email ose fjalëkalim i gabuar!', 'error');
         }
-    } catch { showToast('Nuk u lidh me serverin!', 'error'); }
+    } catch {
+        /* Offline → demo fallback */
+        done = tryDemoLogin(email, password);
+        if (!done) showToast('Serveri offline. Përdor kredencialet demo.', 'error');
+    }
+
+    if (!done) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Kyçu';
+    }
 }
 
 async function handleRegister() {
@@ -126,22 +188,27 @@ async function handleRegister() {
     const phone = document.getElementById('regPhone').value.trim();
     const password = document.getElementById('regPassword').value;
     if (!name || !email || !phone || !password) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
+
     try {
-        const res = await fetch(`${API}/auth/register`, {
+        const res = await fetch(`${GB.API}/auth/register`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, phoneNumber: phone })
         });
         if (res.ok) {
             const data = await res.json();
-            localStorage.setItem('glowbook_token', data.token);
-            localStorage.setItem('glowbook_user', JSON.stringify(data.user));
+            saveSession(data.token, data.user);
             showToast('Llogaria u krijua!', 'success');
-            setTimeout(() => window.location.replace('./dashboard.html'), 500);
+            setTimeout(redirectByRole, 600);
         } else {
-            const err = await res.json();
+            const err = await res.json().catch(() => ({}));
             showToast(err.message || 'Gabim!', 'error');
         }
-    } catch { showToast('Nuk u lidh me serverin!', 'error'); }
+    } catch {
+        const user = { id: 0, name, email, phoneNumber: phone, role: 'Customer' };
+        saveSession('demo-client-' + Date.now(), user);
+        showToast('Demo — Llogaria u krijua!', 'success');
+        setTimeout(redirectByRole, 600);
+    }
 }
 </script>
 </body>

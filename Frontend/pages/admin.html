@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Admin Panel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Admin Panel</span>
+    <div style="width:40px;"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar"><!-- built by role.js --></aside>
+
+    <main class="main">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div>
+                <h1><i class="fa-solid fa-shield-halved" style="font-size:1.4rem;margin-right:8px;color:var(--pink);"></i>Admin Panel</h1>
+                <p>Kontrollo dhe menaxho gjithçka</p>
+            </div>
+            <div class="user-badge">
+                <div class="user-avatar" id="userInitials">AD</div>
+                <span class="user-name" id="userName">Admin</span>
+                <span class="role-tag role-tag-admin" id="userRoleTag">Admin</span>
+            </div>
+        </div>
+
+        <!-- Quick-action cards -->
+        <div class="admin-grid">
+            <a class="admin-action-card" href="users.html">
+                <div class="aci">👥</div>
+                <h3>Përdoruesit</h3>
+                <p>Shto, edito ose fshi llogaritë e klientëve dhe adminëve</p>
+            </a>
+            <a class="admin-action-card" href="appointments.html">
+                <div class="aci">📅</div>
+                <h3>Takimet</h3>
+                <p>Shiko, konfirmo ose anulo të gjitha rezervimet</p>
+            </a>
+            <a class="admin-action-card" href="services.html">
+                <div class="aci">💆</div>
+                <h3>Shërbimet</h3>
+                <p>Menaxho listën e shërbimeve dhe çmimet</p>
+            </a>
+            <a class="admin-action-card" href="gallery.html">
+                <div class="aci">🖼️</div>
+                <h3>Galeria</h3>
+                <p>Shto, edito ose fshi dizajnet e nail art</p>
+            </a>
+            <a class="admin-action-card" href="payment.html">
+                <div class="aci">💳</div>
+                <h3>Pagesat</h3>
+                <p>Shiko historikun e pagesave dhe transaksioneve</p>
+            </a>
+            <a class="admin-action-card" href="dashboard.html">
+                <div class="aci">📊</div>
+                <h3>Dashboard</h3>
+                <p>Statistika dhe overview i aktivitetit të salonit</p>
+            </a>
+        </div>
+
+        <!-- Live stats -->
+        <div class="stats-grid" style="margin-bottom:2rem;">
+            <div class="stat-card pink">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">Klientë</div>
+                <div class="stat-value" id="totalUsers">–</div>
+                <div class="stat-sub" id="subUsers">duke ngarkuar</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon">📅</div>
+                <div class="stat-label">Takime Sot</div>
+                <div class="stat-value" id="todayAppts">–</div>
+                <div class="stat-sub">të planifikuara</div>
+            </div>
+            <div class="stat-card teal">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">Përfunduar</div>
+                <div class="stat-value" id="doneAppts">–</div>
+                <div class="stat-sub">total</div>
+            </div>
+            <div class="stat-card amber">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">Në pritje</div>
+                <div class="stat-value" id="pendingAppts">–</div>
+                <div class="stat-sub">kërkojnë veprim</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+
+            <!-- Recent appointments table -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-title">
+                    <span class="admin-section-title" style="margin:0;border:none;padding:0;">
+                        <i class="fa-solid fa-clock-rotate-left" style="color:var(--pink);"></i>
+                        Takimet e fundit
+                    </span>
+                    <a href="appointments.html">Shiko të gjitha →</a>
+                </div>
+                <div class="table-container" style="margin-top:.75rem;box-shadow:none;border:1px solid var(--pink-light);">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Klienti</th>
+                                <th>Shërbimi</th>
+                                <th>Data</th>
+                                <th>Statusi</th>
+                                <th>Veprimi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentAppts">
+                            <tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted);">Duke ngarkuar...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gallery manager -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="admin-section-title" style="margin:0;border:none;padding:0;">
+                        <i class="fa-solid fa-images" style="color:var(--pink);"></i>
+                        Galeria — Kontrolli
+                    </span>
+                    <a href="gallery.html">Shiko gallery →</a>
+                </div>
+                <div id="adminGalleryList" style="margin-top:.75rem;">
+                    <span style="color:var(--text-muted);font-size:.85rem;">Duke ngarkuar...</span>
+                </div>
+                <button class="btn-primary" style="margin-top:1rem;width:100%;" onclick="openAddDesignModal()">
+                    <i class="fa-solid fa-plus"></i> Shto Dizajn të Ri
+                </button>
+            </div>
+
+            <!-- Users quick list -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="admin-section-title" style="margin:0;border:none;padding:0;">
+                        <i class="fa-solid fa-users" style="color:var(--pink);"></i>
+                        Klientët e fundit
+                    </span>
+                    <a href="users.html">Menaxho →</a>
+                </div>
+                <div id="recentUsers" style="margin-top:.75rem;">
+                    <span style="color:var(--text-muted);font-size:.85rem;">Duke ngarkuar...</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+<!-- Add Design Modal -->
+<div class="modal-overlay" id="addDesignModal">
+    <div class="modal">
+        <h2 class="modal-title">Shto Dizajn të Ri</h2>
+        <div class="field"><label>Emri i Dizajnit</label><input type="text" id="dnName" placeholder="p.sh. Rose Gold Tips"></div>
+        <div class="field"><label>Emoji / Ikona</label><input type="text" id="dnEmoji" placeholder="💅" maxlength="4"></div>
+        <div class="field">
+            <label>Kategoria</label>
+            <select id="dnCategory">
+                <option value="French">French</option>
+                <option value="Gel">Gel</option>
+                <option value="Ombre">Ombre</option>
+                <option value="Floral">Floral</option>
+                <option value="Glitter">Glitter</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Vështirësia</label>
+            <select id="dnComplexity">
+                <option value="E lehtë">E lehtë</option>
+                <option value="Mesatare">Mesatare</option>
+                <option value="E vështirë">E vështirë</option>
+            </select>
+        </div>
+        <div class="field"><label>Çmimi (€)</label><input type="number" id="dnPrice" placeholder="20" min="1"></div>
+        <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="dnDuration" placeholder="45" min="5"></div>
+        <div class="field"><label>Përshkrimi</label><input type="text" id="dnDesc" placeholder="Përshkrim i shkurtër..."></div>
+        <div class="modal-footer">
+            <button class="btn-secondary" style="flex:1;" onclick="closeAddDesignModal()">Anulo</button>
+            <button class="btn-primary" style="flex:2;" onclick="saveNewDesign()">
+                <i class="fa-solid fa-floppy-disk"></i> Shto Dizajnin
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm delete modal -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal" style="max-width:380px;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">⚠️</div>
+        <h2 class="modal-title" style="justify-content:center;">Konfirmo Fshirjen</h2>
+        <p style="color:var(--text-subtle);font-size:.88rem;margin-bottom:1.5rem;" id="confirmMsg">
+            A jeni të sigurt që dëshironi të fshini këtë element?
+        </p>
+        <div class="modal-footer" style="justify-content:center;">
+            <button class="btn-secondary" onclick="closeConfirm()">Anulo</button>
+            <button class="btn-primary" style="background:linear-gradient(135deg,#D85A30,#a32d2d);" id="confirmOkBtn">
+                <i class="fa-solid fa-trash"></i> Fshi
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="gb-toast" id="toast"></div>
+
+<script src="../js/role.js"></script>
+<script>
+/* ── Guard: admin only ───────────────────────────────────────── */
+if (!gbInitPage({ page: 'admin', adminOnly: true })) { /* redirected */ }
+
+const API = 'https://glowbook-1.onrender.com/api';
+
+/* ── Shared gallery designs array (synced with gallery.html) ── */
+const GALLERY_DESIGNS_KEY = 'gb_gallery_designs';
+
+function getDesigns() {
+    try {
+        const stored = localStorage.getItem(GALLERY_DESIGNS_KEY);
+        return stored ? JSON.parse(stored) : getDefaultDesigns();
+    } catch { return getDefaultDesigns(); }
+}
+
+function saveDesigns(designs) {
+    localStorage.setItem(GALLERY_DESIGNS_KEY, JSON.stringify(designs));
+}
+
+function getDefaultDesigns() {
+    return [
+        { id:1,  name:'French Classic',  emoji:'🤍', category:'French',  complexity:'E lehtë',    price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante.',      bg:'#F8F4FF' },
+        { id:2,  name:'Pink Ombre',       emoji:'🌸', category:'Ombre',   complexity:'Mesatare',   price:25, duration:45,  desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë.',   bg:'#FFF0F5' },
+        { id:3,  name:'Glitter Bomb',     emoji:'✨', category:'Glitter', complexity:'E lehtë',    price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht.',                       bg:'#FFFBF0' },
+        { id:4,  name:'Floral Dream',     emoji:'🌺', category:'Floral',  complexity:'E vështirë', price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë.',                      bg:'#F0FFF4' },
+        { id:5,  name:'Gel Nude',         emoji:'🍑', category:'Gel',     complexity:'E lehtë',    price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale.',                            bg:'#FFF5F0' },
+        { id:6,  name:'Galaxy Nails',     emoji:'🌌', category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta.',                      bg:'#F0F0FF' },
+    ];
+}
+
+/* ── Load stats from API ─────────────────────────────────────── */
+async function loadStats() {
+    try {
+        const [uRes, aRes] = await Promise.all([
+            fetch(`${API}/users`), fetch(`${API}/appointments`)
+        ]);
+        const users = await uRes.json();
+        const appts = await aRes.json();
+
+        document.getElementById('totalUsers').textContent   = users.length;
+        document.getElementById('subUsers').textContent     = `${users.filter(u=>u.role==='Admin').length} admin, ${users.filter(u=>u.role==='Customer').length} klientë`;
+        document.getElementById('pendingAppts').textContent = appts.filter(a => a.status === 'Pending').length;
+        document.getElementById('doneAppts').textContent    = appts.filter(a => a.status === 'Done').length;
+
+        const today = new Date().toDateString();
+        document.getElementById('todayAppts').textContent   = appts.filter(a => a.appointmentDate && new Date(a.appointmentDate).toDateString() === today).length;
+
+        /* Recent appointments */
+        const services = await fetch(`${API}/services`).then(r => r.json()).catch(() => []);
+        document.getElementById('recentAppts').innerHTML = appts.slice(0, 6).map(a => {
+            const user = users.find(u => u.id === a.userId);
+            const svc  = services.find(s => s.id === a.serviceId);
+            const bc   = `badge-${(a.status||'pending').toLowerCase()}`;
+            const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+            return `<tr>
+                <td><strong>${user ? user.name : '–'}</strong></td>
+                <td>${svc ? svc.name : '–'}</td>
+                <td>${date}</td>
+                <td><span class="badge ${bc}">${a.status}</span></td>
+                <td><a class="btn-sm btn-view" href="appointments.html"><i class="fa-solid fa-eye"></i></a></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted);">Nuk ka takime</td></tr>';
+
+        /* Recent users */
+        document.getElementById('recentUsers').innerHTML = users.slice(0, 5).map(u => {
+            const ini = u.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+            const bc  = u.role === 'Admin' ? 'badge-admin' : 'badge-customer';
+            return `<div class="appt-item">
+                <div class="appt-avatar">${ini}</div>
+                <div class="appt-info">
+                    <div class="appt-name">${u.name}</div>
+                    <div class="appt-service">${u.email}</div>
+                </div>
+                <span class="badge ${bc}">${u.role}</span>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        console.error(e);
+        /* Offline fallback */
+        document.getElementById('totalUsers').textContent   = '–';
+        document.getElementById('pendingAppts').textContent = '–';
+        document.getElementById('doneAppts').textContent    = '–';
+        document.getElementById('todayAppts').textContent   = '–';
+        document.getElementById('recentAppts').innerHTML    = '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted);">Serveri nuk është i disponueshëm</td></tr>';
+        document.getElementById('recentUsers').innerHTML    = '<span style="color:var(--text-muted);font-size:.85rem;">Nuk mund të ngarkohen të dhënat</span>';
+    }
+}
+
+/* ── Gallery admin panel ─────────────────────────────────────── */
+function renderAdminGallery() {
+    const designs = getDesigns();
+    const container = document.getElementById('adminGalleryList');
+    container.innerHTML = designs.map(d => `
+        <div class="appt-item" style="align-items:flex-start;gap:10px;">
+            <div style="font-size:1.6rem;width:36px;height:36px;background:${d.bg};border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${d.emoji}</div>
+            <div style="flex:1;min-width:0;">
+                <div class="appt-name">${d.name}</div>
+                <div class="appt-service">${d.category} · €${d.price}</div>
+            </div>
+            <button class="btn-sm btn-delete" onclick="confirmDeleteDesign(${d.id})">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>`
+    ).join('') || '<span style="color:var(--text-muted);font-size:.85rem;">Nuk ka dizajne</span>';
+}
+
+/* ── Add design ──────────────────────────────────────────────── */
+function openAddDesignModal() { document.getElementById('addDesignModal').classList.add('open'); }
+function closeAddDesignModal() { document.getElementById('addDesignModal').classList.remove('open'); }
+
+function saveNewDesign() {
+    const name       = document.getElementById('dnName').value.trim();
+    const emoji      = document.getElementById('dnEmoji').value.trim() || '💅';
+    const category   = document.getElementById('dnCategory').value;
+    const complexity = document.getElementById('dnComplexity').value;
+    const price      = parseFloat(document.getElementById('dnPrice').value) || 0;
+    const duration   = parseInt(document.getElementById('dnDuration').value) || 30;
+    const desc       = document.getElementById('dnDesc').value.trim();
+
+    if (!name) { showToast('Shkruani emrin e dizajnit!', 'error'); return; }
+
+    const designs = getDesigns();
+    const newId   = Math.max(0, ...designs.map(d => d.id)) + 1;
+    const bgs     = ['#F8F4FF','#FFF0F5','#FFFBF0','#F0FFF4','#FFF5F0','#F0F0FF','#F8F8F8'];
+    const bg      = bgs[newId % bgs.length];
+
+    designs.push({ id: newId, name, emoji, category, complexity, price, duration, desc, bg, likes: 0, liked: false, tags: [category] });
+    saveDesigns(designs);
+    renderAdminGallery();
+    closeAddDesignModal();
+    showToast(`Dizajni "${name}" u shtua!`, 'success');
+
+    /* Clear form */
+    ['dnName','dnEmoji','dnPrice','dnDuration','dnDesc'].forEach(id => document.getElementById(id).value = '');
+}
+
+/* ── Delete design ───────────────────────────────────────────── */
+let pendingDeleteId = null;
+
+function confirmDeleteDesign(id) {
+    pendingDeleteId = id;
+    const designs = getDesigns();
+    const d = designs.find(x => x.id === id);
+    document.getElementById('confirmMsg').textContent =
+        `A jeni të sigurt që dëshironi të fshini dizajnin "${d ? d.name : ''}"?`;
+    document.getElementById('confirmOkBtn').onclick = () => {
+        const updated = getDesigns().filter(x => x.id !== pendingDeleteId);
+        saveDesigns(updated);
+        renderAdminGallery();
+        closeConfirm();
+        showToast('Dizajni u fshi!', 'success');
+    };
+    document.getElementById('confirmModal').classList.add('open');
+}
+
+function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
+
+/* Close modals on backdrop click */
+['addDesignModal','confirmModal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+        if (e.target === document.getElementById(id)) document.getElementById(id).classList.remove('open');
+    });
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        closeAddDesignModal(); closeConfirm();
+    }
+});
+
+/* ── Init ────────────────────────────────────────────────────── */
+loadStats();
+renderAdminGallery();
+</script>
+</body>
+</html>

@@ -17,30 +17,16 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="layout-wrap">
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <span class="logo-icon">💅</span>
-            <h2>Glow Book</h2>
-            <p>Nail Salon</p>
-        </div>
-        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-        <a class="nav-item active" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-        <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
-        <div class="nav-bottom">
-            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-        </div>
-    </aside>
+    <aside class="sidebar" id="sidebar"></aside>
 
     <main class="main">
         <div class="topbar">
             <div>
                 <h1>Shërbimet</h1>
-                <p>Menaxho shërbimet e salonit</p>
+                <p>Shiko shërbimet e disponueshme</p>
             </div>
-            <button class="btn-primary" onclick="openModal()">
+            <!-- Admin only -->
+            <button class="btn-primary" data-admin onclick="openModal()">
                 <i class="fa-solid fa-plus"></i> Shto Shërbim
             </button>
         </div>
@@ -53,54 +39,46 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Emri</th>
                         <th>Çmimi</th>
                         <th>Kohëzgjatja</th>
                         <th>Përshkrimi</th>
-                        <th>Veprimet</th>
+                        <!-- Admin-only column -->
+                        <th data-admin>Veprimet</th>
                     </tr>
                 </thead>
                 <tbody id="svcTable">
-                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Duke ngarkuar...</td></tr>
+                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">Duke ngarkuar...</td></tr>
                 </tbody>
             </table>
         </div>
     </main>
 </div>
 
-<!-- Modal -->
+<!-- Admin: Add/Edit modal -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h2 class="modal-title" id="modalTitle">Shto Shërbim</h2>
         <div class="field"><label>Emri i Shërbimit</label><input type="text" id="svcName" placeholder="p.sh. Manikyr Klasik"></div>
-        <div class="field"><label>Çmimi (€)</label><input type="number" id="svcPrice" placeholder="0.00" min="0" step="0.50"></div>
+        <div class="field"><label>Çmimi (€)</label><input type="number" id="svcPrice" placeholder="0.00" min="0" step="0.5"></div>
         <div class="field"><label>Kohëzgjatja (minuta)</label><input type="number" id="svcDuration" placeholder="30" min="5"></div>
         <div class="field"><label>Përshkrimi</label><input type="text" id="svcDesc" placeholder="Përshkrim i shkurtër..."></div>
         <div class="modal-footer">
             <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Anulo</button>
-            <button class="btn-primary" style="flex:2;" onclick="saveSvc()">Ruaj</button>
+            <button class="btn-primary" style="flex:2;" onclick="saveSvc()">
+                <i class="fa-solid fa-floppy-disk"></i> Ruaj
+            </button>
         </div>
     </div>
 </div>
 
 <div class="gb-toast" id="toast"></div>
 
-<script src="../js/auth.js"></script>
+<script src="../js/role.js"></script>
 <script>
+gbInitPage({ page: 'services' });
+
 const API = 'https://glowbook-1.onrender.com/api';
-
-document.getElementById('hamburgerBtn').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-});
-document.getElementById('sidebarOverlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-});
-
-requireAuth();
-
 let services = [], editingId = null;
 
 function showToast(msg, type) {
@@ -121,32 +99,35 @@ function renderTable() {
     const fn = document.getElementById('filterName').value.toLowerCase();
     const filtered = services.filter(s => !fn || s.name.toLowerCase().includes(fn));
     const tbody = document.getElementById('svcTable');
+    const isAdmin = gbIsAdmin();
+
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Nuk u gjet asnjë shërbim.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="${isAdmin ? 5 : 4}" style="text-align:center;padding:2rem;color:var(--text-muted);">Nuk u gjet asnjë shërbim.</td></tr>`;
         return;
     }
-    tbody.innerHTML = filtered.map(s => `<tr>
-        <td style="color:var(--text-muted);font-size:.8rem;">#${s.id}</td>
-        <td><strong>${s.name}</strong></td>
-        <td style="color:var(--pink);font-weight:500;">€${s.price}</td>
-        <td>${s.duration ? s.duration + ' min' : '–'}</td>
-        <td style="color:var(--text-subtle);font-size:.82rem;">${s.description || '–'}</td>
-        <td style="display:flex;gap:6px;">
-            <button class="btn-sm btn-edit" onclick="editSvc(${s.id})"><i class="fa-solid fa-pen"></i> Edito</button>
-            <button class="btn-sm btn-delete" onclick="deleteSvc(${s.id})"><i class="fa-solid fa-trash"></i> Fshi</button>
-        </td>
-    </tr>`).join('');
+
+    tbody.innerHTML = filtered.map(s => {
+        const adminCell = isAdmin
+            ? `<td style="display:flex;gap:6px;">
+                    <button class="btn-sm btn-edit" onclick="editSvc(${s.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-sm btn-delete" onclick="deleteSvc(${s.id})"><i class="fa-solid fa-trash"></i></button>
+               </td>`
+            : '';
+        return `<tr>
+            <td><strong>${s.name}</strong></td>
+            <td style="color:var(--pink);font-weight:500;">€${s.price}</td>
+            <td>${s.duration ? s.duration + ' min' : '–'}</td>
+            <td style="color:var(--text-subtle);font-size:.82rem;">${s.description || '–'}</td>
+            ${adminCell}
+        </tr>`;
+    }).join('');
 }
 
 function openModal(id = null) {
+    if (!gbIsAdmin()) { showToast('Nuk keni leje!', 'error'); return; }
     editingId = id;
     document.getElementById('modalTitle').textContent = id ? 'Edito Shërbimin' : 'Shto Shërbim të Ri';
-    if (!id) {
-        document.getElementById('svcName').value = '';
-        document.getElementById('svcPrice').value = '';
-        document.getElementById('svcDuration').value = '';
-        document.getElementById('svcDesc').value = '';
-    }
+    if (!id) { ['svcName','svcPrice','svcDuration','svcDesc'].forEach(i => document.getElementById(i).value = ''); }
     document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -163,10 +144,11 @@ function editSvc(id) {
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
 async function saveSvc() {
+    if (!gbIsAdmin()) return;
     const body = {
-        name:        document.getElementById('svcName').value.trim(),
-        price:       parseFloat(document.getElementById('svcPrice').value),
-        duration:    parseInt(document.getElementById('svcDuration').value) || null,
+        name: document.getElementById('svcName').value.trim(),
+        price: parseFloat(document.getElementById('svcPrice').value),
+        duration: parseInt(document.getElementById('svcDuration').value) || null,
         description: document.getElementById('svcDesc').value.trim()
     };
     if (!body.name || isNaN(body.price)) { showToast('Emri dhe çmimi janë të detyrueshëm!', 'error'); return; }
@@ -174,16 +156,17 @@ async function saveSvc() {
         const res = editingId
             ? await authFetch(`${API}/services/${editingId}`, { method: 'PUT',  body: JSON.stringify(body) })
             : await authFetch(`${API}/services`,              { method: 'POST', body: JSON.stringify(body) });
-        if (res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
+        if (res && res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
         else showToast('Gabim gjatë ruajtjes!', 'error');
     } catch { showToast('Lidhja dështoi!', 'error'); }
 }
 
 async function deleteSvc(id) {
+    if (!gbIsAdmin()) return;
     if (!confirm('A jeni i sigurt?')) return;
     try {
         const res = await authFetch(`${API}/services/${id}`, { method: 'DELETE' });
-        if (res.ok) { showToast('U fshi!', 'success'); load(); }
+        if (res && res.ok) { showToast('U fshi!', 'success'); load(); }
     } catch { showToast('Gabim!', 'error'); }
 }
 

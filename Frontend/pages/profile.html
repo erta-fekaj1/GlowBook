@@ -17,22 +17,7 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="layout-wrap">
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <span class="logo-icon">💅</span>
-            <h2>Glow Book</h2>
-            <p>Nail Salon</p>
-        </div>
-        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-        <a class="nav-item" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-        <a class="nav-item active" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
-        <div class="nav-bottom">
-            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-        </div>
-    </aside>
+    <aside class="sidebar" id="sidebar"></aside>
 
     <main class="main">
         <div class="topbar">
@@ -40,11 +25,13 @@
                 <h1 id="pageTitle">Profili</h1>
                 <p>Detajet e plotë të përdoruesit</p>
             </div>
-            <a class="btn-back" href="users.html"><i class="fa-solid fa-arrow-left"></i> Kthehu</a>
+            <a class="btn-back" href="users.html" data-admin>
+                <i class="fa-solid fa-arrow-left"></i> Kthehu te lista
+            </a>
         </div>
 
         <div class="profile-grid">
-            <!-- Left: profile card + stats -->
+            <!-- Left column -->
             <div>
                 <div class="profile-card">
                     <div class="avatar-big" id="avatar">?</div>
@@ -68,9 +55,11 @@
                 </div>
             </div>
 
-            <!-- Right: edit form + recent appointments -->
+            <!-- Right column -->
             <div class="right-col">
-                <div class="card">
+
+                <!-- Edit form — visible to admin OR viewing own profile -->
+                <div class="card" id="editCard">
                     <div class="card-title">Ndrysho të Dhënat</div>
                     <div class="edit-form">
                         <div class="field"><label>Emri</label><input type="text" id="editName"></div>
@@ -84,7 +73,9 @@
 
                 <div class="card">
                     <div class="card-title">Takimet e Fundit</div>
-                    <div id="apptList"><span style="color:var(--text-muted);font-size:.85rem;">Duke ngarkuar...</span></div>
+                    <div id="apptList">
+                        <span style="color:var(--text-muted);font-size:.85rem;">Duke ngarkuar...</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,22 +84,12 @@
 
 <div class="gb-toast" id="toast"></div>
 
-<script src="../js/auth.js"></script>
+<script src="../js/role.js"></script>
 <script>
+gbInitPage({ page: 'users' });
+
 const API = 'https://glowbook-1.onrender.com/api';
-
-document.getElementById('hamburgerBtn').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-});
-document.getElementById('sidebarOverlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-});
-
-requireAuth();
-
-let userId = 1;
+let userId = null;
 
 function showToast(msg, type) {
     const t = document.getElementById('toast');
@@ -118,7 +99,24 @@ function showToast(msg, type) {
 
 async function load() {
     try {
-        userId = parseInt(new URLSearchParams(window.location.search).get('id') || 1);
+        const params = new URLSearchParams(window.location.search);
+        const me = gbGetUser();
+
+        /* Clients can only view their own profile */
+        if (gbIsAdmin()) {
+            userId = parseInt(params.get('id') || me?.id || 1);
+        } else {
+            userId = me?.id;
+            /* If a client tries to view someone else's profile, redirect */
+            if (params.get('id') && parseInt(params.get('id')) !== userId) {
+                window.location.replace('dashboard.html');
+                return;
+            }
+            /* Hide back-to-list button for clients */
+            const backBtn = document.querySelector('[data-admin]');
+            if (backBtn) backBtn.style.display = 'none';
+        }
+
         const [uRes, aRes, sRes] = await Promise.all([
             authFetch(`${API}/users`),
             authFetch(`${API}/appointments`),
@@ -127,8 +125,9 @@ async function load() {
         const users    = await uRes.json();
         const appts    = await aRes.json();
         const services = await sRes.json();
-        const u = users.find(x => x.id === userId) || users[0];
-        if (!u) return;
+
+        const u = users.find(x => x.id === userId);
+        if (!u) { showToast('Përdoruesi nuk u gjet!', 'error'); return; }
 
         const ini = u.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
         document.getElementById('avatar').textContent       = ini;
@@ -153,10 +152,13 @@ async function load() {
         document.getElementById('statPending').textContent = ua.filter(a => a.status === 'Pending').length;
 
         const apptList = document.getElementById('apptList');
-        if (!ua.length) { apptList.innerHTML = '<span style="color:var(--text-muted);font-size:.85rem;">Nuk ka takime</span>'; return; }
+        if (!ua.length) {
+            apptList.innerHTML = '<span style="color:var(--text-muted);font-size:.85rem;">Nuk ka takime</span>';
+            return;
+        }
         apptList.innerHTML = ua.slice(0, 5).map(a => {
-            const svc = services.find(s => s.id === a.serviceId);
-            const bc  = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
+            const svc  = services.find(s => s.id === a.serviceId);
+            const bc   = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
             const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
             return `<div class="appt-item">
                 <div class="appt-dot"></div>
@@ -167,7 +169,7 @@ async function load() {
                 <span class="badge ${bc}">${a.status}</span>
             </div>`;
         }).join('');
-    } catch { showToast('Gabim në lidhje me serverin!', 'error'); }
+    } catch(e) { console.error(e); showToast('Gabim në lidhje me serverin!', 'error'); }
 }
 
 async function saveChanges() {
@@ -179,8 +181,15 @@ async function saveChanges() {
         const res = await authFetch(`${API}/users/${userId}`, {
             method: 'PUT', body: JSON.stringify({ name, email, phoneNumber: phone })
         });
-        if (res.ok) { showToast('Të dhënat u përditësuan!', 'success'); load(); }
-        else { const e = await res.json(); showToast(e.message || 'Gabim!', 'error'); }
+        if (res && res.ok) {
+            showToast('Të dhënat u përditësuan!', 'success');
+            /* Update localStorage if editing own profile */
+            const me = gbGetUser();
+            if (me && me.id === userId) {
+                localStorage.setItem(GB.KEY_USER, JSON.stringify({ ...me, name, email, phoneNumber: phone }));
+            }
+            load();
+        } else { const e = await res.json(); showToast(e.message || 'Gabim!', 'error'); }
     } catch { showToast('Lidhja dështoi!', 'error'); }
 }
 

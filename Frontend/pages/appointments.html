@@ -17,28 +17,13 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="layout-wrap">
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <span class="logo-icon">💅</span>
-            <h2>Glow Book</h2>
-            <p>Nail Salon</p>
-        </div>
-        <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-house nav-icon"></i> Dashboard</a>
-        <a class="nav-item active" href="appointments.html"><i class="fa-regular fa-calendar-check nav-icon"></i> Takimet</a>
-        <a class="nav-item" href="services.html"><i class="fa-solid fa-spa nav-icon"></i> Shërbimet</a>
-        <a class="nav-item" href="users.html"><i class="fa-solid fa-users nav-icon"></i> Përdoruesit</a>
-        <a class="nav-item" href="gallery.html"><i class="fa-regular fa-images nav-icon"></i> Galeria</a>
-        <a class="nav-item" href="payment.html"><i class="fa-solid fa-credit-card nav-icon"></i> Pagesa</a>
-        <div class="nav-bottom">
-            <a class="nav-item nav-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni</a>
-        </div>
-    </aside>
+    <aside class="sidebar" id="sidebar"></aside>
 
     <main class="main">
         <div class="topbar">
             <div>
                 <h1>Takimet</h1>
-                <p>Menaxho të gjitha takimet</p>
+                <p id="apptSubtitle">Takimet tuaja</p>
             </div>
             <button class="btn-primary" onclick="openModal()">
                 <i class="fa-solid fa-plus"></i> Shto Takim
@@ -80,7 +65,7 @@
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h2 class="modal-title" id="modalTitle">Shto Takim</h2>
-        <div class="field"><label>Klienti</label><select id="apptUser"></select></div>
+        <div class="field" id="clientField" data-admin><label>Klienti</label><select id="apptUser"></select></div>
         <div class="field"><label>Shërbimi</label><select id="apptService"></select></div>
         <div class="field"><label>Data dhe Ora</label><input type="datetime-local" id="apptDate"></div>
         <div class="field">
@@ -92,32 +77,31 @@
                 <option value="Cancelled">Cancelled</option>
             </select>
         </div>
-        <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime..."></div>
+        <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime shtesë..."></div>
         <div class="modal-footer">
             <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Anulo</button>
-            <button class="btn-primary" style="flex:2;" onclick="saveAppt()">Ruaj</button>
+            <button class="btn-primary" style="flex:2;" onclick="saveAppt()">
+                <i class="fa-solid fa-floppy-disk"></i> Ruaj
+            </button>
         </div>
     </div>
 </div>
 
 <div class="gb-toast" id="toast"></div>
 
-<script src="../js/auth.js"></script>
+<script src="../js/role.js"></script>
 <script>
+gbInitPage({ page: 'appointments' });
+
 const API = 'https://glowbook-1.onrender.com/api';
-
-document.getElementById('hamburgerBtn').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-});
-document.getElementById('sidebarOverlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-});
-
-requireAuth();
-
 let appts = [], users = [], services = [], editingId = null;
+
+/* Show subtitle based on role */
+document.getElementById('apptSubtitle').textContent =
+    gbIsAdmin() ? 'Menaxho të gjitha takimet' : 'Takimet tuaja të rezervuara';
+
+/* Hide client filter for non-admins (they only see their own) */
+if (!gbIsAdmin()) document.getElementById('filterUser').style.display = 'none';
 
 function showToast(msg, type) {
     const t = document.getElementById('toast');
@@ -133,7 +117,14 @@ async function load() {
             authFetch(`${API}/services`).then(r => r.json())
         ]);
         appts = a; users = u; services = s;
-        renderTable(); populateSelects();
+
+        /* Clients see only their own appointments */
+        if (!gbIsAdmin()) {
+            const me = gbGetUser();
+            appts = appts.filter(ap => ap.userId === me?.id);
+        }
+        renderTable();
+        populateSelects();
     } catch { showToast('Gabim në lidhje me serverin!', 'error'); }
 }
 
@@ -147,8 +138,7 @@ function renderTable() {
     const fs = document.getElementById('filterStatus').value;
     const filtered = appts.filter(a => {
         const user = users.find(u => u.id === a.userId);
-        return (!fu || (user && user.name.toLowerCase().includes(fu))) &&
-               (!fs || a.status === fs);
+        return (!fu || (user && user.name.toLowerCase().includes(fu))) && (!fs || a.status === fs);
     });
     const tbody = document.getElementById('apptTable');
     if (!filtered.length) {
@@ -159,17 +149,23 @@ function renderTable() {
         const user = users.find(u => u.id === a.userId);
         const svc  = services.find(s => s.id === a.serviceId);
         const bc   = `badge-${(a.status || 'pending').toLowerCase()}`;
-        const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleString('sq-AL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '–';
+        const date = a.appointmentDate
+            ? new Date(a.appointmentDate).toLocaleString('sq-AL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+            : '–';
+        /* Edit/delete only for admins */
+        const actions = gbIsAdmin()
+            ? `<div style="display:flex;gap:6px;">
+                    <button class="btn-sm btn-edit" onclick="editAppt(${a.id})"><i class="fa-solid fa-pen"></i> Edito</button>
+                    <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})"><i class="fa-solid fa-trash"></i> Fshi</button>
+               </div>`
+            : `<span class="badge ${bc}" style="font-size:.72rem;">${a.status}</span>`;
         return `<tr>
             <td style="color:var(--text-muted);font-size:.8rem;">#${a.id}</td>
             <td><strong>${user ? user.name : '–'}</strong></td>
             <td>${svc ? svc.name : '–'}</td>
             <td>${date}</td>
             <td><span class="badge ${bc}">${a.status}</span></td>
-            <td style="display:flex;gap:6px;">
-                <button class="btn-sm btn-edit" onclick="editAppt(${a.id})"><i class="fa-solid fa-pen"></i> Edito</button>
-                <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})"><i class="fa-solid fa-trash"></i> Fshi</button>
-            </td>
+            <td>${actions}</td>
         </tr>`;
     }).join('');
 }
@@ -178,9 +174,15 @@ function openModal(id = null) {
     editingId = id;
     document.getElementById('modalTitle').textContent = id ? 'Edito Takim' : 'Shto Takim të Ri';
     if (!id) {
-        document.getElementById('apptDate').value = '';
-        document.getElementById('apptNotes').value = '';
+        document.getElementById('apptDate').value   = '';
+        document.getElementById('apptNotes').value  = '';
         document.getElementById('apptStatus').value = 'Pending';
+        /* Pre-select current user for clients */
+        if (!gbIsAdmin()) {
+            const me = gbGetUser();
+            const opt = document.getElementById('apptUser');
+            if (me && opt) opt.value = me.id;
+        }
     }
     document.getElementById('modalOverlay').classList.add('open');
 }
@@ -203,28 +205,30 @@ function editAppt(id) {
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
 
 async function saveAppt() {
+    const me = gbGetUser();
     const body = {
-        userId: parseInt(document.getElementById('apptUser').value),
-        serviceId: parseInt(document.getElementById('apptService').value),
+        userId    : gbIsAdmin() ? parseInt(document.getElementById('apptUser').value) : me?.id,
+        serviceId : parseInt(document.getElementById('apptService').value),
         appointmentDate: document.getElementById('apptDate').value,
-        status: document.getElementById('apptStatus').value,
-        notes: document.getElementById('apptNotes').value
+        status    : document.getElementById('apptStatus').value,
+        notes     : document.getElementById('apptNotes').value
     };
     if (!body.appointmentDate) { showToast('Zgjidhni datën!', 'error'); return; }
     try {
         const res = editingId
             ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT',  body: JSON.stringify(body) })
             : await authFetch(`${API}/appointments`,              { method: 'POST', body: JSON.stringify(body) });
-        if (res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
+        if (res && res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
         else showToast('Gabim gjatë ruajtjes!', 'error');
     } catch { showToast('Lidhja dështoi!', 'error'); }
 }
 
 async function deleteAppt(id) {
+    if (!gbIsAdmin()) { showToast('Nuk keni leje!', 'error'); return; }
     if (!confirm('A jeni i sigurt?')) return;
     try {
         const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
-        if (res.ok) { showToast('U fshi!', 'success'); load(); }
+        if (res && res.ok) { showToast('U fshi!', 'success'); load(); }
     } catch { showToast('Gabim!', 'error'); }
 }
 
