@@ -7,11 +7,79 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        .demo-hint { margin-top: 1.25rem; background: var(--pink-light); border: 1px solid var(--pink-border); border-radius: 12px; padding: 12px 14px; font-size: .78rem; }
-        .demo-hint-title { font-weight: 600; color: var(--pink-deep); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .demo-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 3px 0; flex-wrap: wrap; }
-        .demo-row span { color: var(--text-mid); font-weight: 500; }
-        .demo-row code { background: white; border: 1px solid var(--pink-border); padding: 2px 8px; border-radius: 6px; color: var(--text-subtle); font-size: .72rem; font-family: monospace; }
+        /* ── Login page extras ────────────────────────────────── */
+
+        /* Inline field error message */
+        .login-field-error {
+            display: block;
+            font-size: .74rem;
+            color: var(--danger, #D85A30);
+            margin-top: 4px;
+            padding-left: 2px;
+        }
+
+        /* Error state on inputs */
+        .login-field input.input-error {
+            border-color: var(--danger, #D85A30);
+            box-shadow: 0 0 0 3px rgba(216,90,48,.12);
+        }
+
+        /* Credential hint box */
+        .cred-box {
+            margin-top: 1.25rem;
+            background: var(--pink-light);
+            border: 1px solid var(--pink-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: .78rem;
+        }
+        .cred-box-title {
+            font-weight: 600;
+            color: var(--pink-deep);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cred-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .cred-row span { color: var(--text-mid); font-weight: 500; }
+        .cred-row code {
+            background: white;
+            border: 1px solid var(--pink-border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: var(--text-subtle);
+            font-size: .72rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .cred-row code:hover { background: var(--pink-light); }
+
+        /* Quick-fill button */
+        .quick-fill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 6px;
+            font-size: .74rem;
+            color: var(--pink-deep);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .quick-fill:hover { color: var(--pink); }
     </style>
 </head>
 <body>
@@ -19,196 +87,186 @@
 <div class="login-wrap">
     <div class="login-card">
 
+        <!-- Logo -->
         <div class="login-logo">
             <div class="login-logo-icon">💅</div>
             <h1>Glow Book</h1>
             <p>Nail Salon Management</p>
         </div>
 
+        <!-- Session check spinner -->
         <div id="loadingMsg" class="login-loading">
-            <i class="fa-solid fa-circle-notch fa-spin"></i> Duke verifikuar...
+            <i class="fa-solid fa-circle-notch fa-spin"></i>&nbsp; Duke verifikuar sesionin...
         </div>
 
+        <!-- Main content -->
         <div id="loginContent">
+
+            <!-- Tab switcher -->
             <div class="login-tabs">
                 <button class="login-tab active" onclick="switchTab('login')">Kyçu</button>
-                <button class="login-tab" onclick="switchTab('register')">Regjistrohu</button>
+                <button class="login-tab"        onclick="switchTab('register')">Regjistrohu</button>
             </div>
 
+            <!-- ── LOGIN PANEL ── -->
             <div id="loginPanel" class="panel active">
+
                 <div class="login-field">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" placeholder="emri@example.com" autocomplete="email">
+                    <label for="loginEmail">Email</label>
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="emri@example.com"
+                        autocomplete="email"
+                        oninput="clearFieldErr(this)"
+                    >
                 </div>
+
                 <div class="login-field">
-                    <label>Fjalëkalimi</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••"
-                        onkeydown="if(event.key==='Enter') handleLogin()" autocomplete="current-password">
+                    <label for="loginPassword">Fjalëkalimi</label>
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                        oninput="clearFieldErr(this)"
+                        onkeydown="if(event.key==='Enter') handleLogin()"
+                    >
                 </div>
-                <div class="login-forgot"><a href="#">Keni harruar fjalëkalimin?</a></div>
+
+                <div class="login-forgot">
+                    <a href="#" tabindex="-1">Keni harruar fjalëkalimin?</a>
+                </div>
+
                 <button class="login-btn" id="loginBtn" onclick="handleLogin()">
                     <i class="fa-solid fa-right-to-bracket"></i> Kyçu
                 </button>
 
-                <div class="demo-hint">
-                    <div class="demo-hint-title"><i class="fa-solid fa-circle-info"></i> Kredencialet Demo</div>
-                    <div class="demo-row">
+                <!-- Credential hint -->
+                <div class="cred-box">
+                    <div class="cred-box-title">
+                        <i class="fa-solid fa-circle-info"></i> Kredencialet Demo
+                    </div>
+                    <div class="cred-row">
                         <span>👑 Admin</span>
-                        <code>admin@glowbook.com · admin123</code>
+                        <code onclick="fillAdmin()" title="Kliko për të plotësuar">admin@glowbook.com · admin123</code>
                     </div>
-                    <div class="demo-row">
+                    <div class="cred-row">
                         <span>🙋 Klient</span>
-                        <code>Çdo email tjetër · çdo fjalëkalim</code>
+                        <code>client@test.com · çdo fjalëkalim</code>
                     </div>
+                    <button class="quick-fill" onclick="fillAdmin()">
+                        <i class="fa-solid fa-bolt"></i> Plotëso si Admin
+                    </button>
                 </div>
+
             </div>
 
+            <!-- ── REGISTER PANEL ── -->
             <div id="registerPanel" class="panel">
+
                 <div class="login-field">
-                    <label>Emri i plotë</label>
-                    <input type="text" id="regName" placeholder="Ana Krasniqi">
+                    <label for="regName">Emri i plotë</label>
+                    <input type="text" id="regName" placeholder="Ana Krasniqi"
+                        autocomplete="name" oninput="clearFieldErr(this)">
                 </div>
+
                 <div class="login-field">
-                    <label>Email</label>
-                    <input type="email" id="regEmail" placeholder="emri@example.com">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" placeholder="emri@example.com"
+                        autocomplete="email" oninput="clearFieldErr(this)">
                 </div>
+
                 <div class="login-field">
-                    <label>Telefoni</label>
-                    <input type="text" id="regPhone" placeholder="044 123 456">
+                    <label for="regPhone">Telefoni</label>
+                    <input type="tel" id="regPhone" placeholder="044 123 456"
+                        autocomplete="tel" oninput="clearFieldErr(this)">
                 </div>
+
                 <div class="login-field">
-                    <label>Fjalëkalimi</label>
-                    <input type="password" id="regPassword" placeholder="Min. 4 karaktere">
+                    <label for="regPassword">Fjalëkalimi</label>
+                    <input type="password" id="regPassword" placeholder="Min. 4 karaktere"
+                        autocomplete="new-password" oninput="clearFieldErr(this)">
                 </div>
+
                 <button class="login-btn" onclick="handleRegister()">
                     <i class="fa-solid fa-user-plus"></i> Krijo llogarinë
                 </button>
+
             </div>
-        </div>
+
+        </div><!-- /#loginContent -->
     </div>
 </div>
 
+<!-- Toast -->
 <div class="gb-toast" id="toast"></div>
 
+<!-- role.js — contains handleLogin, handleRegister, saveSession, etc. -->
 <script src="../js/role.js"></script>
 <script>
-/* Auto-redirect if valid session exists */
-(async function () {
+/* ── Auto-redirect if already logged in ──────────────────── */
+(async function checkSession() {
     const token = gbGetToken();
     if (!token) return;
+
     const lm = document.getElementById('loadingMsg');
     const lc = document.getElementById('loginContent');
-    lm.classList.add('show'); lc.style.display = 'none';
+    lm.classList.add('show');
+    lc.style.display = 'none';
+
+    /* Demo/local tokens (prefix "local-") — redirect immediately */
+    if (token.startsWith('local-')) {
+        redirectByRole();
+        return;
+    }
+
+    /* Try to verify a real bearer token */
     try {
-        const res = await fetch(`${GB.API}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch(`${GB.API}/auth/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (res.ok) { redirectByRole(); return; }
-        [GB.KEY_TOKEN, GB.KEY_USER, GB.KEY_ROLE].forEach(k => localStorage.removeItem(k));
-    } catch {}
-    lm.classList.remove('show'); lc.style.display = 'block';
+    } catch { /* server offline — still redirect if we have a local session */ }
+
+    /* Token invalid or server error — if we have user data, keep session */
+    if (gbGetUser()) {
+        redirectByRole();
+        return;
+    }
+
+    /* No valid session — show login */
+    [GB.KEY_TOKEN, GB.KEY_USER, GB.KEY_ROLE].forEach(k => localStorage.removeItem(k));
+    lm.classList.remove('show');
+    lc.style.display = 'block';
 })();
 
-function redirectByRole() {
-    window.location.replace(gbIsAdmin() ? './admin.html' : './dashboard.html');
-}
-
+/* ── Tab switch ────────────────────────────────────────────── */
 function switchTab(tab) {
+    clearLoginErrors();
     document.querySelectorAll('.login-tab').forEach((t, i) =>
-        t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
+        t.classList.toggle('active',
+            (i === 0 && tab === 'login') || (i === 1 && tab === 'register')
+        )
+    );
     document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
     document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
 }
 
-/* Demo users for offline/testing */
-const DEMO_USERS = [
-    { id: 1, name: 'Admin GlowBook', email: 'admin@glowbook.com', password: 'admin123', role: 'Admin' },
-    { id: 2, name: 'Admin',          email: 'admin@gmail.com',    password: 'admin123', role: 'Admin' },
-];
-
-function tryDemoLogin(email, password) {
-    const demo = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-    if (demo) {
-        const fakeToken = 'demo-admin-' + Date.now();
-        const role = saveSession(fakeToken, demo);
-        showToast(`Demo Admin — Mirë se vini, ${demo.name}!`, 'success');
-        setTimeout(redirectByRole, 600);
-        return true;
-    }
-    /* Any other email/password → client */
-    if (email && password && password.length >= 1) {
-        const user = { id: 0, name: email.split('@')[0], email, role: 'Customer' };
-        const fakeToken = 'demo-client-' + Date.now();
-        saveSession(fakeToken, user);
-        showToast(`Demo Klient — Mirë se vini, ${user.name}!`, 'success');
-        setTimeout(redirectByRole, 600);
-        return true;
-    }
-    return false;
+/* ── Clear individual field error on input ──────────────────── */
+function clearFieldErr(input) {
+    input.classList.remove('input-error');
+    const err = document.getElementById(input.id + '-err');
+    if (err) err.remove();
 }
 
-async function handleLogin() {
-    const email    = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    if (!email || !password) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
-
-    const btn = document.getElementById('loginBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Duke u kyçur...';
-
-    let done = false;
-    try {
-        const res = await fetch(`${GB.API}/auth/login`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        if (res.ok) {
-            const data = await res.json();
-            const role = saveSession(data.token, data.user);
-            showToast(`Mirë se vini, ${data.user.name}! (${role === 'admin' ? 'Admin' : 'Klient'})`, 'success');
-            setTimeout(redirectByRole, 600);
-            done = true;
-        } else {
-            const err = await res.json().catch(() => ({}));
-            showToast(err.message || 'Email ose fjalëkalim i gabuar!', 'error');
-        }
-    } catch {
-        /* Offline → demo fallback */
-        done = tryDemoLogin(email, password);
-        if (!done) showToast('Serveri offline. Përdor kredencialet demo.', 'error');
-    }
-
-    if (!done) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Kyçu';
-    }
-}
-
-async function handleRegister() {
-    const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
-    const password = document.getElementById('regPassword').value;
-    if (!name || !email || !phone || !password) { showToast('Plotësoni të gjitha fushat!', 'error'); return; }
-
-    try {
-        const res = await fetch(`${GB.API}/auth/register`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, password, phoneNumber: phone })
-        });
-        if (res.ok) {
-            const data = await res.json();
-            saveSession(data.token, data.user);
-            showToast('Llogaria u krijua!', 'success');
-            setTimeout(redirectByRole, 600);
-        } else {
-            const err = await res.json().catch(() => ({}));
-            showToast(err.message || 'Gabim!', 'error');
-        }
-    } catch {
-        const user = { id: 0, name, email, phoneNumber: phone, role: 'Customer' };
-        saveSession('demo-client-' + Date.now(), user);
-        showToast('Demo — Llogaria u krijua!', 'success');
-        setTimeout(redirectByRole, 600);
-    }
+/* ── Quick-fill admin credentials ──────────────────────────── */
+function fillAdmin() {
+    const emailEl = document.getElementById('loginEmail');
+    const passEl  = document.getElementById('loginPassword');
+    if (emailEl) { emailEl.value = 'admin@glowbook.com'; clearFieldErr(emailEl); }
+    if (passEl)  { passEl.value  = 'admin123';            clearFieldErr(passEl);  }
+    showToast('Kredencialet u plotësuan — kliko Kyçu!', 'info');
 }
 </script>
 </body>
