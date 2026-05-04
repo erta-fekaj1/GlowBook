@@ -12,7 +12,7 @@
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
-    <div style="width:40px;"></div>
+    <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -23,15 +23,17 @@
         <div class="topbar">
             <div>
                 <h1>Takimet</h1>
-                <p id="apptSubtitle">Takimet tuaja</p>
+                <p id="apptSub">Takimet tuaja të rezervuara</p>
             </div>
             <button class="btn-primary" onclick="openModal()">
                 <i class="fa-solid fa-plus"></i> Shto Takim
             </button>
         </div>
 
+        <!-- Filters: search client name only visible to admin -->
         <div class="filters">
-            <input type="text" id="filterUser" placeholder="🔍 Kërko klient..." oninput="renderTable()">
+            <input type="text" id="filterUser" placeholder="🔍 Kërko klient..."
+                oninput="renderTable()" data-admin>
             <select id="filterStatus" onchange="renderTable()">
                 <option value="">Të gjitha statuset</option>
                 <option value="Pending">Pending</option>
@@ -45,7 +47,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>#</th>
                         <th>Klienti</th>
                         <th>Shërbimi</th>
                         <th>Data &amp; Ora</th>
@@ -54,21 +56,35 @@
                     </tr>
                 </thead>
                 <tbody id="apptTable">
-                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Duke ngarkuar...</td></tr>
+                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem">Duke ngarkuar...</td></tr>
                 </tbody>
             </table>
         </div>
     </main>
 </div>
 
-<!-- Modal -->
+<!-- Modal: Shto / Edito takim -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h2 class="modal-title" id="modalTitle">Shto Takim</h2>
-        <div class="field" id="clientField" data-admin><label>Klienti</label><select id="apptUser"></select></div>
-        <div class="field"><label>Shërbimi</label><select id="apptService"></select></div>
-        <div class="field"><label>Data dhe Ora</label><input type="datetime-local" id="apptDate"></div>
+
+        <!-- Client selector — admin only -->
+        <div class="field" data-admin>
+            <label>Klienti</label>
+            <select id="apptUser"></select>
+        </div>
+
         <div class="field">
+            <label>Shërbimi</label>
+            <select id="apptService"></select>
+        </div>
+
+        <div class="field">
+            <label>Data dhe Ora</label>
+            <input type="datetime-local" id="apptDate">
+        </div>
+
+        <div class="field" data-admin>
             <label>Statusi</label>
             <select id="apptStatus">
                 <option value="Pending">Pending</option>
@@ -77,10 +93,15 @@
                 <option value="Cancelled">Cancelled</option>
             </select>
         </div>
-        <div class="field"><label>Shënime</label><input type="text" id="apptNotes" placeholder="Shënime shtesë..."></div>
+
+        <div class="field">
+            <label>Shënime</label>
+            <input type="text" id="apptNotes" placeholder="Shënime shtesë...">
+        </div>
+
         <div class="modal-footer">
-            <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Anulo</button>
-            <button class="btn-primary" style="flex:2;" onclick="saveAppt()">
+            <button class="btn-secondary" style="flex:1" onclick="closeModal()">Anulo</button>
+            <button class="btn-primary"   style="flex:2" onclick="saveAppt()">
                 <i class="fa-solid fa-floppy-disk"></i> Ruaj
             </button>
         </div>
@@ -88,81 +109,89 @@
 </div>
 
 <div class="gb-toast" id="toast"></div>
-
-<script src="../js/role.js"></script>
+<script src="../js/auth.js"></script>
 <script>
-gbInitPage({ page: 'appointments' });
+'use strict';
+GB.init({ page: 'appointments' });
 
-const API = 'https://glowbook-1.onrender.com/api';
-let appts = [], users = [], services = [], editingId = null;
+const isAdmin  = GB.isAdmin();
+const me       = GB.getMe();
+let   editingId = null;
 
-/* Show subtitle based on role */
-document.getElementById('apptSubtitle').textContent =
-    gbIsAdmin() ? 'Menaxho të gjitha takimet' : 'Takimet tuaja të rezervuara';
+/* Subtitle */
+document.getElementById('apptSub').textContent = isAdmin
+    ? 'Menaxho të gjitha takimet'
+    : 'Takimet tuaja të rezervuara';
 
-/* Hide client filter for non-admins (they only see their own) */
-if (!gbIsAdmin()) document.getElementById('filterUser').style.display = 'none';
-
-function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'gb-toast ' + type;
-    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
-}
-
-async function load() {
-    try {
-        const [a, u, s] = await Promise.all([
-            authFetch(`${API}/appointments`).then(r => r.json()),
-            authFetch(`${API}/users`).then(r => r.json()),
-            authFetch(`${API}/services`).then(r => r.json())
-        ]);
-        appts = a; users = u; services = s;
-
-        /* Clients see only their own appointments */
-        if (!gbIsAdmin()) {
-            const me = gbGetUser();
-            appts = appts.filter(ap => ap.userId === me?.id);
-        }
-        renderTable();
-        populateSelects();
-    } catch { showToast('Gabim në lidhje me serverin!', 'error'); }
-}
-
+/* Populate selects */
 function populateSelects() {
-    document.getElementById('apptUser').innerHTML    = users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
-    document.getElementById('apptService').innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    /* Users — admin only */
+    const uSel = document.getElementById('apptUser');
+    if (isAdmin) {
+        const users = GB.users.getAll();
+        uSel.innerHTML = users.map(u =>
+            `<option value="${u.id}" data-email="${u.email}" data-name="${u.name}">
+                ${u.name} (${u.email})
+            </option>`
+        ).join('');
+    }
+
+    /* Services */
+    const sSel = document.getElementById('apptService');
+    sSel.innerHTML = GB.services.getAll().map(s =>
+        `<option value="${s.id}" data-name="${s.name}">
+            ${s.name} — €${s.price}
+        </option>`
+    ).join('');
 }
 
+/* Render table */
 function renderTable() {
-    const fu = document.getElementById('filterUser').value.toLowerCase();
+    const fu = (document.getElementById('filterUser')?.value || '').toLowerCase();
     const fs = document.getElementById('filterStatus').value;
-    const filtered = appts.filter(a => {
-        const user = users.find(u => u.id === a.userId);
-        return (!fu || (user && user.name.toLowerCase().includes(fu))) && (!fs || a.status === fs);
-    });
+
+    /* Admin sees all; client sees only own */
+    let appts = isAdmin
+        ? GB.appointments.getAll()
+        : GB.appointments.getByUser(me.email);
+
+    if (fu) appts = appts.filter(a =>
+        (a.userName || '').toLowerCase().includes(fu) ||
+        (a.userEmail || '').toLowerCase().includes(fu)
+    );
+    if (fs) appts = appts.filter(a => a.status === fs);
+
+    /* Newest first */
+    appts = [...appts].reverse();
+
     const tbody = document.getElementById('apptTable');
-    if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Nuk u gjet asnjë takim.</td></tr>';
+    if (!appts.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">
+            ${isAdmin ? 'Nuk ka takime.' : 'Nuk keni asnjë takim akoma. <a href="#" onclick="openModal()" style="color:var(--pink)">Shto takim →</a>'}
+        </td></tr>`;
         return;
     }
-    tbody.innerHTML = filtered.map(a => {
-        const user = users.find(u => u.id === a.userId);
-        const svc  = services.find(s => s.id === a.serviceId);
-        const bc   = `badge-${(a.status || 'pending').toLowerCase()}`;
-        const date = a.appointmentDate
-            ? new Date(a.appointmentDate).toLocaleString('sq-AL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+
+    tbody.innerHTML = appts.map(a => {
+        const bc   = `badge-${a.status.toLowerCase()}`;
+        const date = a.date
+            ? new Date(a.date).toLocaleString('sq-AL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
             : '–';
-        /* Edit/delete only for admins */
-        const actions = gbIsAdmin()
-            ? `<div style="display:flex;gap:6px;">
-                    <button class="btn-sm btn-edit" onclick="editAppt(${a.id})"><i class="fa-solid fa-pen"></i> Edito</button>
-                    <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})"><i class="fa-solid fa-trash"></i> Fshi</button>
+
+        const actions = isAdmin
+            ? `<div style="display:flex;gap:6px">
+                   <button class="btn-sm btn-edit"   onclick="editAppt(${a.id})"><i class="fa-solid fa-pen"></i>  Edito</button>
+                   <button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})"><i class="fa-solid fa-trash"></i> Fshi</button>
                </div>`
-            : `<span class="badge ${bc}" style="font-size:.72rem;">${a.status}</span>`;
+            : (a.status === 'Pending'
+                ? `<button class="btn-sm btn-delete" onclick="deleteAppt(${a.id})"><i class="fa-solid fa-xmark"></i> Anulo</button>`
+                : `<span style="color:var(--text-muted);font-size:.78rem">–</span>`);
+
         return `<tr>
-            <td style="color:var(--text-muted);font-size:.8rem;">#${a.id}</td>
-            <td><strong>${user ? user.name : '–'}</strong></td>
-            <td>${svc ? svc.name : '–'}</td>
+            <td style="color:var(--text-muted);font-size:.78rem">#${a.id}</td>
+            <td><strong>${a.userName || a.userEmail}</strong><br>
+                <span style="font-size:.74rem;color:var(--text-muted)">${a.userEmail}</span></td>
+            <td>${a.serviceName || '–'}</td>
             <td>${date}</td>
             <td><span class="badge ${bc}">${a.status}</span></td>
             <td>${actions}</td>
@@ -170,69 +199,115 @@ function renderTable() {
     }).join('');
 }
 
+/* Open modal */
 function openModal(id = null) {
     editingId = id;
+    populateSelects();
     document.getElementById('modalTitle').textContent = id ? 'Edito Takim' : 'Shto Takim të Ri';
+
     if (!id) {
         document.getElementById('apptDate').value   = '';
         document.getElementById('apptNotes').value  = '';
         document.getElementById('apptStatus').value = 'Pending';
-        /* Pre-select current user for clients */
-        if (!gbIsAdmin()) {
-            const me = gbGetUser();
-            const opt = document.getElementById('apptUser');
-            if (me && opt) opt.value = me.id;
-        }
     }
     document.getElementById('modalOverlay').classList.add('open');
 }
 
+/* Edit existing */
 function editAppt(id) {
-    const a = appts.find(x => x.id === id);
+    const a = GB.appointments.getById(id);
     if (!a) return;
     openModal(id);
-    document.getElementById('apptUser').value    = a.userId;
+
+    /* Pre-fill */
+    if (isAdmin) {
+        const users = GB.users.getAll();
+        const u     = users.find(x => x.email === a.userEmail);
+        if (u) document.getElementById('apptUser').value = u.id;
+    }
     document.getElementById('apptService').value = a.serviceId;
     document.getElementById('apptStatus').value  = a.status;
     document.getElementById('apptNotes').value   = a.notes || '';
-    if (a.appointmentDate) {
-        const d = new Date(a.appointmentDate);
+
+    if (a.date) {
+        const d = new Date(a.date);
         d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
         document.getElementById('apptDate').value = d.toISOString().slice(0, 16);
     }
 }
 
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
-
-async function saveAppt() {
-    const me = gbGetUser();
-    const body = {
-        userId    : gbIsAdmin() ? parseInt(document.getElementById('apptUser').value) : me?.id,
-        serviceId : parseInt(document.getElementById('apptService').value),
-        appointmentDate: document.getElementById('apptDate').value,
-        status    : document.getElementById('apptStatus').value,
-        notes     : document.getElementById('apptNotes').value
-    };
-    if (!body.appointmentDate) { showToast('Zgjidhni datën!', 'error'); return; }
-    try {
-        const res = editingId
-            ? await authFetch(`${API}/appointments/${editingId}`, { method: 'PUT',  body: JSON.stringify(body) })
-            : await authFetch(`${API}/appointments`,              { method: 'POST', body: JSON.stringify(body) });
-        if (res && res.ok) { showToast(editingId ? 'U përditësua!' : 'U shtua!', 'success'); closeModal(); load(); }
-        else showToast('Gabim gjatë ruajtjes!', 'error');
-    } catch { showToast('Lidhja dështoi!', 'error'); }
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    editingId = null;
 }
 
-async function deleteAppt(id) {
-    if (!gbIsAdmin()) { showToast('Nuk keni leje!', 'error'); return; }
-    if (!confirm('A jeni i sigurt?')) return;
-    try {
-        const res = await authFetch(`${API}/appointments/${id}`, { method: 'DELETE' });
-        if (res && res.ok) { showToast('U fshi!', 'success'); load(); }
-    } catch { showToast('Gabim!', 'error'); }
+/* Save */
+function saveAppt() {
+    const date = document.getElementById('apptDate').value;
+    if (!date) { GB.toast('Zgjidhni datën dhe orën!', 'error'); return; }
+
+    /* Resolve user */
+    let userEmail, userName, userId;
+    if (isAdmin) {
+        const sel  = document.getElementById('apptUser');
+        const opt  = sel.options[sel.selectedIndex];
+        userEmail  = opt.dataset.email;
+        userName   = opt.dataset.name;
+        userId     = parseInt(sel.value);
+    } else {
+        userEmail  = me.email;
+        userName   = me.name;
+        userId     = me.id;
+    }
+
+    /* Resolve service */
+    const sSel        = document.getElementById('apptService');
+    const sOpt        = sSel.options[sSel.selectedIndex];
+    const serviceId   = parseInt(sSel.value);
+    const serviceName = sOpt.dataset.name || sOpt.text.split('—')[0].trim();
+
+    const status = isAdmin
+        ? document.getElementById('apptStatus').value
+        : 'Pending';
+    const notes  = document.getElementById('apptNotes').value;
+
+    if (editingId) {
+        const res = GB.appointments.update(editingId, {
+            userEmail, userName, userId,
+            serviceId, serviceName, date, status, notes
+        });
+        if (res.ok) { GB.toast('Takimi u përditësua!', 'success'); closeModal(); renderTable(); }
+        else          GB.toast(res.error, 'error');
+    } else {
+        const res = GB.appointments.add({
+            userEmail, userName, userId,
+            serviceId, serviceName, date, status, notes
+        });
+        if (res.ok) { GB.toast('Takimi u shtua!', 'success'); closeModal(); renderTable(); }
+        else          GB.toast(res.error, 'error');
+    }
 }
 
-load();
+/* Delete / cancel */
+function deleteAppt(id) {
+    const a = GB.appointments.getById(id);
+    if (!a) return;
+    const msg = isAdmin
+        ? `A jeni i sigurt që dëshironi të fshini takimin e ${a.userName}?`
+        : 'A dëshironi të anuloni këtë takim?';
+    if (!confirm(msg)) return;
+    GB.appointments.delete(id);
+    GB.toast(isAdmin ? 'Takimi u fshi!' : 'Takimi u anulua!', 'success');
+    renderTable();
+}
+
+/* Close on backdrop */
+document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+renderTable();
 </script>
 </body>
 </html>

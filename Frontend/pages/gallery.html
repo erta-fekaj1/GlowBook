@@ -12,12 +12,12 @@
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
-    <div style="width:40px;"></div>
+    <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="layout-wrap">
-    <aside class="sidebar" id="sidebar"><!-- built by role.js --></aside>
+    <aside class="sidebar" id="sidebar"></aside>
 
     <main class="main">
         <div class="topbar">
@@ -25,22 +25,24 @@
                 <h1>Nail Art Gallery</h1>
                 <p>Zbulo dizajnet më të bukura</p>
             </div>
-            <!-- Admin-only: add button -->
+            <!-- Admin only -->
             <button class="btn-primary" data-admin onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Shto Dizajn
             </button>
         </div>
 
+        <!-- Stats -->
         <div class="gallery-stats">
-            <div class="gallery-stat"><div class="n" id="statTotal">0</div><div class="l">Dizajne</div></div>
-            <div class="gallery-stat"><div class="n" id="statEasy">0</div><div class="l">Të lehta</div></div>
-            <div class="gallery-stat"><div class="n" id="statMedium">0</div><div class="l">Mesatare</div></div>
-            <div class="gallery-stat"><div class="n" id="statHard">0</div><div class="l">Të vështira</div></div>
+            <div class="gallery-stat"><div class="n" id="stTotal">0</div><div class="l">Dizajne</div></div>
+            <div class="gallery-stat"><div class="n" id="stEasy">0</div><div class="l">Të lehta</div></div>
+            <div class="gallery-stat"><div class="n" id="stMed">0</div><div class="l">Mesatare</div></div>
+            <div class="gallery-stat"><div class="n" id="stHard">0</div><div class="l">Të vështira</div></div>
         </div>
 
-        <div class="filters" style="margin-bottom:1.5rem;">
+        <!-- Filters -->
+        <div class="filters" style="margin-bottom:1.5rem">
             <div class="filter-pills">
-                <input class="search-box" type="text" placeholder="🔍 Kërko dizajn..." id="searchInput" oninput="renderGallery()">
+                <input class="search-box" type="text" id="searchInput" placeholder="🔍 Kërko dizajn..." oninput="renderGallery()">
                 <button class="pill active" onclick="setFilter('Të gjitha')">Të gjitha</button>
                 <button class="pill" onclick="setFilter('French')">French</button>
                 <button class="pill" onclick="setFilter('Gel')">Gel</button>
@@ -64,12 +66,12 @@
             <div class="modal-tags" id="modalTags"></div>
             <div class="gallery-modal-footer">
                 <div>
-                    <div class="modal-price" id="modalPrice">–</div>
+                    <div class="modal-price"    id="modalPrice">–</div>
                     <div class="modal-duration" id="modalDuration">–</div>
                 </div>
-                <div style="display:flex;gap:8px;">
-                    <button class="btn-secondary" onclick="closeModal()">Mbyll</button>
-                    <button class="btn-primary" onclick="bookDesign()">
+                <div style="display:flex;gap:8px">
+                    <button class="btn-secondary" onclick="closeDetailModal()">Mbyll</button>
+                    <button class="btn-primary"   onclick="bookDesign()">
                         <i class="fa-solid fa-calendar-check"></i> Rezervo
                     </button>
                 </div>
@@ -78,36 +80,31 @@
     </div>
 </div>
 
-<!-- Admin: Add/Edit Design modal -->
+<!-- Admin: Add / Edit design modal -->
 <div class="modal-overlay" id="addModal">
     <div class="modal">
         <h2 class="modal-title" id="addModalTitle">Shto Dizajn të Ri</h2>
-        <div class="field"><label>Emri</label><input type="text" id="dnName" placeholder="Rose Gold Tips"></div>
-        <div class="field"><label>Emoji</label><input type="text" id="dnEmoji" placeholder="💅" maxlength="4"></div>
-        <div class="field">
-            <label>Kategoria</label>
-            <select id="dnCategory">
-                <option value="French">French</option>
-                <option value="Gel">Gel</option>
-                <option value="Ombre">Ombre</option>
-                <option value="Floral">Floral</option>
-                <option value="Glitter">Glitter</option>
+        <div class="field"><label>Emri</label><input type="text" id="dName" placeholder="Rose Gold Tips"></div>
+        <div class="field"><label>Emoji / Ikona</label><input type="text" id="dEmoji" placeholder="💅" maxlength="4"></div>
+        <div class="field"><label>Kategoria</label>
+            <select id="dCat">
+                <option>French</option><option>Gel</option><option>Ombre</option>
+                <option>Floral</option><option>Glitter</option>
             </select>
         </div>
-        <div class="field">
-            <label>Vështirësia</label>
-            <select id="dnComplexity">
+        <div class="field"><label>Vështirësia</label>
+            <select id="dComp">
                 <option value="E lehtë">E lehtë</option>
                 <option value="Mesatare">Mesatare</option>
                 <option value="E vështirë">E vështirë</option>
             </select>
         </div>
-        <div class="field"><label>Çmimi (€)</label><input type="number" id="dnPrice" placeholder="20" min="1"></div>
-        <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="dnDuration" placeholder="45"></div>
-        <div class="field"><label>Përshkrimi</label><input type="text" id="dnDesc" placeholder="Përshkrim i shkurtër..."></div>
+        <div class="field"><label>Çmimi (€)</label><input type="number" id="dPrice" placeholder="20" min="1"></div>
+        <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="dDur" placeholder="45" min="5"></div>
+        <div class="field"><label>Përshkrimi</label><input type="text" id="dDesc" placeholder="Përshkrim i shkurtër..."></div>
         <div class="modal-footer">
-            <button class="btn-secondary" style="flex:1;" onclick="closeAddModal()">Anulo</button>
-            <button class="btn-primary" style="flex:2;" id="addModalSaveBtn" onclick="saveDesign()">
+            <button class="btn-secondary" style="flex:1" onclick="closeAddModal()">Anulo</button>
+            <button class="btn-primary"   style="flex:2" id="addModalSaveBtn" onclick="saveDesign()">
                 <i class="fa-solid fa-floppy-disk"></i> Ruaj
             </button>
         </div>
@@ -115,194 +112,188 @@
 </div>
 
 <div class="gb-toast" id="toast"></div>
-
-<script src="../js/role.js"></script>
+<script src="../js/auth.js"></script>
 <script>
-gbInitPage({ page: 'gallery' });
+'use strict';
+GB.init({ page: 'gallery' });
 
-/* ── Local design storage (shared with admin.html) ───────────── */
-const DESIGNS_KEY = 'gb_gallery_designs';
+const isAdmin = GB.isAdmin();
+let   currentFilter   = 'Të gjitha';
+let   currentDesignId = null;
+let   editingDesignId = null;
 
-function getDesigns() {
-    try {
-        const s = localStorage.getItem(DESIGNS_KEY);
-        return s ? JSON.parse(s) : defaultDesigns();
-    } catch { return defaultDesigns(); }
-}
-function saveDesigns(d) { localStorage.setItem(DESIGNS_KEY, JSON.stringify(d)); }
-
-function defaultDesigns() {
-    return [
-        { id:1,  name:'French Classic', emoji:'🤍', category:'French',  complexity:'E lehtë',    price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante. Perfekt për çdo rast.',         tags:['Klasik','Elegant'],   likes:24, liked:false, bg:'#F8F4FF' },
-        { id:2,  name:'Pink Ombre',      emoji:'🌸', category:'Ombre',   complexity:'Mesatare',   price:25, duration:45,  desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë. Romantike dhe femërore.',   tags:['Romantike','Ombre'],  likes:31, liked:false, bg:'#FFF0F5' },
-        { id:3,  name:'Glitter Bomb',    emoji:'✨', category:'Glitter', complexity:'E lehtë',    price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht. Ideal për festa dhe ngjarje speciale.',          tags:['Festë','Glamour'],    likes:18, liked:false, bg:'#FFFBF0' },
-        { id:4,  name:'Floral Dream',    emoji:'🌺', category:'Floral',  complexity:'E vështirë', price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë. Punë artizanale e lartë.',                      tags:['Art','Lule'],         likes:45, liked:false, bg:'#F0FFF4' },
-        { id:5,  name:'Gel Nude',        emoji:'🍑', category:'Gel',     complexity:'E lehtë',    price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale që i shkon çdo veshje dhe rast.',                     tags:['Neutral','Gel'],      likes:29, liked:false, bg:'#FFF5F0' },
-        { id:6,  name:'Galaxy Nails',    emoji:'🌌', category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta dhe shkëlqim si yje. Unike.',                   tags:['Galaxy','Unique'],    likes:52, liked:false, bg:'#F0F0FF' },
-        { id:7,  name:'Marble Effect',   emoji:'🖤', category:'Gel',     complexity:'E vështirë', price:38, duration:80,  desc:'Efekt mermer luksoz me vija delikate. Sofistikate dhe moderne.',                   tags:['Luks','Marble'],      likes:37, liked:false, bg:'#F8F8F8' },
-        { id:8,  name:'Floral Ombre',    emoji:'🌸', category:'Floral',  complexity:'E vështirë', price:50, duration:120, desc:'Kombinim i ombre me lule të vizatuara. Dizajni trending i sezonit.',               tags:['Trending','Lule'],    likes:61, liked:false, bg:'#FFF0F8' },
-        { id:9,  name:'Red Glam',        emoji:'❤️', category:'Gel',     complexity:'E lehtë',    price:16, duration:30,  desc:'Ngjyrë e kuqe klasike e pasur. Ikonike dhe e fuqishme.',                           tags:['Klasik','Red'],       likes:33, liked:false, bg:'#FFF0F0' },
-        { id:10, name:'Baby Blue',       emoji:'💙', category:'Ombre',   complexity:'Mesatare',   price:22, duration:45,  desc:'Kalim i butë në ngjyrë blu të çelët. Freskues dhe i ëmbël.',                      tags:['Pastel','Blue'],      likes:27, liked:false, bg:'#F0F8FF' },
-        { id:11, name:'Gold Tips',       emoji:'⭐', category:'French',  complexity:'Mesatare',   price:28, duration:50,  desc:'Majë të arta që i japin elegancë të veçantë çdo dore.',                           tags:['Gold','French'],      likes:41, liked:false, bg:'#FFFDF0' },
-        { id:12, name:'Lavender Gel',    emoji:'💜', category:'Gel',     complexity:'E lehtë',    price:17, duration:30,  desc:'Ngjyrë lavanderi e butë dhe qetësuese. Perfekte për pranverën.',                  tags:['Pastel','Purple'],    likes:35, liked:false, bg:'#F8F0FF' },
-    ];
-}
-
-let currentFilter = 'Të gjitha';
-let currentDesign = null;
-let editingDesignId = null;
-
-function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'gb-toast ' + type;
-    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
-}
-
+/* ── Gallery rendering ──────────────────────────────────── */
 function setFilter(cat) {
     currentFilter = cat;
-    document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b.textContent.trim() === cat));
+    document.querySelectorAll('.pill').forEach(b =>
+        b.classList.toggle('active', b.textContent.trim() === cat));
     renderGallery();
 }
 
 function renderGallery() {
-    const search   = document.getElementById('searchInput').value.toLowerCase();
-    const designs  = getDesigns();
-    const filtered = designs.filter(d =>
+    const search  = document.getElementById('searchInput').value.toLowerCase();
+    const designs = GB.designs.getAll();
+    const shown   = designs.filter(d =>
         (currentFilter === 'Të gjitha' || d.category === currentFilter) &&
         (!search || d.name.toLowerCase().includes(search) || d.category.toLowerCase().includes(search))
     );
 
-    document.getElementById('statTotal').textContent  = designs.length;
-    document.getElementById('statEasy').textContent   = designs.filter(d => d.complexity === 'E lehtë').length;
-    document.getElementById('statMedium').textContent = designs.filter(d => d.complexity === 'Mesatare').length;
-    document.getElementById('statHard').textContent   = designs.filter(d => d.complexity === 'E vështirë').length;
+    /* Stats */
+    document.getElementById('stTotal').textContent = designs.length;
+    document.getElementById('stEasy').textContent  = designs.filter(d => d.complexity === 'E lehtë').length;
+    document.getElementById('stMed').textContent   = designs.filter(d => d.complexity === 'Mesatare').length;
+    document.getElementById('stHard').textContent  = designs.filter(d => d.complexity === 'E vështirë').length;
 
-    const isAdmin = gbIsAdmin();
     const grid = document.getElementById('galleryGrid');
-    if (!filtered.length) {
-        grid.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:2rem;">Nuk ka dizajne për këtë filtrim.</div>';
+    if (!shown.length) {
+        grid.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:2rem">Nuk ka dizajne për këtë filtrim.</div>';
         return;
     }
-    grid.innerHTML = filtered.map(d => {
-        const cc = d.complexity === 'E lehtë' ? 'complexity-easy' : d.complexity === 'Mesatare' ? 'complexity-medium' : 'complexity-hard';
-        /* Admin edit/delete controls — hidden from clients via data-admin + CSS */
-        const adminBar = `<div class="design-admin-bar" data-admin>
-            <button class="btn-sm btn-edit" style="flex:1;" onclick="event.stopPropagation();editDesign(${d.id})">
-                <i class="fa-solid fa-pen"></i> Edito
-            </button>
-            <button class="btn-sm btn-delete" style="flex:1;" onclick="event.stopPropagation();deleteDesign(${d.id})">
-                <i class="fa-solid fa-trash"></i> Fshi
-            </button>
-        </div>`;
-        return `<div class="design-card" onclick="openDesign(${d.id})">
-            <div class="design-preview" style="background:${d.bg};">${d.emoji}</div>
+
+    grid.innerHTML = shown.map(d => {
+        const cc = d.complexity === 'E lehtë' ? 'complexity-easy'
+                 : d.complexity === 'Mesatare' ? 'complexity-medium'
+                 : 'complexity-hard';
+
+        /* Admin controls — hidden from clients via [data-admin] + CSS */
+        const adminBar = isAdmin ? `
+            <div class="design-admin-bar" data-admin>
+                <button class="btn-sm btn-edit"   style="flex:1" onclick="event.stopPropagation();openEditModal(${d.id})">
+                    <i class="fa-solid fa-pen"></i> Edito
+                </button>
+                <button class="btn-sm btn-delete" style="flex:1" onclick="event.stopPropagation();deleteDesign(${d.id})">
+                    <i class="fa-solid fa-trash"></i> Fshi
+                </button>
+            </div>` : '';
+
+        return `<div class="design-card" onclick="openDetailModal(${d.id})">
+            <div class="design-preview" style="background:${d.bg}">${d.emoji}</div>
             <div class="design-card-body">
                 <div class="design-name">${d.name}</div>
-                <div class="design-desc">${d.desc.substring(0,60)}…</div>
+                <div class="design-desc">${(d.desc||'').substring(0,60)}…</div>
                 <div class="design-footer">
                     <span class="design-complexity ${cc}">${d.complexity}</span>
                     <span class="design-price">€${d.price}</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-                    <span style="font-size:.75rem;color:var(--text-muted);">${d.duration} min</span>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                    <span style="font-size:.75rem;color:var(--text-muted)">${d.duration} min</span>
                     <button class="like-btn" onclick="event.stopPropagation();toggleLike(${d.id})" id="like-${d.id}">
-                        ${d.liked?'❤️':'🤍'} ${d.likes}
+                        ${d.liked ? '❤️' : '🤍'} ${d.likes}
                     </button>
                 </div>
-                ${isAdmin ? adminBar : ''}
+                ${adminBar}
             </div>
         </div>`;
     }).join('');
 }
 
+/* ── Like ───────────────────────────────────────────────── */
 function toggleLike(id) {
-    const designs = getDesigns();
+    const designs = GB.designs.getAll();
     const d = designs.find(x => x.id === id);
     if (!d) return;
-    d.liked = !d.liked; d.likes += d.liked ? 1 : -1;
-    saveDesigns(designs);
+    d.liked  = !d.liked;
+    d.likes += d.liked ? 1 : -1;
+    GB.designs.save(designs);
     const btn = document.getElementById(`like-${id}`);
     if (btn) btn.textContent = (d.liked ? '❤️' : '🤍') + ' ' + d.likes;
 }
 
-function openDesign(id) {
-    currentDesign = getDesigns().find(d => d.id === id);
-    if (!currentDesign) return;
+/* ── Detail modal ───────────────────────────────────────── */
+function openDetailModal(id) {
+    const d = GB.designs.getAll().find(x => x.id === id);
+    if (!d) return;
+    currentDesignId = id;
     const mp = document.getElementById('modalPreview');
-    mp.style.background = currentDesign.bg;
-    mp.textContent = currentDesign.emoji;
-    document.getElementById('modalName').textContent     = currentDesign.name;
-    document.getElementById('modalDesc').textContent     = currentDesign.desc;
-    document.getElementById('modalPrice').textContent    = '€' + currentDesign.price;
-    document.getElementById('modalDuration').textContent = currentDesign.duration + ' minuta';
-    document.getElementById('modalTags').innerHTML = (currentDesign.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+    mp.style.background = d.bg;
+    mp.style.fontSize   = '7rem';
+    mp.textContent      = d.emoji;
+    document.getElementById('modalName').textContent     = d.name;
+    document.getElementById('modalDesc').textContent     = d.desc || '';
+    document.getElementById('modalPrice').textContent    = '€' + d.price;
+    document.getElementById('modalDuration').textContent = d.duration + ' minuta';
+    document.getElementById('modalTags').innerHTML       = (d.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
     document.getElementById('modalBg').classList.add('open');
 }
 
-function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
-function bookDesign() { closeModal(); window.location.href = 'appointments.html'; }
+function closeDetailModal() { document.getElementById('modalBg').classList.remove('open'); }
+function bookDesign()       { closeDetailModal(); window.location.href = 'appointments.html'; }
 
-/* ── Admin: Add design ───────────────────────────────────────── */
-function openAddModal(id = null) {
+/* ── Add modal ──────────────────────────────────────────── */
+function openAddModal() {
+    editingDesignId = null;
+    document.getElementById('addModalTitle').textContent      = 'Shto Dizajn të Ri';
+    document.getElementById('addModalSaveBtn').innerHTML      = '<i class="fa-solid fa-floppy-disk"></i> Shto';
+    ['dName','dEmoji','dPrice','dDur','dDesc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('dCat').value  = 'French';
+    document.getElementById('dComp').value = 'E lehtë';
+    document.getElementById('addModal').classList.add('open');
+}
+
+function openEditModal(id) {
+    const d = GB.designs.getAll().find(x => x.id === id);
+    if (!d) return;
     editingDesignId = id;
-    const designs = getDesigns();
-    const d = id ? designs.find(x => x.id === id) : null;
-    document.getElementById('addModalTitle').textContent = d ? 'Edito Dizajnin' : 'Shto Dizajn të Ri';
-    document.getElementById('dnName').value       = d?.name     || '';
-    document.getElementById('dnEmoji').value      = d?.emoji    || '';
-    document.getElementById('dnCategory').value   = d?.category || 'French';
-    document.getElementById('dnComplexity').value = d?.complexity || 'E lehtë';
-    document.getElementById('dnPrice').value      = d?.price    || '';
-    document.getElementById('dnDuration').value   = d?.duration || '';
-    document.getElementById('dnDesc').value       = d?.desc     || '';
+    document.getElementById('addModalTitle').textContent = 'Edito Dizajnin';
+    document.getElementById('addModalSaveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Ruaj';
+    document.getElementById('dName').value  = d.name;
+    document.getElementById('dEmoji').value = d.emoji;
+    document.getElementById('dCat').value   = d.category;
+    document.getElementById('dComp').value  = d.complexity;
+    document.getElementById('dPrice').value = d.price;
+    document.getElementById('dDur').value   = d.duration;
+    document.getElementById('dDesc').value  = d.desc;
     document.getElementById('addModal').classList.add('open');
 }
 
 function closeAddModal() { document.getElementById('addModal').classList.remove('open'); editingDesignId = null; }
 
 function saveDesign() {
-    const name       = document.getElementById('dnName').value.trim();
-    const emoji      = document.getElementById('dnEmoji').value.trim() || '💅';
-    const category   = document.getElementById('dnCategory').value;
-    const complexity = document.getElementById('dnComplexity').value;
-    const price      = parseFloat(document.getElementById('dnPrice').value) || 0;
-    const duration   = parseInt(document.getElementById('dnDuration').value) || 30;
-    const desc       = document.getElementById('dnDesc').value.trim();
-    if (!name) { showToast('Shkruani emrin!', 'error'); return; }
+    const name  = document.getElementById('dName').value.trim();
+    if (!name) { GB.toast('Shkruani emrin e dizajnit!', 'error'); return; }
 
-    const designs = getDesigns();
-    const bgs = ['#F8F4FF','#FFF0F5','#FFFBF0','#F0FFF4','#FFF5F0','#F0F0FF'];
+    const bgs  = ['#F8F4FF','#FFF0F5','#FFFBF0','#F0FFF4','#FFF5F0','#F0F0FF','#F8F8F8','#FFF0F8','#FFFDF0','#F8F0FF'];
+    const cat  = document.getElementById('dCat').value;
 
     if (editingDesignId) {
-        const idx = designs.findIndex(d => d.id === editingDesignId);
-        if (idx > -1) { designs[idx] = { ...designs[idx], name, emoji, category, complexity, price, duration, desc }; }
-        showToast(`Dizajni u përditësua!`, 'success');
+        GB.designs.update(editingDesignId, {
+            name, emoji: document.getElementById('dEmoji').value.trim() || '💅',
+            category: cat, complexity: document.getElementById('dComp').value,
+            price: parseFloat(document.getElementById('dPrice').value) || 0,
+            duration: parseInt(document.getElementById('dDur').value) || 30,
+            desc: document.getElementById('dDesc').value.trim(),
+            tags: [cat],
+        });
+        GB.toast(`"${name}" u përditësua!`, 'success');
     } else {
-        const newId = Math.max(0, ...designs.map(d => d.id)) + 1;
-        designs.push({ id: newId, name, emoji, category, complexity, price, duration, desc,
-            bg: bgs[newId % bgs.length], likes: 0, liked: false, tags: [category] });
-        showToast(`Dizajni "${name}" u shtua!`, 'success');
+        GB.designs.add({
+            name, emoji: document.getElementById('dEmoji').value.trim() || '💅',
+            category: cat, complexity: document.getElementById('dComp').value,
+            price: parseFloat(document.getElementById('dPrice').value) || 0,
+            duration: parseInt(document.getElementById('dDur').value) || 30,
+            desc: document.getElementById('dDesc').value.trim(),
+            tags: [cat],
+            bg: bgs[GB.designs.count() % bgs.length],
+        });
+        GB.toast(`"${name}" u shtua!`, 'success');
     }
-    saveDesigns(designs);
-    renderGallery();
     closeAddModal();
+    renderGallery();
 }
-
-function editDesign(id) { openAddModal(id); }
 
 function deleteDesign(id) {
-    const designs = getDesigns();
-    const d = designs.find(x => x.id === id);
-    if (!confirm(`A jeni të sigurt që dëshironi të fshini "${d?.name || 'dizajnin'}"?`)) return;
-    saveDesigns(designs.filter(x => x.id !== id));
+    const d = GB.designs.getAll().find(x => x.id === id);
+    if (!d) return;
+    if (!confirm(`A jeni të sigurt që dëshironi të fshini "${d.name}"?`)) return;
+    GB.designs.delete(id);
+    GB.toast('Dizajni u fshi!', 'success');
     renderGallery();
-    showToast('Dizajni u fshi!', 'success');
 }
 
-/* Close on backdrop/ESC */
-document.getElementById('modalBg').addEventListener('click', e => { if (e.target === document.getElementById('modalBg')) closeModal(); });
+/* Close modals */
+document.getElementById('modalBg').addEventListener('click',  e => { if (e.target === document.getElementById('modalBg'))  closeDetailModal(); });
 document.getElementById('addModal').addEventListener('click', e => { if (e.target === document.getElementById('addModal')) closeAddModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeAddModal(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDetailModal(); closeAddModal(); } });
 
 renderGallery();
 </script>

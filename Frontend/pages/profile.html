@@ -12,7 +12,7 @@
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
-    <div style="width:40px;"></div>
+    <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -23,174 +23,174 @@
         <div class="topbar">
             <div>
                 <h1 id="pageTitle">Profili</h1>
-                <p>Detajet e plotë të përdoruesit</p>
+                <p>Detajet e plotë të llogarisë</p>
             </div>
-            <a class="btn-back" href="users.html" data-admin>
-                <i class="fa-solid fa-arrow-left"></i> Kthehu te lista
+            <!-- Back button — shown to admin when viewing other users -->
+            <a class="btn-back" id="backBtn" href="users.html" data-admin>
+                <i class="fa-solid fa-arrow-left"></i> Kthehu
             </a>
         </div>
 
         <div class="profile-grid">
-            <!-- Left column -->
+
+            <!-- LEFT: profile card + stats -->
             <div>
                 <div class="profile-card">
                     <div class="avatar-big" id="avatar">?</div>
-                    <div class="profile-name" id="profileName">Duke ngarkuar...</div>
+                    <div class="profile-name"  id="profileName">–</div>
                     <div class="profile-email" id="profileEmail">–</div>
                     <span class="badge" id="profileBadge">–</span>
                     <div class="profile-info">
-                        <div class="info-row"><span class="info-label">Telefoni</span><span class="info-value" id="profilePhone">–</span></div>
-                        <div class="info-row"><span class="info-label">Roli</span><span class="info-value" id="profileRole">–</span></div>
+                        <div class="info-row"><span class="info-label">Telefoni</span>     <span class="info-value" id="profilePhone">–</span></div>
+                        <div class="info-row"><span class="info-label">Roli</span>         <span class="info-value" id="profileRole">–</span></div>
                         <div class="info-row"><span class="info-label">Anëtar që nga</span><span class="info-value" id="profileDate">–</span></div>
                     </div>
                 </div>
 
-                <div class="card" style="margin-top:1.25rem;">
+                <div class="card" style="margin-top:1.25rem">
                     <div class="card-title">Statistikat</div>
                     <div class="stats-mini-3">
-                        <div class="stat-box"><div class="n" id="statTotal">0</div><div class="l">Takime</div></div>
-                        <div class="stat-box"><div class="n" id="statDone">0</div><div class="l">Kryer</div></div>
-                        <div class="stat-box"><div class="n" id="statPending">0</div><div class="l">Në pritje</div></div>
+                        <div class="stat-box"><div class="n" id="stTotal">0</div><div class="l">Takime</div></div>
+                        <div class="stat-box"><div class="n" id="stDone">0</div><div class="l">Kryer</div></div>
+                        <div class="stat-box"><div class="n" id="stPend">0</div><div class="l">Në pritje</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right column -->
+            <!-- RIGHT: edit form + appointment history -->
             <div class="right-col">
 
-                <!-- Edit form — visible to admin OR viewing own profile -->
-                <div class="card" id="editCard">
+                <div class="card">
                     <div class="card-title">Ndrysho të Dhënat</div>
                     <div class="edit-form">
-                        <div class="field"><label>Emri</label><input type="text" id="editName"></div>
-                        <div class="field"><label>Email</label><input type="email" id="editEmail"></div>
-                        <div class="field"><label>Telefoni</label><input type="text" id="editPhone"></div>
-                        <button class="btn-save" onclick="saveChanges()">
+                        <div class="field"><label>Emri</label>    <input type="text"  id="editName"></div>
+                        <div class="field"><label>Email</label>   <input type="email" id="editEmail"></div>
+                        <div class="field"><label>Telefoni</label><input type="text"  id="editPhone"></div>
+                        <div class="field">
+                            <label>Fjalëkalimi i Ri <small style="color:var(--text-muted)">(lëre bosh për të mbajtur)</small></label>
+                            <input type="password" id="editPassword" placeholder="Fjalëkalim i ri...">
+                        </div>
+                        <button class="btn-save" onclick="saveProfile()">
                             <i class="fa-solid fa-floppy-disk"></i> Ruaj Ndryshimet
                         </button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Takimet e Fundit</div>
-                    <div id="apptList">
-                        <span style="color:var(--text-muted);font-size:.85rem;">Duke ngarkuar...</span>
+                    <div class="card-title">
+                        <span>Takimet</span>
+                        <a href="appointments.html">Shiko të gjitha →</a>
                     </div>
+                    <div id="apptList"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
                 </div>
+
             </div>
         </div>
     </main>
 </div>
 
 <div class="gb-toast" id="toast"></div>
-
-<script src="../js/role.js"></script>
+<script src="../js/auth.js"></script>
 <script>
-gbInitPage({ page: 'users' });
+'use strict';
+GB.init({ page: 'users' });
 
-const API = 'https://glowbook-1.onrender.com/api';
-let userId = null;
+const isAdmin = GB.isAdmin();
+const me      = GB.getMe();
+let   userId  = null;
+let   viewUser = null;
 
-function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'gb-toast ' + type;
-    clearTimeout(t._t); t._t = setTimeout(() => t.className = 'gb-toast', 3000);
-}
+function load() {
+    const params = new URLSearchParams(window.location.search);
+    const reqId  = parseInt(params.get('id'));
 
-async function load() {
-    try {
-        const params = new URLSearchParams(window.location.search);
-        const me = gbGetUser();
-
-        /* Clients can only view their own profile */
-        if (gbIsAdmin()) {
-            userId = parseInt(params.get('id') || me?.id || 1);
-        } else {
-            userId = me?.id;
-            /* If a client tries to view someone else's profile, redirect */
-            if (params.get('id') && parseInt(params.get('id')) !== userId) {
-                window.location.replace('dashboard.html');
-                return;
-            }
-            /* Hide back-to-list button for clients */
-            const backBtn = document.querySelector('[data-admin]');
-            if (backBtn) backBtn.style.display = 'none';
-        }
-
-        const [uRes, aRes, sRes] = await Promise.all([
-            authFetch(`${API}/users`),
-            authFetch(`${API}/appointments`),
-            authFetch(`${API}/services`)
-        ]);
-        const users    = await uRes.json();
-        const appts    = await aRes.json();
-        const services = await sRes.json();
-
-        const u = users.find(x => x.id === userId);
-        if (!u) { showToast('Përdoruesi nuk u gjet!', 'error'); return; }
-
-        const ini = u.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-        document.getElementById('avatar').textContent       = ini;
-        document.getElementById('pageTitle').textContent    = u.name;
-        document.getElementById('profileName').textContent  = u.name;
-        document.getElementById('profileEmail').textContent = u.email;
-        document.getElementById('profilePhone').textContent = u.phoneNumber || '–';
-        document.getElementById('profileRole').textContent  = u.role;
-        document.getElementById('profileDate').textContent  = u.createdAt ? new Date(u.createdAt).toLocaleDateString('sq-AL') : '–';
-
-        const badge = document.getElementById('profileBadge');
-        badge.textContent = u.role;
-        badge.className   = `badge ${u.role === 'Admin' ? 'badge-admin' : 'badge-customer'}`;
-
-        document.getElementById('editName').value  = u.name;
-        document.getElementById('editEmail').value = u.email;
-        document.getElementById('editPhone').value = u.phoneNumber || '';
-
-        const ua = appts.filter(a => a.userId === userId);
-        document.getElementById('statTotal').textContent   = ua.length;
-        document.getElementById('statDone').textContent    = ua.filter(a => a.status === 'Done').length;
-        document.getElementById('statPending').textContent = ua.filter(a => a.status === 'Pending').length;
-
-        const apptList = document.getElementById('apptList');
-        if (!ua.length) {
-            apptList.innerHTML = '<span style="color:var(--text-muted);font-size:.85rem;">Nuk ka takime</span>';
+    if (isAdmin && reqId) {
+        /* Admin can view any profile */
+        viewUser = GB.users.getById(reqId);
+    } else {
+        /* Clients can only view their own */
+        if (reqId && reqId !== me?.id) {
+            window.location.replace('dashboard.html');
             return;
         }
-        apptList.innerHTML = ua.slice(0, 5).map(a => {
-            const svc  = services.find(s => s.id === a.serviceId);
+        viewUser = GB.users.getById(me?.id) || me;
+        document.getElementById('backBtn').style.display = 'none';
+    }
+
+    if (!viewUser) { GB.toast('Përdoruesi nuk u gjet!', 'error'); return; }
+    userId = viewUser.id;
+
+    /* Populate profile card */
+    const ini = viewUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('avatar').textContent       = ini;
+    document.getElementById('pageTitle').textContent    = viewUser.name;
+    document.getElementById('profileName').textContent  = viewUser.name;
+    document.getElementById('profileEmail').textContent = viewUser.email;
+    document.getElementById('profilePhone').textContent = viewUser.phone || '–';
+    document.getElementById('profileRole').textContent  = viewUser.role;
+    document.getElementById('profileDate').textContent  = viewUser.createdAt
+        ? new Date(viewUser.createdAt).toLocaleDateString('sq-AL') : '–';
+
+    const badge = document.getElementById('profileBadge');
+    badge.textContent = viewUser.role;
+    badge.className   = `badge ${viewUser.role === 'Admin' ? 'badge-admin' : 'badge-customer'}`;
+
+    /* Pre-fill edit form */
+    document.getElementById('editName').value  = viewUser.name;
+    document.getElementById('editEmail').value = viewUser.email;
+    document.getElementById('editPhone').value = viewUser.phone || '';
+
+    /* Stats */
+    const appts = GB.appointments.getByUser(viewUser.email);
+    document.getElementById('stTotal').textContent = appts.length;
+    document.getElementById('stDone').textContent  = appts.filter(a => a.status === 'Done').length;
+    document.getElementById('stPend').textContent  = appts.filter(a => a.status === 'Pending').length;
+
+    /* Recent appointments */
+    const al = document.getElementById('apptList');
+    if (!appts.length) {
+        al.innerHTML = `<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem">
+            Nuk ka takime. <a href="appointments.html" style="color:var(--pink)">Shto →</a></div>`;
+    } else {
+        al.innerHTML = [...appts].reverse().slice(0, 5).map(a => {
             const bc   = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';
-            const date = a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString('sq-AL') : '–';
+            const date = new Date(a.date).toLocaleDateString('sq-AL');
             return `<div class="appt-item">
                 <div class="appt-dot"></div>
                 <div class="appt-info">
-                    <div class="appt-name">${svc ? svc.name : 'Shërbim'}</div>
+                    <div class="appt-name">${a.serviceName || 'Shërbim'}</div>
                     <div class="appt-date">${date}</div>
                 </div>
                 <span class="badge ${bc}">${a.status}</span>
             </div>`;
         }).join('');
-    } catch(e) { console.error(e); showToast('Gabim në lidhje me serverin!', 'error'); }
+    }
 }
 
-async function saveChanges() {
+function saveProfile() {
     const name  = document.getElementById('editName').value.trim();
     const email = document.getElementById('editEmail').value.trim();
     const phone = document.getElementById('editPhone').value.trim();
-    if (!name || !email) { showToast('Emri dhe Email janë të detyrueshëm!', 'error'); return; }
-    try {
-        const res = await authFetch(`${API}/users/${userId}`, {
-            method: 'PUT', body: JSON.stringify({ name, email, phoneNumber: phone })
-        });
-        if (res && res.ok) {
-            showToast('Të dhënat u përditësuan!', 'success');
-            /* Update localStorage if editing own profile */
-            const me = gbGetUser();
-            if (me && me.id === userId) {
-                localStorage.setItem(GB.KEY_USER, JSON.stringify({ ...me, name, email, phoneNumber: phone }));
-            }
-            load();
-        } else { const e = await res.json(); showToast(e.message || 'Gabim!', 'error'); }
-    } catch { showToast('Lidhja dështoi!', 'error'); }
+    const pass  = document.getElementById('editPassword').value;
+
+    if (!name)  { GB.toast('Shkruani emrin!', 'error'); return; }
+    if (!email) { GB.toast('Shkruani email-in!', 'error'); return; }
+    if (pass && pass.length < 4) { GB.toast('Fjalëkalimi duhet ≥ 4 karaktere!', 'error'); return; }
+
+    const fields = { name, email, phone };
+    if (pass) fields.password = pass;
+
+    const res = GB.users.update(userId, fields);
+    if (res.ok) {
+        /* If editing own profile, refresh session */
+        if (userId === me?.id) {
+            GB._saveSession(res.user);
+        }
+        GB.toast('Të dhënat u përditësuan!', 'success');
+        load();
+    } else {
+        GB.toast(res.error, 'error');
+    }
 }
 
 load();
