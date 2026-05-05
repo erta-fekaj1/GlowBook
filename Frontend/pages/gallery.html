@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Book - Galeria</title>
+    <title>Glow Book - Nail Art Gallery</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/gallery.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
 
+<!-- Mobile nav -->
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
     <span class="mobile-nav-logo">💅 Glow Book</span>
@@ -20,92 +22,235 @@
     <aside class="sidebar" id="sidebar"></aside>
 
     <main class="main">
+
+        <!-- ── Topbar ── -->
         <div class="topbar">
             <div>
                 <h1>Nail Art Gallery</h1>
-                <p>Zbulo dizajnet më të bukura</p>
+                <p>Zbulo dizajnet më të bukura · <span id="totalCount">0</span> dizajne</p>
             </div>
-            <!-- Admin only -->
-            <button class="btn-primary" data-admin onclick="openAddModal()">
+            <button class="btn-primary gl-add-btn" data-admin onclick="openAddModal()">
                 <i class="fa-solid fa-plus"></i> Shto Dizajn
             </button>
         </div>
 
-        <!-- Stats -->
-        <div class="gallery-stats">
-            <div class="gallery-stat"><div class="n" id="stTotal">0</div><div class="l">Dizajne</div></div>
-            <div class="gallery-stat"><div class="n" id="stEasy">0</div><div class="l">Të lehta</div></div>
-            <div class="gallery-stat"><div class="n" id="stMed">0</div><div class="l">Mesatare</div></div>
-            <div class="gallery-stat"><div class="n" id="stHard">0</div><div class="l">Të vështira</div></div>
-        </div>
-
-        <!-- Filters -->
-        <div class="filters" style="margin-bottom:1.5rem">
-            <div class="filter-pills">
-                <input class="search-box" type="text" id="searchInput" placeholder="🔍 Kërko dizajn..." oninput="renderGallery()">
-                <button class="pill active" onclick="setFilter('Të gjitha')">Të gjitha</button>
-                <button class="pill" onclick="setFilter('French')">French</button>
-                <button class="pill" onclick="setFilter('Gel')">Gel</button>
-                <button class="pill" onclick="setFilter('Ombre')">Ombre</button>
-                <button class="pill" onclick="setFilter('Floral')">Floral</button>
-                <button class="pill" onclick="setFilter('Glitter')">Glitter</button>
+        <!-- ── Stats row ── -->
+        <div class="gl-stats-row">
+            <div class="gl-stat">
+                <div class="gl-stat-icon" style="background:linear-gradient(135deg,#F8F4FF,#EEEDFE)">💅</div>
+                <div class="gl-stat-info">
+                    <span class="gl-stat-val" id="stTotal">0</span>
+                    <span class="gl-stat-lbl">Dizajne Gjithsej</span>
+                </div>
+            </div>
+            <div class="gl-stat">
+                <div class="gl-stat-icon" style="background:linear-gradient(135deg,#E1F5EE,#B7EAD9)">✅</div>
+                <div class="gl-stat-info">
+                    <span class="gl-stat-val" id="stEasy">0</span>
+                    <span class="gl-stat-lbl">Të Lehta</span>
+                </div>
+            </div>
+            <div class="gl-stat">
+                <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FAEEDA,#F5D5A0)">⚡</div>
+                <div class="gl-stat-info">
+                    <span class="gl-stat-val" id="stMed">0</span>
+                    <span class="gl-stat-lbl">Mesatare</span>
+                </div>
+            </div>
+            <div class="gl-stat">
+                <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FCEBEB,#F8C4C4)">🎨</div>
+                <div class="gl-stat-info">
+                    <span class="gl-stat-val" id="stHard">0</span>
+                    <span class="gl-stat-lbl">Të Vështira</span>
+                </div>
+            </div>
+            <div class="gl-stat">
+                <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FBEAF0,#F4C0D1)">❤️</div>
+                <div class="gl-stat-info">
+                    <span class="gl-stat-val" id="stLikes">0</span>
+                    <span class="gl-stat-lbl">Të Pëlqyera</span>
+                </div>
             </div>
         </div>
 
-        <div class="gallery-grid" id="galleryGrid"></div>
+        <!-- ── Search + filter pills ── -->
+        <div class="gl-filter-bar">
+            <div class="gl-search-wrap">
+                <i class="fa-solid fa-magnifying-glass gl-search-icon"></i>
+                <input class="gl-search" type="text" id="searchInput" placeholder="Kërko dizajn, kategori..." oninput="applyFilters()">
+                <button class="gl-search-clear" id="searchClear" onclick="clearSearch()" title="Pastro kërkimin">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="gl-pills" id="pillsContainer">
+                <!-- built by JS -->
+            </div>
+        </div>
+
+        <!-- ── View toggle ── -->
+        <div class="gl-view-bar">
+            <span class="gl-results-count" id="resultsCount">Duke ngarkuar...</span>
+            <div class="gl-view-btns">
+                <button class="gl-view-btn active" id="btnGrid"  onclick="setView('grid')"  title="Pamja Grid">
+                    <i class="fa-solid fa-grip"></i>
+                </button>
+                <button class="gl-view-btn" id="btnList" onclick="setView('list')"  title="Pamja List">
+                    <i class="fa-solid fa-list"></i>
+                </button>
+                <button class="gl-view-btn" id="btnCats" onclick="setView('category')" title="Sipas Kategorisë">
+                    <i class="fa-solid fa-layer-group"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Gallery container ── -->
+        <div id="galleryContainer"></div>
+
     </main>
 </div>
 
-<!-- Design detail modal -->
-<div class="gallery-modal-bg" id="modalBg">
-    <div class="gallery-modal">
-        <div class="gallery-modal-preview" id="modalPreview"></div>
-        <div class="gallery-modal-body">
-            <h2 id="modalName">–</h2>
-            <p id="modalDesc">–</p>
-            <div class="modal-tags" id="modalTags"></div>
-            <div class="gallery-modal-footer">
+<!-- ================================================================
+     DETAIL MODAL
+     ================================================================ -->
+<div class="gl-detail-overlay" id="detailOverlay">
+    <div class="gl-detail-modal">
+
+        <button class="gl-detail-close" onclick="closeDetailModal()" aria-label="Mbyll">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Image -->
+        <div class="gl-detail-img-wrap">
+            <img src="" alt="" id="detailImg" class="gl-detail-img">
+            <div class="gl-detail-img-placeholder" id="detailPlaceholder">
+                <i class="fa-solid fa-image"></i>
+            </div>
+            <button class="gl-detail-like" id="detailLikeBtn" onclick="toggleLikeFromModal()">
+                <i class="fa-heart" id="detailLikeIcon"></i>
+                <span id="detailLikeCount">0</span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="gl-detail-body">
+            <div class="gl-detail-header">
                 <div>
-                    <div class="modal-price"    id="modalPrice">–</div>
-                    <div class="modal-duration" id="modalDuration">–</div>
+                    <span class="gl-detail-cat" id="detailCat">–</span>
+                    <h2 class="gl-detail-title" id="detailName">–</h2>
                 </div>
-                <div style="display:flex;gap:8px">
-                    <button class="btn-secondary" onclick="closeDetailModal()">Mbyll</button>
-                    <button class="btn-primary"   onclick="bookDesign()">
-                        <i class="fa-solid fa-calendar-check"></i> Rezervo
-                    </button>
+                <div class="gl-detail-price-wrap">
+                    <span class="gl-detail-price" id="detailPrice">–</span>
+                    <span class="gl-detail-dur"   id="detailDur">–</span>
                 </div>
+            </div>
+
+            <p class="gl-detail-desc" id="detailDesc">–</p>
+
+            <div class="gl-detail-tags" id="detailTags"></div>
+
+            <div class="gl-detail-meta">
+                <span class="gl-complexity-badge" id="detailComp">–</span>
+            </div>
+
+            <div class="gl-detail-actions">
+                <button class="btn-secondary" onclick="closeDetailModal()">
+                    <i class="fa-solid fa-xmark"></i> Mbyll
+                </button>
+                <button class="btn-primary" onclick="bookDesign()">
+                    <i class="fa-solid fa-calendar-check"></i> Rezervo Tani
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Admin: Add / Edit design modal -->
+<!-- ================================================================
+     ADMIN: ADD / EDIT MODAL
+     ================================================================ -->
 <div class="modal-overlay" id="addModal">
-    <div class="modal">
+    <div class="modal" style="max-width:520px">
         <h2 class="modal-title" id="addModalTitle">Shto Dizajn të Ri</h2>
-        <div class="field"><label>Emri</label><input type="text" id="dName" placeholder="Rose Gold Tips"></div>
-        <div class="field"><label>Emoji / Ikona</label><input type="text" id="dEmoji" placeholder="💅" maxlength="4"></div>
-        <div class="field"><label>Kategoria</label>
-            <select id="dCat">
-                <option>French</option><option>Gel</option><option>Ombre</option>
-                <option>Floral</option><option>Glitter</option>
-            </select>
+
+        <div class="gl-form-row">
+            <div class="field">
+                <label>Emri i Dizajnit *</label>
+                <input type="text" id="dName" placeholder="p.sh. Rose Gold Chrome">
+            </div>
+            <div class="field">
+                <label>Kategoria *</label>
+                <select id="dCat">
+                    <option value="French">French</option>
+                    <option value="Gel">Gel</option>
+                    <option value="Ombre">Ombre</option>
+                    <option value="Floral">Floral</option>
+                    <option value="Glitter">Glitter</option>
+                    <option value="Chrome">Chrome / Mirror</option>
+                    <option value="Animal Print">Animal Print</option>
+                    <option value="Abstract">Abstract</option>
+                    <option value="Swirls">Swirls</option>
+                    <option value="3D">3D Nails</option>
+                    <option value="Foil">Foil Nails</option>
+                    <option value="Seasonal">Seasonal</option>
+                </select>
+            </div>
         </div>
-        <div class="field"><label>Vështirësia</label>
-            <select id="dComp">
-                <option value="E lehtë">E lehtë</option>
-                <option value="Mesatare">Mesatare</option>
-                <option value="E vështirë">E vështirë</option>
-            </select>
+
+        <div class="field">
+            <label>
+                Shtegu i Imazhit *
+                <small style="color:var(--text-muted);font-weight:400">
+                    (p.sh. ../images/gallery/chrome/chrome1.jpg)
+                </small>
+            </label>
+            <div class="gl-img-input-wrap">
+                <i class="fa-solid fa-image" style="color:var(--pink-border);margin-right:8px"></i>
+                <input type="text" id="dImage" placeholder="../images/gallery/chrome/chrome1.jpg" oninput="previewAdminImg()">
+            </div>
+            <div class="gl-img-preview-wrap">
+                <img id="adminImgPreview" src="" alt="" class="gl-admin-img-preview" style="display:none">
+                <div class="gl-admin-img-placeholder" id="adminImgPlaceholder">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Pamja paraprake e imazhit</span>
+                </div>
+            </div>
         </div>
-        <div class="field"><label>Çmimi (€)</label><input type="number" id="dPrice" placeholder="20" min="1"></div>
-        <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="dDur" placeholder="45" min="5"></div>
-        <div class="field"><label>Përshkrimi</label><input type="text" id="dDesc" placeholder="Përshkrim i shkurtër..."></div>
+
+        <div class="gl-form-row">
+            <div class="field">
+                <label>Vështirësia</label>
+                <select id="dComp">
+                    <option value="E lehtë">E lehtë</option>
+                    <option value="Mesatare">Mesatare</option>
+                    <option value="E vështirë">E vështirë</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Çmimi (€)</label>
+                <input type="number" id="dPrice" placeholder="25" min="1">
+            </div>
+            <div class="field">
+                <label>Kohëzgjatja (min)</label>
+                <input type="number" id="dDur" placeholder="45" min="5">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Përshkrimi</label>
+            <input type="text" id="dDesc" placeholder="Përshkrim i shkurtër dhe tërheqës...">
+        </div>
+
+        <div class="field">
+            <label>
+                Etiketat (tags)
+                <small style="color:var(--text-muted);font-weight:400">ndaj me presje</small>
+            </label>
+            <input type="text" id="dTags" placeholder="Modern, Trendy, Bold">
+        </div>
+
         <div class="modal-footer">
             <button class="btn-secondary" style="flex:1" onclick="closeAddModal()">Anulo</button>
             <button class="btn-primary"   style="flex:2" id="addModalSaveBtn" onclick="saveDesign()">
-                <i class="fa-solid fa-floppy-disk"></i> Ruaj
+                <i class="fa-solid fa-floppy-disk"></i> Ruaj Dizajnin
             </button>
         </div>
     </div>
@@ -113,189 +258,6 @@
 
 <div class="gb-toast" id="toast"></div>
 <script src="../js/auth.js"></script>
-<script>
-'use strict';
-GB.init({ page: 'gallery' });
-
-const isAdmin = GB.isAdmin();
-let   currentFilter   = 'Të gjitha';
-let   currentDesignId = null;
-let   editingDesignId = null;
-
-/* ── Gallery rendering ──────────────────────────────────── */
-function setFilter(cat) {
-    currentFilter = cat;
-    document.querySelectorAll('.pill').forEach(b =>
-        b.classList.toggle('active', b.textContent.trim() === cat));
-    renderGallery();
-}
-
-function renderGallery() {
-    const search  = document.getElementById('searchInput').value.toLowerCase();
-    const designs = GB.designs.getAll();
-    const shown   = designs.filter(d =>
-        (currentFilter === 'Të gjitha' || d.category === currentFilter) &&
-        (!search || d.name.toLowerCase().includes(search) || d.category.toLowerCase().includes(search))
-    );
-
-    /* Stats */
-    document.getElementById('stTotal').textContent = designs.length;
-    document.getElementById('stEasy').textContent  = designs.filter(d => d.complexity === 'E lehtë').length;
-    document.getElementById('stMed').textContent   = designs.filter(d => d.complexity === 'Mesatare').length;
-    document.getElementById('stHard').textContent  = designs.filter(d => d.complexity === 'E vështirë').length;
-
-    const grid = document.getElementById('galleryGrid');
-    if (!shown.length) {
-        grid.innerHTML = '<div style="color:var(--text-muted);font-size:.85rem;padding:2rem">Nuk ka dizajne për këtë filtrim.</div>';
-        return;
-    }
-
-    grid.innerHTML = shown.map(d => {
-        const cc = d.complexity === 'E lehtë' ? 'complexity-easy'
-                 : d.complexity === 'Mesatare' ? 'complexity-medium'
-                 : 'complexity-hard';
-
-        /* Admin controls — hidden from clients via [data-admin] + CSS */
-        const adminBar = isAdmin ? `
-            <div class="design-admin-bar" data-admin>
-                <button class="btn-sm btn-edit"   style="flex:1" onclick="event.stopPropagation();openEditModal(${d.id})">
-                    <i class="fa-solid fa-pen"></i> Edito
-                </button>
-                <button class="btn-sm btn-delete" style="flex:1" onclick="event.stopPropagation();deleteDesign(${d.id})">
-                    <i class="fa-solid fa-trash"></i> Fshi
-                </button>
-            </div>` : '';
-
-        return `<div class="design-card" onclick="openDetailModal(${d.id})">
-            <div class="design-preview" style="background:${d.bg}">${d.emoji}</div>
-            <div class="design-card-body">
-                <div class="design-name">${d.name}</div>
-                <div class="design-desc">${(d.desc||'').substring(0,60)}…</div>
-                <div class="design-footer">
-                    <span class="design-complexity ${cc}">${d.complexity}</span>
-                    <span class="design-price">€${d.price}</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-                    <span style="font-size:.75rem;color:var(--text-muted)">${d.duration} min</span>
-                    <button class="like-btn" onclick="event.stopPropagation();toggleLike(${d.id})" id="like-${d.id}">
-                        ${d.liked ? '❤️' : '🤍'} ${d.likes}
-                    </button>
-                </div>
-                ${adminBar}
-            </div>
-        </div>`;
-    }).join('');
-}
-
-/* ── Like ───────────────────────────────────────────────── */
-function toggleLike(id) {
-    const designs = GB.designs.getAll();
-    const d = designs.find(x => x.id === id);
-    if (!d) return;
-    d.liked  = !d.liked;
-    d.likes += d.liked ? 1 : -1;
-    GB.designs.save(designs);
-    const btn = document.getElementById(`like-${id}`);
-    if (btn) btn.textContent = (d.liked ? '❤️' : '🤍') + ' ' + d.likes;
-}
-
-/* ── Detail modal ───────────────────────────────────────── */
-function openDetailModal(id) {
-    const d = GB.designs.getAll().find(x => x.id === id);
-    if (!d) return;
-    currentDesignId = id;
-    const mp = document.getElementById('modalPreview');
-    mp.style.background = d.bg;
-    mp.style.fontSize   = '7rem';
-    mp.textContent      = d.emoji;
-    document.getElementById('modalName').textContent     = d.name;
-    document.getElementById('modalDesc').textContent     = d.desc || '';
-    document.getElementById('modalPrice').textContent    = '€' + d.price;
-    document.getElementById('modalDuration').textContent = d.duration + ' minuta';
-    document.getElementById('modalTags').innerHTML       = (d.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
-    document.getElementById('modalBg').classList.add('open');
-}
-
-function closeDetailModal() { document.getElementById('modalBg').classList.remove('open'); }
-function bookDesign()       { closeDetailModal(); window.location.href = 'appointments.html'; }
-
-/* ── Add modal ──────────────────────────────────────────── */
-function openAddModal() {
-    editingDesignId = null;
-    document.getElementById('addModalTitle').textContent      = 'Shto Dizajn të Ri';
-    document.getElementById('addModalSaveBtn').innerHTML      = '<i class="fa-solid fa-floppy-disk"></i> Shto';
-    ['dName','dEmoji','dPrice','dDur','dDesc'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('dCat').value  = 'French';
-    document.getElementById('dComp').value = 'E lehtë';
-    document.getElementById('addModal').classList.add('open');
-}
-
-function openEditModal(id) {
-    const d = GB.designs.getAll().find(x => x.id === id);
-    if (!d) return;
-    editingDesignId = id;
-    document.getElementById('addModalTitle').textContent = 'Edito Dizajnin';
-    document.getElementById('addModalSaveBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Ruaj';
-    document.getElementById('dName').value  = d.name;
-    document.getElementById('dEmoji').value = d.emoji;
-    document.getElementById('dCat').value   = d.category;
-    document.getElementById('dComp').value  = d.complexity;
-    document.getElementById('dPrice').value = d.price;
-    document.getElementById('dDur').value   = d.duration;
-    document.getElementById('dDesc').value  = d.desc;
-    document.getElementById('addModal').classList.add('open');
-}
-
-function closeAddModal() { document.getElementById('addModal').classList.remove('open'); editingDesignId = null; }
-
-function saveDesign() {
-    const name  = document.getElementById('dName').value.trim();
-    if (!name) { GB.toast('Shkruani emrin e dizajnit!', 'error'); return; }
-
-    const bgs  = ['#F8F4FF','#FFF0F5','#FFFBF0','#F0FFF4','#FFF5F0','#F0F0FF','#F8F8F8','#FFF0F8','#FFFDF0','#F8F0FF'];
-    const cat  = document.getElementById('dCat').value;
-
-    if (editingDesignId) {
-        GB.designs.update(editingDesignId, {
-            name, emoji: document.getElementById('dEmoji').value.trim() || '💅',
-            category: cat, complexity: document.getElementById('dComp').value,
-            price: parseFloat(document.getElementById('dPrice').value) || 0,
-            duration: parseInt(document.getElementById('dDur').value) || 30,
-            desc: document.getElementById('dDesc').value.trim(),
-            tags: [cat],
-        });
-        GB.toast(`"${name}" u përditësua!`, 'success');
-    } else {
-        GB.designs.add({
-            name, emoji: document.getElementById('dEmoji').value.trim() || '💅',
-            category: cat, complexity: document.getElementById('dComp').value,
-            price: parseFloat(document.getElementById('dPrice').value) || 0,
-            duration: parseInt(document.getElementById('dDur').value) || 30,
-            desc: document.getElementById('dDesc').value.trim(),
-            tags: [cat],
-            bg: bgs[GB.designs.count() % bgs.length],
-        });
-        GB.toast(`"${name}" u shtua!`, 'success');
-    }
-    closeAddModal();
-    renderGallery();
-}
-
-function deleteDesign(id) {
-    const d = GB.designs.getAll().find(x => x.id === id);
-    if (!d) return;
-    if (!confirm(`A jeni të sigurt që dëshironi të fshini "${d.name}"?`)) return;
-    GB.designs.delete(id);
-    GB.toast('Dizajni u fshi!', 'success');
-    renderGallery();
-}
-
-/* Close modals */
-document.getElementById('modalBg').addEventListener('click',  e => { if (e.target === document.getElementById('modalBg'))  closeDetailModal(); });
-document.getElementById('addModal').addEventListener('click', e => { if (e.target === document.getElementById('addModal')) closeAddModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDetailModal(); closeAddModal(); } });
-
-renderGallery();
-</script>
+<script src="../js/gallery.js"></script>
 </body>
 </html>

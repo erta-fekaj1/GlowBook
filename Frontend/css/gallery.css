@@ -1,0 +1,884 @@
+/* ================================================================
+   GLOWBOOK — gallery.css
+   All styles for the gallery page.
+   Depends on: style.css (variables, base, sidebar, topbar)
+   ================================================================ */
+
+/* ── Stats row ────────────────────────────────────────────────── */
+.gl-stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.gl-stat {
+    background: var(--white);
+    border-radius: var(--r-card);
+    border: 1px solid var(--pink-border);
+    padding: 1rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    box-shadow: var(--shadow);
+    transition: var(--ease);
+}
+.gl-stat:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+
+.gl-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.gl-stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.gl-stat-val {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--pink-deep);
+    line-height: 1;
+    font-family: 'Cormorant Garamond', serif;
+}
+
+.gl-stat-lbl {
+    font-size: .7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Filter bar ───────────────────────────────────────────────── */
+.gl-filter-bar {
+    background: var(--white);
+    border: 1px solid var(--pink-border);
+    border-radius: var(--r-card);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Search input */
+.gl-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.gl-search-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--pink-border);
+    font-size: .9rem;
+    pointer-events: none;
+    transition: var(--ease);
+}
+
+.gl-search-wrap:focus-within .gl-search-icon { color: var(--pink); }
+
+.gl-search {
+    width: 100%;
+    padding: 10px 40px 10px 40px;
+    border: 1.5px solid var(--pink-border);
+    border-radius: var(--r-input);
+    font-size: .9rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--white);
+    outline: none;
+    transition: var(--ease);
+}
+.gl-search:focus {
+    border-color: var(--pink);
+    box-shadow: 0 0 0 3px rgba(212,83,126,.1);
+}
+.gl-search::placeholder { color: #D3D1C7; }
+
+.gl-search-clear {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--ease);
+    font-size: .85rem;
+}
+.gl-search-clear:hover { background: var(--pink-light); color: var(--pink); }
+
+/* Filter pills */
+.gl-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.gl-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: .78rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--pink-border);
+    background: var(--white);
+    color: var(--text-subtle);
+    transition: var(--ease);
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+}
+.gl-pill i { font-size: .72rem; }
+.gl-pill:hover { background: var(--pink-light); color: var(--pink-deep); border-color: var(--pink-border); }
+.gl-pill.active {
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+    color: var(--white);
+    border-color: transparent;
+    box-shadow: 0 3px 10px rgba(212,83,126,.3);
+}
+
+/* ── View bar ─────────────────────────────────────────────────── */
+.gl-view-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.gl-results-count {
+    font-size: .85rem;
+    color: var(--text-muted);
+}
+
+.gl-view-btns {
+    display: flex;
+    gap: 4px;
+    background: var(--white);
+    border: 1px solid var(--pink-border);
+    border-radius: 10px;
+    padding: 3px;
+}
+
+.gl-view-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: none;
+    color: var(--text-muted);
+    font-size: .9rem;
+    transition: var(--ease);
+}
+.gl-view-btn:hover { background: var(--pink-light); color: var(--pink); }
+.gl-view-btn.active {
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+    color: var(--white);
+}
+
+/* ================================================================
+   GRID VIEW — cards
+   ================================================================ */
+.gl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.gl-card {
+    background: var(--white);
+    border-radius: var(--r-card);
+    border: 1px solid var(--pink-border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: var(--shadow);
+    outline: none;
+}
+.gl-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(212,83,126,.18); }
+.gl-card:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+
+/* Image area */
+.gl-card-img-wrap {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.gl-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+}
+.gl-card:hover .gl-card-img { transform: scale(1.07); }
+
+/* Placeholder when image missing */
+.gl-card-img-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    padding: 1rem;
+}
+.gl-card-img-placeholder span {
+    font-size: .8rem;
+    text-align: center;
+    line-height: 1.3;
+    font-size: .78rem;
+}
+
+/* Hover overlay with action buttons */
+.gl-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(153,53,86,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity .25s ease;
+    backdrop-filter: blur(2px);
+}
+.gl-card:hover .gl-card-overlay { opacity: 1; }
+
+.gl-overlay-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: .78rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: 2px solid var(--white);
+    background: rgba(255,255,255,.15);
+    color: var(--white);
+    cursor: pointer;
+    transition: var(--ease);
+    backdrop-filter: blur(4px);
+}
+.gl-overlay-btn:hover { background: var(--white); color: var(--pink-deep); }
+.gl-overlay-book { background: var(--pink); border-color: var(--pink); }
+.gl-overlay-book:hover { background: var(--pink-deep); border-color: var(--pink-deep); color: var(--white); }
+
+/* Like button */
+.gl-like-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: none;
+    background: rgba(255,255,255,.9);
+    color: var(--text-subtle);
+    font-size: .75rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: var(--ease);
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    z-index: 2;
+    backdrop-filter: blur(4px);
+}
+.gl-like-btn:hover { background: var(--white); color: var(--pink); transform: scale(1.05); }
+.gl-like-btn.liked { background: var(--pink); color: var(--white); }
+.gl-like-btn.liked:hover { background: var(--pink-deep); }
+
+/* Category badge top-left */
+.gl-card-cat-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: .3px;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+/* Admin bar on card */
+.gl-card-admin-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 1px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity .2s;
+}
+.gl-card:hover .gl-card-admin-bar { opacity: 1; }
+
+.gl-admin-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: .78rem;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: var(--ease);
+}
+.gl-admin-edit { background: rgba(127,119,221,.9); color: var(--white); }
+.gl-admin-del  { background: rgba(216,90,48,.9);   color: var(--white); }
+.gl-admin-edit:hover { background: #534AB7; }
+.gl-admin-del:hover  { background: #A32D2D; }
+
+/* Card body */
+.gl-card-body { padding: 1rem; }
+
+.gl-card-title {
+    font-size: .92rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gl-card-desc {
+    font-size: .74rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.gl-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.gl-card-price {
+    font-size: .92rem;
+    font-weight: 600;
+    color: var(--pink);
+}
+
+.gl-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-card-dur {
+    font-size: .72rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Complexity badges */
+.gl-complexity-badge {
+    display: inline-block;
+    font-size: .68rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+.gl-badge-easy { background: #E1F5EE; color: #0F6E56; }
+.gl-badge-med  { background: #FAEEDA; color: #854F0B; }
+.gl-badge-hard { background: #FCEBEB; color: #A32D2D; }
+
+/* Category pill (list view) */
+.gl-card-cat-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 500;
+}
+
+/* ================================================================
+   LIST VIEW
+   ================================================================ */
+.gl-list-row { transition: var(--ease); }
+.gl-list-row:hover td { background: #fdf9fa !important; }
+
+.gl-list-img-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gl-list-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gl-list-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gl-list-name {
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.gl-list-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* ================================================================
+   CATEGORY VIEW
+   ================================================================ */
+.gl-cat-section {
+    margin-bottom: 2.5rem;
+}
+
+.gl-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1rem;
+}
+
+.gl-cat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.gl-cat-info { flex: 1; }
+
+.gl-cat-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--pink-deep);
+    margin-bottom: 2px;
+    line-height: 1.1;
+}
+
+.gl-cat-count {
+    font-size: .76rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.gl-cat-see-all {
+    font-size: .8rem;
+    padding: 7px 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.gl-cat-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* ================================================================
+   DETAIL MODAL
+   ================================================================ */
+.gl-detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(153,53,86,.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    backdrop-filter: blur(6px);
+}
+.gl-detail-overlay.open { display: flex; }
+
+.gl-detail-modal {
+    background: var(--white);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 24px 80px rgba(153,53,86,.25);
+    animation: gl-modal-in .3s ease;
+    position: relative;
+}
+@keyframes gl-modal-in {
+    from { transform: scale(.93) translateY(20px); opacity: 0; }
+    to   { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+/* Close button */
+.gl-detail-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,.9);
+    color: var(--text-mid);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: var(--ease);
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+.gl-detail-close:hover { background: var(--pink); color: var(--white); }
+
+/* Image side */
+.gl-detail-img-wrap {
+    position: relative;
+    min-height: 340px;
+    border-radius: 24px 0 0 24px;
+    overflow: hidden;
+    background: var(--pink-light);
+}
+
+.gl-detail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gl-detail-img-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 4rem;
+    color: var(--text-muted);
+    font-size: .85rem;
+}
+
+/* Like button in detail modal */
+.gl-detail-like {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background: rgba(255,255,255,.92);
+    color: var(--text-subtle);
+    font-size: .85rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: var(--ease);
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    backdrop-filter: blur(4px);
+}
+.gl-detail-like:hover { background: var(--white); transform: scale(1.05); }
+.gl-detail-like.liked { background: var(--pink); color: var(--white); }
+.gl-detail-like i { font-size: 1rem; }
+
+/* Body side */
+.gl-detail-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gl-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.gl-detail-cat {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.gl-detail-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--pink-deep);
+    line-height: 1.1;
+}
+
+.gl-detail-price-wrap {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.gl-detail-price {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--pink);
+    line-height: 1;
+}
+
+.gl-detail-dur {
+    display: block;
+    font-size: .74rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.gl-detail-desc {
+    font-size: .88rem;
+    color: var(--text-subtle);
+    line-height: 1.7;
+}
+
+.gl-detail-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.gl-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: .5rem;
+    border-top: 1px solid var(--pink-light);
+}
+.gl-detail-actions .btn-primary,
+.gl-detail-actions .btn-secondary {
+    flex: 1;
+    justify-content: center;
+}
+
+/* ================================================================
+   ADMIN: ADD/EDIT MODAL EXTRAS
+   ================================================================ */
+.gl-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+.gl-form-row .field { margin-bottom: 0; }
+
+.gl-img-input-wrap {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border: 1.5px solid var(--pink-border);
+    border-radius: var(--r-input);
+    transition: var(--ease);
+    background: var(--white);
+}
+.gl-img-input-wrap:focus-within { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(212,83,126,.1); }
+.gl-img-input-wrap input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: .88rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-dark);
+    background: transparent;
+    padding: 0;
+}
+.gl-img-input-wrap input::placeholder { color: #D3D1C7; }
+
+.gl-img-preview-wrap {
+    margin-top: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--pink-light);
+    background: var(--pink-light);
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gl-admin-img-preview {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.gl-admin-img-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 1.5rem;
+    color: var(--text-muted);
+    font-size: .82rem;
+    text-align: center;
+}
+.gl-admin-img-placeholder i { font-size: 2rem; color: var(--pink-border); }
+
+/* ================================================================
+   EMPTY STATE
+   ================================================================ */
+.gl-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+.gl-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: .3;
+}
+.gl-empty h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: var(--pink-deep);
+    margin-bottom: 8px;
+}
+.gl-empty p { font-size: .88rem; margin-bottom: 1.25rem; }
+
+/* ================================================================
+   ADD BUTTON (topbar)
+   ================================================================ */
+.gl-add-btn {
+    flex-shrink: 0;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+
+/* 1200px */
+@media (max-width: 1200px) {
+    .gl-stats-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 1024px */
+@media (max-width: 1024px) {
+    .gl-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+    .gl-detail-modal { grid-template-columns: 1fr; max-width: 480px; }
+    .gl-detail-img-wrap { min-height: 260px; border-radius: 24px 24px 0 0; }
+}
+
+/* 900px */
+@media (max-width: 900px) {
+    .gl-stats-row { grid-template-columns: repeat(3, 1fr); }
+    .gl-form-row { grid-template-columns: 1fr; }
+}
+
+/* 768px — mobile */
+@media (max-width: 768px) {
+    .gl-stats-row { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+    .gl-filter-bar { padding: .9rem 1rem; }
+    .gl-pills { gap: 6px; }
+    .gl-pill { padding: 5px 11px; font-size: .73rem; }
+    .gl-pill span { display: none; }           /* icons only on mobile */
+    .gl-pill i    { font-size: .85rem; }
+    .gl-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .85rem; }
+    .gl-card-img-wrap { height: 160px; }
+    .gl-cat-see-all { display: none; }
+    .gl-detail-modal { margin: 0; border-radius: 20px; }
+    .gl-detail-body { padding: 1.25rem; }
+    .gl-detail-title { font-size: 1.3rem; }
+}
+
+/* 540px */
+@media (max-width: 540px) {
+    .gl-stats-row { grid-template-columns: 1fr 1fr; }
+    .gl-stat { padding: .8rem .9rem; gap: .65rem; }
+    .gl-stat-val { font-size: 1.25rem; }
+    .gl-view-bar { flex-direction: column; align-items: flex-start; gap: .5rem; }
+    .gl-card-img-wrap { height: 145px; }
+    .gl-detail-header { flex-direction: column; gap: .5rem; }
+    .gl-detail-price-wrap { text-align: left; }
+}
+
+/* 400px */
+@media (max-width: 400px) {
+    .gl-grid { grid-template-columns: 1fr 1fr; gap: .6rem; }
+    .gl-card-body { padding: .75rem; }
+    .gl-card-title { font-size: .8rem; }
+    .gl-card-desc { display: none; }
+}
