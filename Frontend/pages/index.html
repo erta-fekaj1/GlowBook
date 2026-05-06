@@ -9,13 +9,6 @@
     <style>
         .login-field-error{display:block;font-size:.73rem;color:#D85A30;margin-top:4px}
         .login-field input.is-err{border-color:#D85A30;box-shadow:0 0 0 3px rgba(216,90,48,.12)}
-        .hint-box{margin-top:1.2rem;background:var(--pink-light);border:1px solid var(--pink-border);border-radius:12px;padding:12px 14px;font-size:.78rem}
-        .hint-box strong{display:block;color:var(--pink-deep);margin-bottom:8px}
-        .hint-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;gap:8px;flex-wrap:wrap}
-        .hint-row span{color:var(--text-mid);font-weight:500}
-        .hint-row code{background:white;border:1px solid var(--pink-border);padding:2px 8px;border-radius:6px;color:var(--text-subtle);font-size:.71rem;font-family:monospace;cursor:pointer}
-        .hint-row code:hover{background:var(--pink-light)}
-        .quick-fill{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:.74rem;color:var(--pink-deep);background:none;border:none;padding:0;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
     </style>
 </head>
 <body>
@@ -50,21 +43,6 @@
                 <button class="login-btn" id="loginBtn" onclick="doLogin()">
                     <i class="fa-solid fa-right-to-bracket"></i> Kyçu
                 </button>
-
-                <div class="hint-box">
-                    <strong><i class="fa-solid fa-circle-info"></i> Hyrje demo</strong>
-                    <div class="hint-row">
-                        <span>👑 Admin</span>
-                        <code onclick="fillAdmin()" title="Kliko për të plotësuar">admin@glowbook.com · admin123</code>
-                    </div>
-                    <div class="hint-row">
-                        <span>🙋 Klient</span>
-                        <code>Regjistrohu ose email tjetër</code>
-                    </div>
-                    <button class="quick-fill" onclick="fillAdmin()">
-                        <i class="fa-solid fa-bolt"></i> Plotëso si Admin
-                    </button>
-                </div>
             </div>
 
             <!-- REGISTER -->
@@ -179,12 +157,6 @@ function doRegister() {
     }
 }
 
-function fillAdmin() {
-    document.getElementById('loginEmail').value    = 'admin@glowbook.com';
-    document.getElementById('loginPassword').value = 'admin123';
-    clearAllErrors();
-    GB.toast('Kredencialet u plotësuan — kliko Kyçu!', 'info');
-}
 </script>
 </body>
 </html>
