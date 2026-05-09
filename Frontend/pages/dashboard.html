@@ -31,19 +31,19 @@
             </div>
         </div>
 
-        <!-- Admin shortcut bar (hidden from clients via CSS) -->
-        <div data-admin class="card" style="margin-bottom:1.25rem;background:linear-gradient(135deg,#FBEAF0,#EEEDFE)">
-            <div class="card-title" style="margin-bottom:.75rem">
-                <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:6px"></i>Admin Shortcuts</span>
+        <!-- Admin shortcut bar -->
+        <div data-admin class="card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(251,234,240,.8),rgba(238,237,254,.8));backdrop-filter:blur(12px);animation:slideUp .5s ease-out .1s both">
+            <div class="card-title" style="margin-bottom:1rem">
+                <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:8px"></i>Admin Shortcuts</span>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
                 <a href="admin.html"        class="btn-primary"   style="font-size:.82rem"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
                 <a href="users.html"        class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-users"></i> Përdoruesit</a>
                 <a href="appointments.html" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Të gjitha Takimet</a>
             </div>
         </div>
 
-        <!-- Stats -->
+        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card pink">
                 <div class="stat-icon">👥</div>
@@ -74,23 +74,23 @@
         <div class="grid-2">
             <div class="card">
                 <div class="card-title">
-                    <span>Takimet e fundit</span>
+                    <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Takimet e fundit</span>
                     <a href="appointments.html">Shiko të gjitha →</a>
                 </div>
-                <div id="apptList"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
+                <div id="apptList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
             <div class="card">
                 <div class="card-title">
-                    <span>Shërbimet</span>
+                    <span><i class="fa-solid fa-sparkles" style="margin-right:8px;color:var(--pink)"></i>Shërbimet</span>
                     <a href="services.html">Shiko të gjitha →</a>
                 </div>
-                <div id="svcList"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
+                <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
         </div>
 
         <!-- Admin-only bar chart -->
-        <div class="card" data-admin>
-            <div class="card-title">Klientët sipas rolit</div>
+        <div class="card" data-admin style="animation:slideUp .5s ease-out .25s both">
+            <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Klientët sipas rolit</div>
             <div class="bar-wrap" id="roleChart"></div>
         </div>
     </main>
@@ -98,13 +98,14 @@
 
 <div class="gb-toast" id="toast"></div>
 <script src="../js/auth.js"></script>
+<script src="../js/animations.js"></script>
 <script>
 GB.init({ page:'dashboard' });
 
 const me    = GB.getMe();
 const admin = GB.isAdmin();
 
-document.getElementById('topbarSub').textContent = `Mirë se vini, ${me?.name||''}! Ja përmbledhja.`;
+document.getElementById('topbarSub').textContent = `Mirë se vini, ${me?.name||''}! Ja përmbledhja e aktivitetit.`;
 
 function load() {
     const allAppts  = GB.appointments.getAll();
@@ -127,13 +128,14 @@ function load() {
     const showAppts = [...myAppts].reverse().slice(0,4);
     const al = document.getElementById('apptList');
     if (!showAppts.length) {
-        al.innerHTML = `<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem">
-            Nuk ka takime akoma. <a href="appointments.html" style="color:var(--pink)">Shto takim →</a></div>`;
+        al.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.85rem">
+            <div style="font-size:2rem;margin-bottom:.5rem">📅</div>
+            Nuk ka takime akoma. <a href="appointments.html" style="color:var(--pink);font-weight:600">Shto takim →</a></div>`;
     } else {
         al.innerHTML = showAppts.map(a => {
             const bc  = a.status==='Pending'?'badge-pending':a.status==='Confirmed'?'badge-confirmed':'badge-done';
             const ini = (a.userName||a.userEmail||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-            return `<div class="appt-item">
+            return `<div class="appt-item" style="animation:slideUp .5s ease-out">
                 <div class="appt-avatar">${ini}</div>
                 <div class="appt-info">
                     <div class="appt-name">${a.userName||a.userEmail}</div>
@@ -146,12 +148,16 @@ function load() {
 
     /* Services list */
     const sl = document.getElementById('svcList');
-    sl.innerHTML = services.slice(0,5).map(s =>
-        `<div class="service-item">
-            <span class="service-name">${s.name}</span>
-            <span class="service-price">€${s.price}</span>
-        </div>`
-    ).join('') || '<span style="color:var(--text-muted);font-size:.85rem">Nuk ka shërbime</span>';
+    if (services.length) {
+        sl.innerHTML = services.slice(0,5).map(s =>
+            `<div class="service-item" style="animation:slideUp .5s ease-out">
+                <span class="service-name">${s.name}</span>
+                <span class="service-price">€${s.price}</span>
+            </div>`
+        ).join('');
+    } else {
+        sl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.85rem"><div style="font-size:2rem;margin-bottom:.5rem">💆</div>Nuk ka shërbime akoma</div>';
+    }
 
     /* Bar chart — admin only */
     if (admin) {
@@ -160,10 +166,10 @@ function load() {
         const total     = allUsers.length || 1;
         document.getElementById('roleChart').innerHTML = `
             <div class="bar-row"><span class="bar-label">Admin</span>
-                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(admins/total*100)}%"></div></div>
+                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(admins/total*100)}%;animation:slideInLeft 1s ease-out"></div></div>
                 <span class="bar-val">${admins}</span></div>
-            <div class="bar-row"><span class="bar-label">Customer</span>
-                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#7F77DD,#534AB7)"></div></div>
+            <div class="bar-row" style="animation-delay:.1s"><span class="bar-label">Customer</span>
+                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#7F77DD,#534AB7);animation:slideInLeft 1s ease-out .1s both"></div></div>
                 <span class="bar-val">${customers}</span></div>`;
     }
 }

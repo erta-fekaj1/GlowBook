@@ -77,21 +77,77 @@ function _seed() {
     /* ── Empty appointments array ── */
     if (!_r(_K.APPTS)) _w(_K.APPTS, []);
 
-    /* ── Default gallery designs ── */
+    /* ── Default gallery designs (full dataset — all categories) ── */
     if (!_r(_K.DESIGNS)) {
         _w(_K.DESIGNS, [
-            { id:1,  name:'French Classic', emoji:'🤍', category:'French',  complexity:'E lehtë',    price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante.',    tags:['Klasik','Elegant'],  likes:24, liked:false, bg:'#F8F4FF' },
-            { id:2,  name:'Pink Ombre',      emoji:'🌸', category:'Ombre',   complexity:'Mesatare',   price:25, duration:45,  desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë.', tags:['Romantike','Ombre'], likes:31, liked:false, bg:'#FFF0F5' },
-            { id:3,  name:'Glitter Bomb',    emoji:'✨', category:'Glitter', complexity:'E lehtë',    price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht.',                    tags:['Festë','Glamour'],   likes:18, liked:false, bg:'#FFFBF0' },
-            { id:4,  name:'Floral Dream',    emoji:'🌺', category:'Floral',  complexity:'E vështirë', price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë.',                   tags:['Art','Lule'],        likes:45, liked:false, bg:'#F0FFF4' },
-            { id:5,  name:'Gel Nude',        emoji:'🍑', category:'Gel',     complexity:'E lehtë',    price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale.',                         tags:['Neutral','Gel'],     likes:29, liked:false, bg:'#FFF5F0' },
-            { id:6,  name:'Galaxy Nails',    emoji:'🌌', category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta.',                   tags:['Galaxy','Unique'],   likes:52, liked:false, bg:'#F0F0FF' },
-            { id:7,  name:'Marble Effect',   emoji:'🖤', category:'Gel',     complexity:'E vështirë', price:38, duration:80,  desc:'Efekt mermer luksoz me vija delikate.',                 tags:['Luks','Marble'],     likes:37, liked:false, bg:'#F8F8F8' },
-            { id:8,  name:'Floral Ombre',    emoji:'🌸', category:'Floral',  complexity:'E vështirë', price:50, duration:120, desc:'Kombinim ombre me lule të vizatuara.',                  tags:['Trending','Lule'],   likes:61, liked:false, bg:'#FFF0F8' },
-            { id:9,  name:'Red Glam',        emoji:'❤️', category:'Gel',     complexity:'E lehtë',    price:16, duration:30,  desc:'Ngjyrë e kuqe klasike ikonike.',                        tags:['Klasik','Red'],      likes:33, liked:false, bg:'#FFF0F0' },
-            { id:10, name:'Baby Blue',       emoji:'💙', category:'Ombre',   complexity:'Mesatare',   price:22, duration:45,  desc:'Kalim i butë në ngjyrë blu.',                           tags:['Pastel','Blue'],     likes:27, liked:false, bg:'#F0F8FF' },
-            { id:11, name:'Gold Tips',       emoji:'⭐', category:'French',  complexity:'Mesatare',   price:28, duration:50,  desc:'Majë të arta elegante.',                               tags:['Gold','French'],     likes:41, liked:false, bg:'#FFFDF0' },
-            { id:12, name:'Lavender Gel',    emoji:'💜', category:'Gel',     complexity:'E lehtë',    price:17, duration:30,  desc:'Ngjyrë lavanderi e butë.',                             tags:['Pastel','Purple'],   likes:35, liked:false, bg:'#F8F0FF' },
+            /* ── French ── */
+            { id:1,  name:'French Classic',     image:'../images/gallery/french/french1.jpg',    category:'French',  complexity:'E lehtë',    price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante. Perfekt për çdo rast.',         tags:['Klasik','Elegant','Casual'],   likes:24, liked:false },
+            { id:2,  name:'Gold French Tips',   image:'../images/gallery/french/french2.jpg',    category:'French',  complexity:'Mesatare',   price:28, duration:50,  desc:'Majë të arta luksoze mbi bazë transparente. Sofistikate dhe moderne.',            tags:['Gold','Luks','French'],        likes:41, liked:false },
+            { id:3,  name:'Pink French',        image:'../images/gallery/french/french3.jpg',    category:'French',  complexity:'E lehtë',    price:18, duration:35,  desc:'Varianti rozë i French klasikut. Femëror dhe i ëmbël.',                           tags:['Pink','French','Sweet'],       likes:33, liked:false },
+
+            /* ── Gel ── */
+            { id:4,  name:'Gel Nude',           image:'../images/gallery/gel/gel1.jpg',          category:'Gel',     complexity:'E lehtë',    price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale. I shkon çdo veshje dhe rast.',                      tags:['Neutral','Natural','Gel'],     likes:29, liked:false },
+            { id:5,  name:'Red Glam Gel',       image:'../images/gallery/gel/gel2.jpg',          category:'Gel',     complexity:'E lehtë',    price:16, duration:30,  desc:'Ngjyrë e kuqe klasike dhe e pasur. Ikonike dhe e fuqishme.',                       tags:['Klasik','Bold','Red'],         likes:33, liked:false },
+            { id:6,  name:'Marble Gel',         image:'../images/gallery/gel/gel3.jpg',          category:'Gel',     complexity:'E vështirë', price:38, duration:80,  desc:'Efekt mermer luksoz me vija delikate gri dhe të bardhë.',                         tags:['Luks','Marble','Modern'],      likes:37, liked:false },
+            { id:7,  name:'Lavender Gel',       image:'../images/gallery/gel/gel4.jpg',          category:'Gel',     complexity:'E lehtë',    price:17, duration:30,  desc:'Ngjyrë lavanderi e butë dhe qetësuese. Perfekte për pranverën.',                  tags:['Pastel','Purple','Spring'],    likes:35, liked:false },
+
+            /* ── Ombre ── */
+            { id:8,  name:'Pink Ombre',         image:'../images/gallery/ombre/ombre1.jpg',      category:'Ombre',   complexity:'Mesatare',   price:25, duration:45,  desc:'Kalim gradual nga rozë i çelët te ngjyra më e thellë. Romantike dhe femërore.',   tags:['Romantike','Ombre','Pink'],   likes:31, liked:false },
+            { id:9,  name:'Baby Blue Ombre',    image:'../images/gallery/ombre/ombre2.jpg',      category:'Ombre',   complexity:'Mesatare',   price:22, duration:45,  desc:'Kalim i butë në ngjyrë blu të çelët. Freskues dhe i ëmbël.',                      tags:['Pastel','Blue','Sweet'],       likes:27, liked:false },
+            { id:10, name:'Sunset Ombre',       image:'../images/gallery/ombre/ombre3.jpg',      category:'Ombre',   complexity:'E vështirë', price:32, duration:70,  desc:'Kalim i bukur nga portokalli në rozë si perëndim dielli. Dramatik dhe ngjyrshëm.',tags:['Sunset','Warm','Dramatic'],    likes:45, liked:false },
+
+            /* ── Floral ── */
+            { id:11, name:'Floral Dream',       image:'../images/gallery/floral/floral1.jpg',    category:'Floral',  complexity:'E vështirë', price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë. Punë artizanale e lartë dhe delikate.',      tags:['Art','Lule','Handmade'],      likes:45, liked:false },
+            { id:12, name:'Floral Ombre',       image:'../images/gallery/floral/floral2.jpg',    category:'Floral',  complexity:'E vështirë', price:50, duration:120, desc:'Kombinim elegant i ombre me lule të vizatuara. Dizajni trending i sezonit.',      tags:['Trending','Lule','Ombre'],    likes:61, liked:false },
+            { id:13, name:'Daisy Nails',        image:'../images/gallery/floral/floral3.jpg',    category:'Floral',  complexity:'Mesatare',   price:30, duration:60,  desc:'Lule kamomili të bardha dhe të verdha mbi bazë të çelët. Fresket dhe verore.',   tags:['Daisy','Summer','Fresh'],     likes:38, liked:false },
+
+            /* ── Glitter ── */
+            { id:14, name:'Glitter Bomb',       image:'../images/gallery/glitter/glitter1.jpg',  category:'Glitter', complexity:'E lehtë',    price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht. Ideal për festa dhe ngjarje speciale.',        tags:['Festë','Glamour','Shine'],    likes:18, liked:false },
+            { id:15, name:'Galaxy Nails',       image:'../images/gallery/glitter/glitter2.jpg',  category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta dhe shkëlqim si yje. Unike dhe mbresëlënëse.',tags:['Galaxy','Artsy','Unique'],    likes:52, liked:false },
+            { id:16, name:'Rose Gold Glitter',  image:'../images/gallery/glitter/glitter3.jpg',  category:'Glitter', complexity:'Mesatare',   price:28, duration:55,  desc:'Shkëlqim rozë ari mbi bazë krem. Femëror, luksoze dhe elegant.',                 tags:['RoseGold','Luks','Glamour'],  likes:44, liked:false },
+
+            /* ── Chrome / Mirror ── */
+            { id:17, name:'Silver Chrome',      image:'../images/gallery/chrome/chrome1.jpg',    category:'Chrome',  complexity:'Mesatare',   price:32, duration:55,  desc:'Efekt metalik argjendi perfekt sikur pasqyrë. Futuristik dhe mbresëlënës.',       tags:['Silver','Mirror','Metal'],    likes:56, liked:false },
+            { id:18, name:'Gold Mirror',        image:'../images/gallery/chrome/chrome2.jpg',    category:'Chrome',  complexity:'Mesatare',   price:35, duration:60,  desc:'Shkëlqim ar i pastër si pasqyrë. Luksoze dhe glamoroz.',                          tags:['Gold','Mirror','Luks'],       likes:49, liked:false },
+            { id:19, name:'Rose Gold Chrome',   image:'../images/gallery/chrome/chrome3.jpg',    category:'Chrome',  complexity:'Mesatare',   price:33, duration:55,  desc:'Efekt pasqyre rozë ari. Kombinim perfekt i modernitetit me femëroren.',           tags:['RoseGold','Chrome','Trendy'], likes:62, liked:false },
+            { id:20, name:'Blue Chrome',        image:'../images/gallery/chrome/chrome4.jpg',    category:'Chrome',  complexity:'E vështirë', price:38, duration:65,  desc:'Pasqyrë blu elektrik që ndryshon ngjyrë sipas dritës. Magjike dhe dinamike.',    tags:['Blue','Mirror','Iridescent'], likes:41, liked:false },
+
+            /* ── Animal Print ── */
+            { id:21, name:'Leopard Print',      image:'../images/gallery/animal/animal1.jpg',    category:'Animal Print', complexity:'E vështirë', price:40, duration:85,  desc:'Modeli leopard i vizatuar me dorë. Bold, guximtar dhe trendy gjithmonë.',     tags:['Leopard','Wild','Bold'],      likes:47, liked:false },
+            { id:22, name:'Zebra Stripes',      image:'../images/gallery/animal/animal2.jpg',    category:'Animal Print', complexity:'Mesatare',   price:30, duration:65,  desc:'Vija zebër të bardha e të zeza. Klasike, kontraste dhe mbresëlënëse.',        tags:['Zebra','Stripes','Classic'],  likes:35, liked:false },
+            { id:23, name:'Snake Skin',         image:'../images/gallery/animal/animal3.jpg',    category:'Animal Print', complexity:'E vështirë', price:45, duration:95,  desc:'Teksturë lëkure gjarpri e vizatuar me durim dhe precizion të lartë.',         tags:['Snake','Texture','Art'],      likes:38, liked:false },
+            { id:24, name:'Cow Print',          image:'../images/gallery/animal/animal4.jpg',    category:'Animal Print', complexity:'Mesatare',   price:28, duration:60,  desc:'Modeli lopë retro dhe i lezetshëm. Trendy dhe argëtues për verën.',            tags:['Cow','Retro','Fun'],          likes:52, liked:false },
+
+            /* ── Abstract ── */
+            { id:25, name:'Abstract Lines',     image:'../images/gallery/abstract/abstract1.jpg',category:'Abstract', complexity:'Mesatare',   price:28, duration:55,  desc:'Vija dhe forma gjeometrike abstrakte. Moderne, minimalist dhe artistike.',       tags:['Lines','Modern','Art'],       likes:39, liked:false },
+            { id:26, name:'Color Block',        image:'../images/gallery/abstract/abstract2.jpg',category:'Abstract', complexity:'E lehtë',    price:22, duration:45,  desc:'Blloke ngjyrash kontraste. Thjeshtë, bold dhe tepër modern.',                    tags:['Colorful','Block','Minimal'], likes:31, liked:false },
+            { id:27, name:'Paint Splash',       image:'../images/gallery/abstract/abstract3.jpg',category:'Abstract', complexity:'E vështirë', price:42, duration:90,  desc:'Spërkatje ngjyrash si pikturë artistike. Unike — çdo thonj ndryshon!',          tags:['Art','Splash','Unique'],      likes:54, liked:false },
+            { id:28, name:'Negative Space',     image:'../images/gallery/abstract/abstract4.jpg',category:'Abstract', complexity:'Mesatare',   price:30, duration:60,  desc:'Hapësirat negative si dizajn vetë. Minimalist, elegant dhe tepër trendy.',      tags:['Minimal','Space','Trendy'],   likes:43, liked:false },
+
+            /* ── Swirls ── */
+            { id:29, name:'Pastel Swirls',      image:'../images/gallery/swirls/swirls1.jpg',    category:'Swirls',  complexity:'E vështirë', price:38, duration:80,  desc:'Spirale delikate pastel në ngjyra të buta dhe ëmbëlsuese. Romantike dhe unike.', tags:['Pastel','Swirl','Romantic'],  likes:57, liked:false },
+            { id:30, name:'Black & White Swirl',image:'../images/gallery/swirls/swirls2.jpg',    category:'Swirls',  complexity:'E vështirë', price:35, duration:75,  desc:'Spirale kontraste bardhë e zi. Dramatike, sofistikate dhe moderne.',            tags:['BW','Contrast','Modern'],     likes:44, liked:false },
+            { id:31, name:'Rainbow Swirls',     image:'../images/gallery/swirls/swirls3.jpg',    category:'Swirls',  complexity:'E vështirë', price:45, duration:100, desc:'Spirale shumëngjyrëshe si ylber. Gëzuese, ngjyrshëme dhe plot energji.',        tags:['Rainbow','Fun','Colorful'],   likes:63, liked:false },
+
+            /* ── 3D Nails ── */
+            { id:32, name:'3D Roses',           image:'../images/gallery/3d/3d1.jpg',            category:'3D',      complexity:'E vështirë', price:60, duration:120, desc:'Trëndafila 3D të formuara me akryl mbi thonj. Tepër luksoz dhe vëmendtërheqës.', tags:['Roses','3D','Luxury'],        likes:71, liked:false },
+            { id:33, name:'3D Pearls',          image:'../images/gallery/3d/3d2.jpg',            category:'3D',      complexity:'E vështirë', price:55, duration:110, desc:'Perla dhe kristale 3D të ngjitura me kujdes. Elegant, luksoze dhe festiv.',      tags:['Pearls','Crystal','Elegant'], likes:65, liked:false },
+            { id:34, name:'3D Bow Nails',       image:'../images/gallery/3d/3d3.jpg',            category:'3D',      complexity:'Mesatare',   price:45, duration:90,  desc:'Hinkëza të bëra me akryl mbi thonj. Femëror, i ëmbël dhe tepër kawaii.',        tags:['Bow','Cute','Kawaii'],        likes:58, liked:false },
+            { id:35, name:'3D Butterflies',     image:'../images/gallery/3d/3d4.jpg',            category:'3D',      complexity:'E vështirë', price:65, duration:130, desc:'Flutura 3D të buta dhe delikate. Magji e vërtetë e artit të thonjve.',           tags:['Butterfly','3D','Magic'],     likes:82, liked:false },
+
+            /* ── Foil Nails ── */
+            { id:36, name:'Gold Foil',          image:'../images/gallery/foil/foil1.jpg',        category:'Foil',    complexity:'E lehtë',    price:22, duration:40,  desc:'Folia ari e aplikuar mbi bazë transparente ose ngjyrë. Luksoze dhe e shpejtë.',  tags:['Gold','Foil','Quick'],        likes:48, liked:false },
+            { id:37, name:'Holographic Foil',   image:'../images/gallery/foil/foil2.jpg',        category:'Foil',    complexity:'Mesatare',   price:30, duration:55,  desc:'Folia holografike që ndryshon ngjyrë. Magjike, iridescente dhe moderne.',        tags:['Holo','Iridescent','Magic'],  likes:67, liked:false },
+            { id:38, name:'Silver Foil Tips',   image:'../images/gallery/foil/foil3.jpg',        category:'Foil',    complexity:'E lehtë',    price:25, duration:45,  desc:'Majët e thonjve të mbuluara me foli argjendi. Variant modern i French tipik.',  tags:['Silver','Tips','Modern'],     likes:39, liked:false },
+            { id:39, name:'Rainbow Foil',       image:'../images/gallery/foil/foil4.jpg',        category:'Foil',    complexity:'Mesatare',   price:32, duration:60,  desc:'Folia shumëngjyrëshe si ylber. Tërheq vëmendjen gjithkund ku shkoni.',          tags:['Rainbow','Foil','Bold'],      likes:55, liked:false },
+
+            /* ── Seasonal ── */
+            { id:40, name:'Valentine Hearts',   image:'../images/gallery/seasonal/seasonal1.jpg',category:'Seasonal',complexity:'Mesatare',   price:25, duration:50,  desc:'Zemra rozë dhe të kuqe për Shën Valentin. Romantike dhe të ëmbla.',             tags:['Valentine','Hearts','Love'],  likes:44, liked:false },
+            { id:41, name:'Summer Vibes',       image:'../images/gallery/seasonal/seasonal2.jpg',category:'Seasonal',complexity:'E lehtë',    price:20, duration:40,  desc:'Ngjyra verore të ndezura dhe motive diellore. Energji dhe lumturi.',             tags:['Summer','Sun','Bright'],      likes:51, liked:false },
+            { id:42, name:'Autumn Leaves',      image:'../images/gallery/seasonal/seasonal3.jpg',category:'Seasonal',complexity:'Mesatare',   price:28, duration:60,  desc:'Gjethet e vjeshtës në ari, portokalli dhe kafe. Ngrohtësi dhe charm.',          tags:['Autumn','Warm','Nature'],     likes:36, liked:false },
+            { id:43, name:'Winter Wonderland',  image:'../images/gallery/seasonal/seasonal4.jpg',category:'Seasonal',complexity:'E vështirë', price:35, duration:75,  desc:'Thekon bore dhe sfond dimëror. Magjia e dimrit në majat e gishtave.',            tags:['Winter','Snow','Magic'],      likes:49, liked:false },
+            { id:44, name:'Christmas Nails',    image:'../images/gallery/seasonal/seasonal5.jpg',category:'Seasonal',complexity:'Mesatare',   price:30, duration:65,  desc:'Motive krishtlindjore me thekon, drurë dhe ngjyra festive.',                     tags:['Christmas','Holiday','Red'],  likes:67, liked:false },
+            { id:45, name:'Spring Blossom',     image:'../images/gallery/seasonal/seasonal6.jpg',category:'Seasonal',complexity:'Mesatare',   price:26, duration:55,  desc:'Lule pranverore të buta dhe ngjyra të freskëta pastel.',                         tags:['Spring','Floral','Fresh'],    likes:42, liked:false },
         ]);
     }
 }
@@ -360,7 +416,11 @@ window.GB = {
 
         sb.innerHTML = `
             <div class="logo">
-                <span class="logo-icon">💅</span>
+                <a href="dashboard.html" class="logo-img-link">
+                    <img src="../images/logo.png" alt="Glow Book Logo" class="logo-img"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <span class="logo-img-fallback">💅</span>
+                </a>
                 <h2>Glow Book</h2>
                 <p>Nail Salon</p>
             </div>
