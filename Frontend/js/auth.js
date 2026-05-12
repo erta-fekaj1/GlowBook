@@ -23,6 +23,7 @@ const _K = {
     SVCS    : 'gb_services',
     DESIGNS : 'gb_designs',
     REVIEWS : 'gb_reviews',
+    THEME   : 'gb_theme',
 };
 
 /* ── Tiny localStorage read/write helpers ──────────────────── */
@@ -542,6 +543,49 @@ window.GB = {
         document.body.classList.toggle('role-client', this.isClient());
     },
 
+    getTheme() {
+        const mode = localStorage.getItem(_K.THEME);
+        return mode === 'dark' ? 'dark' : 'light';
+    },
+    applyTheme(mode = this.getTheme()) {
+        if (!document?.body) return;
+        const dark = mode === 'dark';
+        document.body.classList.toggle('theme-dark', dark);
+        document.body.classList.toggle('theme-light', !dark);
+        this.syncThemeToggleUI();
+    },
+    setTheme(mode = 'light') {
+        const theme = mode === 'dark' ? 'dark' : 'light';
+        localStorage.setItem(_K.THEME, theme);
+        this.applyTheme(theme);
+    },
+    toggleTheme() {
+        this.setTheme(this.getTheme() === 'dark' ? 'light' : 'dark');
+    },
+    syncThemeToggleUI() {
+        const btn = document.getElementById('themeToggleBtn');
+        if (!btn) return;
+        const dark = this.getTheme() === 'dark';
+        btn.innerHTML = dark
+            ? '<i class="fa-regular fa-sun"></i> Light'
+            : '<i class="fa-regular fa-moon"></i> Dark';
+        btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    },
+    injectThemeToggle() {
+        const host = document.querySelector('.topbar') || document.querySelector('.login-logo');
+        if (!host) return;
+        let btn = document.getElementById('themeToggleBtn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.id = 'themeToggleBtn';
+            btn.type = 'button';
+            btn.className = 'theme-toggle-btn';
+            btn.addEventListener('click', () => this.toggleTheme());
+        }
+        if (!host.contains(btn)) host.appendChild(btn);
+        this.syncThemeToggleUI();
+    },
+
     /* Populate topbar user badge */
     loadBadge() {
         const me = this.getMe();
@@ -612,6 +656,7 @@ window.GB = {
 
     applyBranding() {
         this.decorateMobileNav();
+        this.injectThemeToggle();
         this.injectAppFooter();
     },
 
@@ -679,6 +724,7 @@ window.GB = {
     init({ page='', admin=false }={}) {
         if (admin) { if (!this.requireAdmin()) return false; }
         else       { if (!this.requireAuth())  return false; }
+        this.applyTheme();
         this.applyRole();
         this.buildSidebar(page);
         this.applyBranding();
@@ -720,3 +766,7 @@ window.redirectByRole = ()          => { window.location.replace(GB.isAdmin() ? 
 
 /* ── Auto-seed on every page load ──────────────────────────── */
 _seed();
+if (typeof document !== 'undefined') {
+    GB.applyTheme();
+    GB.injectThemeToggle();
+}
