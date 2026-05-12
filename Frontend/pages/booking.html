@@ -12,6 +12,12 @@
         .qb-headline { margin-bottom:1rem; }
         .qb-headline h2 { font-family:'Cormorant Garamond',serif; font-size:1.45rem; color:var(--pink-deep); }
         .qb-headline p { font-size:.84rem; color:var(--text-muted); margin-top:2px; }
+        .qb-design-prefill { display:none; margin:0 0 1rem; padding:.75rem; border:1px solid var(--pink-border); border-radius:12px; background:linear-gradient(135deg,var(--pink-light),#fff); }
+        .qb-design-prefill.show { display:flex; align-items:center; gap:.75rem; }
+        .qb-design-img { width:52px; height:52px; border-radius:10px; object-fit:cover; background:#fff; border:1px solid var(--pink-border); }
+        .qb-design-title { font-size:.85rem; font-weight:700; color:var(--text-dark); }
+        .qb-design-meta { font-size:.72rem; color:var(--text-muted); }
+        .qb-design-clear { margin-left:auto; border:none; background:#fff; border:1px solid var(--pink-border); border-radius:8px; padding:.35rem .55rem; color:var(--text-mid); }
         .qb-steps { display:flex; gap:.55rem; margin-top:1rem; flex-wrap:wrap; }
         .qb-step { border:1px solid var(--pink-border); background:var(--pink-light); border-radius:999px; padding:.35rem .75rem; font-size:.74rem; color:var(--pink-deep); font-weight:600; }
         .qb-step.done { background:#e9f8f2; color:#0f6e56; border-color:#b7ead9; }
@@ -91,6 +97,7 @@
                         <span class="qb-step" id="step-pay">4. Pagesa</span>
                     </div>
                 </div>
+                <div id="designPrefill" class="qb-design-prefill"></div>
 
                 <div class="qb-card" style="padding:1rem;margin-bottom:1rem">
                     <div class="card-title" style="margin-bottom:.75rem">
@@ -130,6 +137,7 @@
 
             <aside class="qb-card qb-summary">
                 <div class="card-title"><span><i class="fa-solid fa-receipt" style="margin-right:6px;color:var(--pink)"></i>Përmbledhja e rezervimit</span></div>
+                <div class="qb-row" id="sumDesignRow" style="display:none"><span>Stili</span><b id="sumDesign">–</b></div>
                 <div class="qb-row"><span>Shërbimi</span><b id="sumService">–</b></div>
                 <div class="qb-row"><span>Data</span><b id="sumDate">–</b></div>
                 <div class="qb-row"><span>Ora</span><b id="sumTime">–</b></div>
@@ -158,12 +166,14 @@ if (GB.isAdmin()) {
 }
 
 const BOOKING_DRAFT_KEY = 'gb_checkout_draft';
+const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 const WORK_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
 const monthNames = ['Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nëntor', 'Dhjetor'];
 const dayNames = ['Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht', 'Die'];
 
 const state = {
     service: null,
+    design: null,
     date: null,
     time: null,
     month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -186,6 +196,9 @@ function updateSteps() {
 }
 
 function updateSummary() {
+    const hasDesign = !!state.design;
+    document.getElementById('sumDesignRow').style.display = hasDesign ? 'flex' : 'none';
+    document.getElementById('sumDesign').textContent = hasDesign ? state.design.name : '–';
     document.getElementById('sumService').textContent = state.service?.name || '–';
     document.getElementById('sumDate').textContent = state.date ? formatLongDate(state.date) : '–';
     document.getElementById('sumTime').textContent = state.time || '–';
@@ -213,6 +226,68 @@ function renderServices() {
         </button>
     `).join('');
 }
+
+function renderDesignPrefill() {
+    const box = document.getElementById('designPrefill');
+    if (!state.design) {
+        box.className = 'qb-design-prefill';
+        box.innerHTML = '';
+        return;
+    }
+    box.className = 'qb-design-prefill show';
+    box.innerHTML = `
+        <img src="${state.design.image || ''}" class="qb-design-img" alt="${state.design.name}" onerror="this.style.visibility='hidden'">
+        <div>
+            <div class="qb-design-title">Stili nga galeria: ${state.design.name}</div>
+            <div class="qb-design-meta">${state.design.category || 'Design i përzgjedhur'} · i lidhur me prenotimin</div>
+        </div>
+        <button type="button" class="qb-design-clear" onclick="clearSelectedDesign()"><i class="fa-solid fa-xmark"></i></button>
+    `;
+}
+
+function suggestServiceByCategory(category = '', suggestedId = null) {
+    if (suggestedId) {
+        const direct = services.find(s => s.id === Number(suggestedId));
+        if (direct) return direct;
+    }
+    const cat = String(category).toLowerCase();
+    const pick = (keywords) => services.find(s => keywords.some(k => String(s.name || '').toLowerCase().includes(k)));
+    if (cat.includes('french')) return pick(['french']);
+    if (cat.includes('gel')) return pick(['gel']);
+    if (cat.includes('ombre')) return pick(['ombre']);
+    if (cat.includes('3d')) return pick(['akryl', 'acryl', 'nail art']);
+    return pick(['nail art', 'gel', 'manikyr']) || null;
+}
+
+function hydrateGalleryPrefill() {
+    let prefill;
+    try {
+        prefill = JSON.parse(localStorage.getItem(BOOKING_PREFILL_KEY) || 'null');
+    } catch {
+        prefill = null;
+    }
+    if (!prefill?.designName) return;
+
+    state.design = {
+        id: prefill.designId || null,
+        name: prefill.designName,
+        image: prefill.designImage || '',
+        category: prefill.designCategory || '',
+    };
+    const suggested = suggestServiceByCategory(prefill.designCategory, prefill.suggestedServiceId);
+    if (suggested) state.service = suggested;
+    localStorage.removeItem(BOOKING_PREFILL_KEY);
+    renderDesignPrefill();
+    renderServices();
+    document.getElementById('autoHint').textContent = `"${state.design.name}" u soll nga galeria dhe u shtua te përmbledhja.`;
+}
+
+function clearSelectedDesign() {
+    state.design = null;
+    renderDesignPrefill();
+    updateSummary();
+}
+window.clearSelectedDesign = clearSelectedDesign;
 
 function dayAvailability(dayISO) {
     return GB.appointments.getDayAvailability(`${dayISO}T09:00`, WORK_SLOTS);
@@ -302,6 +377,10 @@ function continueToCheckout() {
         serviceName: state.service.name,
         servicePrice: Number(state.service.price || 0),
         serviceDuration: Number(state.service.duration || 60),
+        selectedDesignId: state.design?.id || null,
+        selectedDesignName: state.design?.name || null,
+        selectedDesignImage: state.design?.image || null,
+        selectedDesignCategory: state.design?.category || null,
         date: state.date,
         time: state.time,
         slotISO,
@@ -366,8 +445,10 @@ window.addEventListener('storage', (e) => {
 });
 
 renderServices();
+hydrateGalleryPrefill();
 renderCalendar();
 renderSlots();
+renderDesignPrefill();
 updateSummary();
 </script>
 </body>

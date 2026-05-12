@@ -319,7 +319,19 @@ window.GB = {
             };
         },
 
-        add({ userEmail, userName, serviceId, serviceName, date, notes='', status='Pending' }) {
+        add({
+            userEmail,
+            userName,
+            serviceId,
+            serviceName,
+            date,
+            notes='',
+            status='Pending',
+            selectedDesignId = null,
+            selectedDesignName = null,
+            selectedDesignImage = null,
+            selectedDesignCategory = null
+        }) {
             if (!userEmail || !serviceId || !date) {
                 return { ok:false, error:'Email, shërbimi dhe data janë të detyrueshme.' };
             }
@@ -332,6 +344,10 @@ window.GB = {
                 userEmail: userEmail.toLowerCase(), userName,
                 serviceId, serviceName, date,
                 notes: notes.trim(), status,
+                selectedDesignId,
+                selectedDesignName,
+                selectedDesignImage,
+                selectedDesignCategory,
                 createdAt: _now(),
             };
             _w(_K.APPTS, [...all, appt]);

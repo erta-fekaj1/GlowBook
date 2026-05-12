@@ -35,6 +35,7 @@ const state = {
     editingId    : null,
     detailId     : null,
 };
+const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 
 /* ── Helpers ──────────────────────────────────────────────────── */
 const isAdmin = () => GB.isAdmin();
@@ -45,6 +46,23 @@ function getCat(key) {
 
 function complexityClass(c) {
     return c === 'E lehtë' ? 'gl-badge-easy' : c === 'Mesatare' ? 'gl-badge-med' : 'gl-badge-hard';
+}
+
+function suggestServiceForDesign(design) {
+    const allServices = GB.services.getAll();
+    const cat = String(design?.category || '').toLowerCase();
+    const byKeyword = (keywords) =>
+        allServices.find(s => keywords.some(k => String(s.name || '').toLowerCase().includes(k)));
+
+    if (cat.includes('french')) return byKeyword(['french']);
+    if (cat.includes('gel')) return byKeyword(['gel']);
+    if (cat.includes('ombre')) return byKeyword(['ombre']);
+    if (cat.includes('3d')) return byKeyword(['akryl', 'acryl', 'nail art']);
+    if (cat.includes('chrome') || cat.includes('foil')) return byKeyword(['gel', 'nail art']);
+    if (cat.includes('floral') || cat.includes('animal') || cat.includes('abstract') || cat.includes('swirls')) {
+        return byKeyword(['nail art', 'gel']);
+    }
+    return byKeyword(['nail art', 'gel', 'manikyr']) || allServices[0] || null;
 }
 
 /* Fallback placeholder when image fails to load */
@@ -190,6 +208,9 @@ function buildGridCard(d) {
             <div class="gl-card-meta">
                 <span class="gl-card-dur"><i class="fa-regular fa-clock"></i> ${d.duration} min</span>
             </div>
+            <button class="gl-card-book-inline" onclick="event.stopPropagation();bookFromCard(${d.id})">
+                <i class="fa-solid fa-calendar-check"></i> Rezervo këtë stil
+            </button>
         </div>
     </div>`;
 }
@@ -227,6 +248,11 @@ function buildListRow(d) {
         <td><span class="gl-complexity-badge ${comp}">${d.complexity}</span></td>
         <td style="font-weight:600;color:var(--pink)">€${d.price}</td>
         <td style="color:var(--text-subtle)">${d.duration} min</td>
+        <td>
+            <button class="btn-sm btn-edit" style="background:var(--pink-light);color:var(--pink-deep)" onclick="event.stopPropagation();bookFromCard(${d.id})">
+                <i class="fa-solid fa-calendar-check"></i> Rezervo
+            </button>
+        </td>
         <td>
             <button class="gl-like-btn ${d.liked?'liked':''}" style="position:static;transform:none;box-shadow:none;background:var(--pink-light);border-radius:20px;padding:4px 10px;font-size:.78rem"
                 onclick="event.stopPropagation();toggleLike(${d.id})" id="like-${d.id}">
@@ -280,6 +306,7 @@ function render() {
                         <th>Vështirësia</th>
                         <th>Çmimi</th>
                         <th>Kohëzgjatja</th>
+                        <th>Rezervo</th>
                         <th>Pëlqimet</th>
                         ${adminHeader}
                     </tr></thead>
@@ -428,15 +455,36 @@ function closeDetailModal() {
 window.closeDetailModal = closeDetailModal;
 
 function bookDesign() {
-    closeDetailModal();
-    window.location.href = 'appointments.html';
+    if (!state.detailId) return;
+    startBookingTransition(state.detailId, true);
 }
 window.bookDesign = bookDesign;
 
 function bookFromCard(id) {
-    window.location.href = 'appointments.html';
+    startBookingTransition(id, false);
 }
 window.bookFromCard = bookFromCard;
+
+function startBookingTransition(id, closeModalFirst) {
+    const design = GB.designs.getAll().find(x => x.id === id);
+    if (!design) return;
+
+    const suggestedService = suggestServiceForDesign(design);
+    localStorage.setItem(BOOKING_PREFILL_KEY, JSON.stringify({
+        designId: design.id,
+        designName: design.name,
+        designImage: design.image || '',
+        designCategory: design.category || '',
+        designPrice: Number(design.price || 0),
+        designDuration: Number(design.duration || 0),
+        suggestedServiceId: suggestedService?.id || null,
+        suggestedServiceName: suggestedService?.name || null,
+        createdAt: new Date().toISOString(),
+    }));
+
+    if (closeModalFirst) closeDetailModal();
+    window.location.href = 'booking.html?source=gallery';
+}
 
 /* ================================================================
    ADMIN: ADD / EDIT / DELETE
