@@ -88,8 +88,8 @@
                 </div>
                 <div style="display:flex;gap:12px;flex-wrap:wrap">
                     <a href="admin.html"        class="btn-primary"   style="font-size:.82rem"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
-                    <a href="users.html"        class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-users"></i> Përdoruesit</a>
-                    <a href="appointments.html" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Të gjitha Takimet</a>
+                    <a href="admin.html#appointments" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Takimet</a>
+                    <a href="admin.html#settings" class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-sliders"></i> Settings</a>
                 </div>
             </section>
 
@@ -125,14 +125,14 @@
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Takimet e fundit</span>
-                    <a href="appointments.html" id="recentApptLink">Shiko të gjitha →</a>
+                    <a href="admin.html#appointments" id="recentApptLink">Shiko të gjitha →</a>
                 </div>
                 <div id="apptList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-sparkles" style="margin-right:8px;color:var(--pink)"></i>Shërbimet</span>
-                    <a href="services.html" id="servicesLink">Shiko të gjitha →</a>
+                    <a href="admin.html#services" id="servicesLink">Shiko të gjitha →</a>
                 </div>
                 <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
@@ -160,6 +160,11 @@ if (!admin) {
     const svcLink = document.getElementById('servicesLink');
     if (apptLink) { apptLink.href = 'booking.html'; apptLink.textContent = 'Book Appointment →'; }
     if (svcLink) { svcLink.href = 'booking.html'; svcLink.textContent = 'Zgjidh në booking →'; }
+} else {
+    const apptLink = document.getElementById('recentApptLink');
+    const svcLink = document.getElementById('servicesLink');
+    if (apptLink) { apptLink.href = 'admin.html#appointments'; apptLink.textContent = 'Menaxho te Admin →'; }
+    if (svcLink) { svcLink.href = 'admin.html#services'; svcLink.textContent = 'Menaxho te Admin →'; }
 }
 
 document.getElementById('topbarSub').textContent = `Mirë se vini, ${me?.name||''}! Ja përmbledhja e aktivitetit.`;

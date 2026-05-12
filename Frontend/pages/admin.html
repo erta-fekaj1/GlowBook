@@ -3,9 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Book - Admin Panel</title>
+    <title>GlowBook - Admin Control Center</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .ad-tabs { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:1rem; }
+        .ad-tab-btn { border:1px solid var(--pink-border); background:#fff; color:var(--text-mid); border-radius:999px; padding:.42rem .75rem; font-size:.78rem; font-weight:700; }
+        .ad-tab-btn.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:var(--pink); box-shadow:var(--shadow-sm); }
+        .ad-panel { display:none; }
+        .ad-panel.active { display:block; animation:slideUp .24s ease; }
+        .ad-toolbar { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:.8rem; }
+        .ad-toolbar input, .ad-toolbar select {
+            border:1.5px solid var(--pink-border); border-radius:10px; padding:.5rem .62rem; font-size:.79rem; min-width:180px;
+        }
+        .ad-sub-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .ad-soft-table { width:100%; border-collapse:separate; border-spacing:0; }
+        .ad-soft-table th, .ad-soft-table td { font-size:.78rem; padding:.58rem .5rem; border-bottom:1px solid var(--pink-light); text-align:left; }
+        .ad-soft-table th { font-size:.72rem; text-transform:uppercase; letter-spacing:.45px; color:var(--text-muted); font-weight:700; }
+        .ad-soft-table tr:last-child td { border-bottom:none; }
+        .ad-actions { display:flex; gap:.3rem; flex-wrap:wrap; }
+        .ad-actions .btn-sm { width:auto; min-width:28px; height:28px; padding:0 .42rem; border-radius:8px; }
+        .ad-settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+        .ad-field label { display:block; margin-bottom:.3rem; font-size:.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; }
+        .ad-field input, .ad-field textarea, .ad-field select {
+            width:100%; border:1.5px solid var(--pink-border); border-radius:10px; padding:.56rem .62rem; font-size:.82rem;
+        }
+        .ad-field textarea { min-height:92px; resize:vertical; }
+        .ad-empty { text-align:center; color:var(--text-muted); font-size:.8rem; padding:1rem .5rem; }
+        .ad-inline-kpis { display:grid; grid-template-columns:repeat(6,1fr); gap:.65rem; margin-bottom:1rem; }
+        .ad-inline-kpi { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.68rem .58rem; }
+        .ad-inline-kpi b { display:block; font-family:'Cormorant Garamond',serif; font-size:1.18rem; color:var(--pink-deep); }
+        .ad-inline-kpi span { font-size:.67rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; font-weight:700; }
+        .ad-notice { margin-bottom:.9rem; border:1px solid var(--pink-border); background:linear-gradient(135deg,#fff,#fef7fa); border-radius:12px; padding:.7rem .8rem; font-size:.78rem; color:var(--text-subtle); }
+        .ad-modal-overlay { display:none; position:fixed; inset:0; background:rgba(44,21,29,.42); z-index:2100; padding:1rem; align-items:center; justify-content:center; }
+        .ad-modal-overlay.open { display:flex; }
+        .ad-modal-box { width:min(94vw,560px); max-height:90vh; overflow:auto; background:#fff; border-radius:16px; border:1px solid var(--pink-border); box-shadow:var(--shadow-xl); padding:1rem; }
+        .ad-modal-title { font-family:'Cormorant Garamond',serif; font-size:1.35rem; color:var(--pink-deep); margin-bottom:.8rem; }
+        .ad-modal-actions { display:flex; gap:.55rem; margin-top:.8rem; }
+        @media (max-width:1100px) { .ad-inline-kpis { grid-template-columns:repeat(3,1fr); } }
+        @media (max-width:900px) { .ad-sub-grid, .ad-settings-grid { grid-template-columns:1fr; } }
+        @media (max-width:620px) { .ad-inline-kpis { grid-template-columns:repeat(2,1fr); } .ad-toolbar input,.ad-toolbar select{min-width:unset; width:100%;} }
+    </style>
 </head>
 <body>
 <div class="mobile-nav">
@@ -21,8 +59,8 @@
     <main class="main">
         <div class="topbar">
             <div>
-                <h1><i class="fa-solid fa-shield-halved" style="font-size:1.4rem;color:var(--pink);margin-right:8px"></i>Admin Panel</h1>
-                <p>Kontrollo dhe menaxho gjithçka</p>
+                <h1><i class="fa-solid fa-shield-halved" style="font-size:1.35rem;color:var(--pink);margin-right:8px"></i>Admin Control Center</h1>
+                <p>Menaxhim i centralizuar për rezervime, pagesa, shërbime, galeri dhe reviews.</p>
             </div>
             <div class="user-badge">
                 <div class="user-avatar" id="userInitials">AD</div>
@@ -31,222 +69,709 @@
             </div>
         </div>
 
-        <!-- Quick actions -->
-        <div class="admin-grid">
-            <a class="admin-action-card" href="users.html">
-                <div class="aci">👥</div><h3>Përdoruesit</h3>
-                <p>Shto, edito ose fshi llogaritë</p>
-            </a>
-            <a class="admin-action-card" href="appointments.html">
-                <div class="aci">📅</div><h3>Takimet</h3>
-                <p>Shiko dhe menaxho rezervimet</p>
-            </a>
-            <a class="admin-action-card" href="services.html">
-                <div class="aci">💆</div><h3>Shërbimet</h3>
-                <p>Menaxho listën dhe çmimet</p>
-            </a>
-            <a class="admin-action-card" href="gallery.html">
-                <div class="aci">🖼️</div><h3>Galeria</h3>
-                <p>Shto ose fshi dizajnet</p>
-            </a>
-            <a class="admin-action-card" href="payment.html">
-                <div class="aci">💳</div><h3>Pagesat</h3>
-                <p>Historiku i transaksioneve</p>
-            </a>
-            <a class="admin-action-card" href="dashboard.html">
-                <div class="aci">📊</div><h3>Dashboard</h3>
-                <p>Statistika të salonit</p>
-            </a>
+        <div class="ad-notice">
+            Ky panel është burimi kryesor i menaxhimit. Faqet e vjetra administrative ruhen vetëm për kompatibilitet dhe ridrejtohen këtu.
         </div>
 
-        <!-- Live stats -->
-        <div class="stats-grid">
-            <div class="stat-card pink">
-                <div class="stat-icon">👥</div>
-                <div class="stat-label">Klientë</div>
-                <div class="stat-value" id="stUsers">–</div>
-                <div class="stat-sub" id="stUsersSub">–</div>
-            </div>
-            <div class="stat-card purple">
-                <div class="stat-icon">📅</div>
-                <div class="stat-label">Takime Sot</div>
-                <div class="stat-value" id="stToday">–</div>
-                <div class="stat-sub">të planifikuara</div>
-            </div>
-            <div class="stat-card teal">
-                <div class="stat-icon">✅</div>
-                <div class="stat-label">Përfunduar</div>
-                <div class="stat-value" id="stDone">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card amber">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-label">Në pritje</div>
-                <div class="stat-value" id="stPending">–</div>
-                <div class="stat-sub">kërkojnë veprim</div>
-            </div>
+        <div class="ad-inline-kpis">
+            <div class="ad-inline-kpi"><b id="kpiUsers">0</b><span>Përdorues</span></div>
+            <div class="ad-inline-kpi"><b id="kpiAppts">0</b><span>Takime</span></div>
+            <div class="ad-inline-kpi"><b id="kpiPending">0</b><span>Në pritje</span></div>
+            <div class="ad-inline-kpi"><b id="kpiServices">0</b><span>Shërbime</span></div>
+            <div class="ad-inline-kpi"><b id="kpiPayments">0</b><span>Pagesa</span></div>
+            <div class="ad-inline-kpi"><b id="kpiReviews">0</b><span>Reviews</span></div>
         </div>
 
-        <div class="grid-2">
-            <!-- Recent appointments -->
-            <div class="card" style="grid-column:1/-1">
+        <div class="ad-tabs">
+            <button class="ad-tab-btn active" data-tab="appointments"><i class="fa-regular fa-calendar-check"></i> Appointments</button>
+            <button class="ad-tab-btn" data-tab="services"><i class="fa-solid fa-spa"></i> Services</button>
+            <button class="ad-tab-btn" data-tab="gallery"><i class="fa-regular fa-images"></i> Gallery</button>
+            <button class="ad-tab-btn" data-tab="reviews"><i class="fa-solid fa-star"></i> Reviews</button>
+            <button class="ad-tab-btn" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings</button>
+        </div>
+
+        <section class="ad-panel active" id="panel-appointments">
+            <div class="card" style="margin-bottom:1rem">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-clock-rotate-left" style="color:var(--pink);margin-right:6px"></i>Takimet e fundit</span>
-                    <a href="appointments.html">Shiko të gjitha →</a>
+                    <span><i class="fa-regular fa-calendar-check" style="color:var(--pink);margin-right:7px"></i>Appointments Management</span>
                 </div>
-                <div class="table-container" style="margin-top:.75rem;box-shadow:none;border:1px solid var(--pink-light)">
-                    <table>
-                        <thead><tr><th>Klienti</th><th>Shërbimi</th><th>Data</th><th>Statusi</th><th>Veprim</th></tr></thead>
-                        <tbody id="recentAppts"><tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Duke ngarkuar...</td></tr></tbody>
+                <div class="ad-toolbar">
+                    <input type="text" id="apptSearch" placeholder="Kërko klient, email ose shërbim...">
+                    <select id="apptStatusFilter">
+                        <option value="">Gjithë statuset</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Done">Done</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <select id="apptSort">
+                        <option value="newest">Më të rejat</option>
+                        <option value="oldest">Më të vjetrat</option>
+                        <option value="status">Sipas statusit</option>
+                    </select>
+                </div>
+                <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light)">
+                    <table class="ad-soft-table">
+                        <thead>
+                            <tr><th>Klienti</th><th>Shërbimi</th><th>Data/Ora</th><th>Statusi</th><th>Pagesa</th><th>Veprime</th></tr>
+                        </thead>
+                        <tbody id="apptTable"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Gallery manage -->
-            <div class="card">
-                <div class="card-title">
-                    <span><i class="fa-solid fa-images" style="color:var(--pink);margin-right:6px"></i>Galeria</span>
-                    <a href="gallery.html">Shiko →</a>
+            <div class="ad-sub-grid">
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-users" style="color:var(--pink);margin-right:7px"></i>Users Overview</span>
+                    </div>
+                    <div class="ad-toolbar">
+                        <input type="text" id="userSearch" placeholder="Kërko përdorues...">
+                        <select id="userRoleFilter">
+                            <option value="">Të gjithë rolet</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Customer">Customer</option>
+                        </select>
+                    </div>
+                    <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light)">
+                        <table class="ad-soft-table">
+                            <thead><tr><th>Emri</th><th>Email</th><th>Roli</th><th>Takime</th></tr></thead>
+                            <tbody id="usersMiniTable"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div id="adminDesigns" style="margin-top:.75rem">Duke ngarkuar...</div>
-                <button class="btn-primary" style="margin-top:1rem;width:100%" onclick="openAddDesign()">
-                    <i class="fa-solid fa-plus"></i> Shto Dizajn
-                </button>
-            </div>
 
-            <!-- Recent users -->
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fa-solid fa-credit-card" style="color:var(--pink);margin-right:7px"></i>Payments Overview</span>
+                    </div>
+                    <div class="ad-toolbar">
+                        <input type="text" id="paymentSearch" placeholder="Kërko pagesë ose klient...">
+                        <select id="paymentMethodFilter">
+                            <option value="">Të gjitha metodat</option>
+                            <option value="Kartë Krediti">Kartë</option>
+                            <option value="PayPal">PayPal</option>
+                            <option value="Cash në Sallon">Cash</option>
+                        </select>
+                    </div>
+                    <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light)">
+                        <table class="ad-soft-table">
+                            <thead><tr><th>ID</th><th>Klienti</th><th>Shuma</th><th>Metoda</th><th>Statusi</th></tr></thead>
+                            <tbody id="paymentsMiniTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ad-panel" id="panel-services">
             <div class="card">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-users" style="color:var(--pink);margin-right:6px"></i>Klientët e fundit</span>
-                    <a href="users.html">Menaxho →</a>
+                    <span><i class="fa-solid fa-spa" style="color:var(--pink);margin-right:7px"></i>Services Management</span>
+                    <button class="btn-primary" style="font-size:.76rem;padding:.45rem .7rem" id="addServiceBtn"><i class="fa-solid fa-plus"></i> Shto Shërbim</button>
                 </div>
-                <div id="recentUsers" style="margin-top:.75rem">Duke ngarkuar...</div>
+                <div class="ad-toolbar">
+                    <input type="text" id="serviceSearch" placeholder="Kërko shërbim...">
+                    <select id="serviceSort">
+                        <option value="name">Sipas emrit</option>
+                        <option value="price-asc">Çmimi ↑</option>
+                        <option value="price-desc">Çmimi ↓</option>
+                    </select>
+                </div>
+                <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light)">
+                    <table class="ad-soft-table">
+                        <thead><tr><th>Shërbimi</th><th>Përshkrimi</th><th>Kohëzgjatja</th><th>Çmimi</th><th>Veprime</th></tr></thead>
+                        <tbody id="servicesTable"></tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <section class="ad-panel" id="panel-gallery">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-regular fa-images" style="color:var(--pink);margin-right:7px"></i>Gallery Management</span>
+                    <button class="btn-primary" style="font-size:.76rem;padding:.45rem .7rem" id="addDesignBtn"><i class="fa-solid fa-plus"></i> Shto Dizajn</button>
+                </div>
+                <div class="ad-toolbar">
+                    <input type="text" id="designSearch" placeholder="Kërko dizajn...">
+                    <select id="designCategoryFilter"><option value="">Gjithë kategoritë</option></select>
+                </div>
+                <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light)">
+                    <table class="ad-soft-table">
+                        <thead><tr><th>Dizajni</th><th>Kategoria</th><th>Vështirësia</th><th>Çmimi</th><th>Pëlqime</th><th>Veprime</th></tr></thead>
+                        <tbody id="designsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="ad-panel" id="panel-reviews">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-star" style="color:var(--pink);margin-right:7px"></i>Reviews Management</span>
+                </div>
+                <div class="ad-toolbar">
+                    <input type="text" id="reviewSearch" placeholder="Kërko review, klient, shërbim...">
+                    <select id="reviewRatingFilter">
+                        <option value="">Të gjitha vlerësimet</option>
+                        <option value="5">5 yje</option>
+                        <option value="4">4 yje</option>
+                        <option value="3">3 yje</option>
+                        <option value="2">2 yje</option>
+                        <option value="1">1 yll</option>
+                    </select>
+                    <select id="reviewSort">
+                        <option value="latest">Më të rejat</option>
+                        <option value="highest">Më të lartat</option>
+                    </select>
+                </div>
+                <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light)">
+                    <table class="ad-soft-table">
+                        <thead><tr><th>Klienti</th><th>Shërbimi</th><th>Vlerësim</th><th>Komenti</th><th>Data</th><th>Veprime</th></tr></thead>
+                        <tbody id="reviewsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="ad-panel" id="panel-settings">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-sliders" style="color:var(--pink);margin-right:7px"></i>Settings</span>
+                </div>
+                <form id="settingsForm">
+                    <div class="ad-settings-grid">
+                        <div class="ad-field">
+                            <label for="sBusinessName">Business Name</label>
+                            <input id="sBusinessName" type="text" placeholder="GlowBook Studio">
+                        </div>
+                        <div class="ad-field">
+                            <label for="sSupportEmail">Support Email</label>
+                            <input id="sSupportEmail" type="email" placeholder="hello@glowbook.com">
+                        </div>
+                        <div class="ad-field">
+                            <label for="sPhone">Phone</label>
+                            <input id="sPhone" type="text" placeholder="+383 44 123 456">
+                        </div>
+                        <div class="ad-field">
+                            <label for="sAddress">Address</label>
+                            <input id="sAddress" type="text" placeholder="Prishtinë, Kosovë">
+                        </div>
+                        <div class="ad-field">
+                            <label for="sOpenHour">Open Hour</label>
+                            <input id="sOpenHour" type="text" placeholder="09:00">
+                        </div>
+                        <div class="ad-field">
+                            <label for="sCloseHour">Close Hour</label>
+                            <input id="sCloseHour" type="text" placeholder="18:00">
+                        </div>
+                    </div>
+                    <div class="ad-field" style="margin-top:.6rem">
+                        <label for="sNotes">Notes</label>
+                        <textarea id="sNotes" placeholder="Politika, udhëzime për ekipin, apo shënime operative..."></textarea>
+                    </div>
+                    <div style="display:flex;gap:.55rem;margin-top:.8rem;flex-wrap:wrap">
+                        <button type="button" class="btn-secondary" id="resetSettingsBtn">Reset</button>
+                        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Ruaj Settings</button>
+                    </div>
+                </form>
+            </div>
+        </section>
     </main>
 </div>
 
-<!-- Add design modal -->
-<div class="modal-overlay" id="designModal">
-    <div class="modal">
-        <h2 class="modal-title">Shto Dizajn të Ri</h2>
-        <div class="field"><label>Emri</label><input type="text" id="dName" placeholder="Rose Gold Tips"></div>
-        <div class="field"><label>Emoji</label><input type="text" id="dEmoji" placeholder="💅" maxlength="4"></div>
-        <div class="field"><label>Kategoria</label>
-            <select id="dCat"><option>French</option><option>Gel</option><option>Ombre</option><option>Floral</option><option>Glitter</option></select>
-        </div>
-        <div class="field"><label>Vështirësia</label>
-            <select id="dComp"><option value="E lehtë">E lehtë</option><option value="Mesatare">Mesatare</option><option value="E vështirë">E vështirë</option></select>
-        </div>
-        <div class="field"><label>Çmimi (€)</label><input type="number" id="dPrice" placeholder="20" min="1"></div>
-        <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="dDur" placeholder="45"></div>
-        <div class="field"><label>Përshkrimi</label><input type="text" id="dDesc" placeholder="Përshkrim i shkurtër..."></div>
-        <div class="modal-footer">
-            <button class="btn-secondary" style="flex:1" onclick="closeAddDesign()">Anulo</button>
-            <button class="btn-primary"   style="flex:2" onclick="saveDesign()"><i class="fa-solid fa-floppy-disk"></i> Shto</button>
-        </div>
+<div class="ad-modal-overlay" id="recordModal">
+    <div class="ad-modal-box">
+        <h3 class="ad-modal-title" id="recordModalTitle">Edito</h3>
+        <form id="recordForm"></form>
     </div>
 </div>
 
 <div class="gb-toast" id="toast"></div>
 <script src="../js/auth.js"></script>
 <script>
+'use strict';
 GB.init({ page:'admin', admin:true });
 
-function load() {
-    /* Stats */
+const SETTINGS_KEY = 'gb_admin_settings';
+const PAYMENTS_KEY = 'gb_payments';
+const state = {
+    tab: 'appointments',
+    editing: null,
+};
+
+function readPayments() {
+    try { return JSON.parse(localStorage.getItem(PAYMENTS_KEY) || '[]'); }
+    catch { return []; }
+}
+function readSettings() {
+    try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); }
+    catch { return {}; }
+}
+function saveSettings(payload) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(payload));
+}
+function fmtDate(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('sq-AL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function badgeForStatus(status='') {
+    const v = String(status || '');
+    const key = v.toLowerCase();
+    const map = { pending:'badge-pending', confirmed:'badge-confirmed', done:'badge-done', cancelled:'badge-cancelled' };
+    return map[key] || 'badge-confirmed';
+}
+
+function updateKpis() {
     const users = GB.users.getAll();
     const appts = GB.appointments.getAll();
-    document.getElementById('stUsers').textContent   = users.length;
-    document.getElementById('stUsersSub').textContent= `${GB.users.admins().length} admin, ${GB.users.customers().length} klientë`;
-    document.getElementById('stToday').textContent   = GB.appointments.todayCount();
-    document.getElementById('stDone').textContent    = GB.appointments.done().length;
-    document.getElementById('stPending').textContent = GB.appointments.pending().length;
-
-    /* Recent appointments */
-    const tbody = document.getElementById('recentAppts');
-    if (!appts.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Nuk ka takime ende</td></tr>';
-    } else {
-        tbody.innerHTML = [...appts].reverse().slice(0,6).map(a => {
-            const bc = `badge-${a.status.toLowerCase()}`;
-            const dt = new Date(a.date).toLocaleDateString('sq-AL');
-            return `<tr>
-                <td><strong>${a.userName||a.userEmail}</strong></td>
-                <td>${a.serviceName||'–'}</td>
-                <td>${dt}</td>
-                <td><span class="badge ${bc}">${a.status}</span></td>
-                <td><a class="btn-sm btn-view" href="appointments.html"><i class="fa-solid fa-eye"></i></a></td>
-            </tr>`;
-        }).join('');
-    }
-
-    /* Recent users */
-    const ru = document.getElementById('recentUsers');
-    const lastUsers = [...users].reverse().slice(0,5);
-    if (!lastUsers.length) { ru.innerHTML = '<span style="color:var(--text-muted);font-size:.85rem">Nuk ka përdorues</span>'; }
-    else {
-        ru.innerHTML = lastUsers.map(u => {
-            const ini = u.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-            const bc  = u.role==='Admin' ? 'badge-admin' : 'badge-customer';
-            return `<div class="appt-item">
-                <div class="appt-avatar">${ini}</div>
-                <div class="appt-info"><div class="appt-name">${u.name}</div><div class="appt-service">${u.email}</div></div>
-                <span class="badge ${bc}">${u.role}</span>
-            </div>`;
-        }).join('');
-    }
-
-    /* Gallery list */
-    const designs = GB.designs.getAll();
-    const ad = document.getElementById('adminDesigns');
-    if (!designs.length) { ad.innerHTML = '<span style="color:var(--text-muted);font-size:.85rem">Nuk ka dizajne</span>'; }
-    else {
-        ad.innerHTML = designs.slice(0,5).map(d => `
-            <div class="appt-item">
-                <div style="font-size:1.6rem;width:36px;height:36px;background:${d.bg};border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${d.emoji}</div>
-                <div class="appt-info"><div class="appt-name">${d.name}</div><div class="appt-service">${d.category} · €${d.price}</div></div>
-                <button class="btn-sm btn-delete" onclick="delDesign(${d.id})"><i class="fa-solid fa-trash"></i></button>
-            </div>`).join('');
-    }
+    const payments = readPayments();
+    const reviews = GB.reviews.getAll();
+    document.getElementById('kpiUsers').textContent = String(users.length);
+    document.getElementById('kpiAppts').textContent = String(appts.length);
+    document.getElementById('kpiPending').textContent = String(appts.filter(a => a.status === 'Pending').length);
+    document.getElementById('kpiServices').textContent = String(GB.services.getAll().length);
+    document.getElementById('kpiPayments').textContent = String(payments.length);
+    document.getElementById('kpiReviews').textContent = String(reviews.length);
 }
 
-function openAddDesign() { document.getElementById('designModal').classList.add('open'); }
-function closeAddDesign(){ document.getElementById('designModal').classList.remove('open'); }
+function setTab(tab) {
+    state.tab = tab;
+    document.querySelectorAll('.ad-tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+    document.querySelectorAll('.ad-panel').forEach(panel => panel.classList.toggle('active', panel.id === `panel-${tab}`));
+    window.location.hash = tab;
+}
 
-function saveDesign() {
-    const name = document.getElementById('dName').value.trim();
-    if (!name) { GB.toast('Shkruani emrin!','error'); return; }
-    const bgs = ['#F8F4FF','#FFF0F5','#FFFBF0','#F0FFF4','#FFF5F0','#F0F0FF'];
-    const d = GB.designs.add({
-        name, emoji: document.getElementById('dEmoji').value.trim()||'💅',
-        category: document.getElementById('dCat').value,
-        complexity: document.getElementById('dComp').value,
-        price: parseFloat(document.getElementById('dPrice').value)||0,
-        duration: parseInt(document.getElementById('dDur').value)||30,
-        desc: document.getElementById('dDesc').value.trim(),
-        tags: [document.getElementById('dCat').value],
-        bg: bgs[GB.designs.count() % bgs.length],
+function renderAppointmentsTable() {
+    const q = document.getElementById('apptSearch').value.trim().toLowerCase();
+    const status = document.getElementById('apptStatusFilter').value;
+    const sort = document.getElementById('apptSort').value;
+    let rows = GB.appointments.getAll().filter(a => {
+        const text = `${a.userName || ''} ${a.userEmail || ''} ${a.serviceName || ''}`.toLowerCase();
+        return (!q || text.includes(q)) && (!status || a.status === status);
     });
-    GB.toast(`Dizajni "${d.name}" u shtua!`, 'success');
-    closeAddDesign();
-    load();
-    ['dName','dEmoji','dPrice','dDur','dDesc'].forEach(id => document.getElementById(id).value='');
+    if (sort === 'newest') rows.sort((a,b) => String(b.date || '').localeCompare(String(a.date || '')));
+    if (sort === 'oldest') rows.sort((a,b) => String(a.date || '').localeCompare(String(b.date || '')));
+    if (sort === 'status') rows.sort((a,b) => String(a.status || '').localeCompare(String(b.status || '')));
+
+    const tbody = document.getElementById('apptTable');
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="ad-empty">Nuk ka takime për filtrat aktual.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map(a => {
+        const pay = readPayments().find(p => Number(p.appointmentId) === Number(a.id));
+        return `<tr>
+            <td><strong>${a.userName || '—'}</strong><br><span style="color:var(--text-muted)">${a.userEmail || ''}</span></td>
+            <td>${a.serviceName || '—'}${a.selectedDesignName ? `<br><span style="color:var(--text-muted)">🎨 ${a.selectedDesignName}</span>` : ''}</td>
+            <td>${fmtDate(a.date)}</td>
+            <td><span class="badge ${badgeForStatus(a.status)}">${a.status || '—'}</span></td>
+            <td>${pay ? `<span style="color:var(--green);font-weight:600">${pay.status || 'Paguar'}</span>` : '<span style="color:var(--text-muted)">Pa pagesë</span>'}</td>
+            <td>
+                <div class="ad-actions">
+                    <button class="btn-sm btn-view" title="Konfirmo" onclick="updateApptStatus(${a.id}, 'Confirmed')"><i class="fa-solid fa-check"></i></button>
+                    <button class="btn-sm btn-edit" title="Edito" onclick="openApptEditor(${a.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-sm btn-delete" title="Fshi" onclick="deleteAppointment(${a.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
 }
 
-function delDesign(id) {
-    const d = GB.designs.getAll().find(x=>x.id===id);
-    if (!confirm(`Fshi "${d?.name}"?`)) return;
+function renderUsersMini() {
+    const q = document.getElementById('userSearch').value.trim().toLowerCase();
+    const role = document.getElementById('userRoleFilter').value;
+    const rows = GB.users.getAll().filter(u => {
+        const text = `${u.name || ''} ${u.email || ''}`.toLowerCase();
+        return (!q || text.includes(q)) && (!role || u.role === role);
+    }).slice(0, 12);
+    const tbody = document.getElementById('usersMiniTable');
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="ad-empty">Nuk ka përdorues.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map(u => {
+        const cnt = GB.appointments.getByUser(u.email).length;
+        return `<tr>
+            <td>${u.name || '—'}</td>
+            <td>${u.email || '—'}</td>
+            <td><span class="badge ${u.role === 'Admin' ? 'badge-admin' : 'badge-customer'}">${u.role}</span></td>
+            <td>${cnt}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderPaymentsMini() {
+    const q = document.getElementById('paymentSearch').value.trim().toLowerCase();
+    const method = document.getElementById('paymentMethodFilter').value;
+    const rows = readPayments().filter(p => {
+        const text = `${p.txId || ''} ${p.userName || ''} ${p.userEmail || ''}`.toLowerCase();
+        return (!q || text.includes(q)) && (!method || String(p.method || '').includes(method));
+    }).sort((a,b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))).slice(0, 12);
+    const tbody = document.getElementById('paymentsMiniTable');
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="ad-empty">Nuk ka pagesa.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map(p => `
+        <tr>
+            <td>${p.txId || `#${p.id}`}</td>
+            <td>${p.userName || p.userEmail || '—'}</td>
+            <td>€${Number(p.amount || 0).toFixed(2)}</td>
+            <td>${p.method || '—'}</td>
+            <td>${p.status || '—'}</td>
+        </tr>
+    `).join('');
+}
+
+function renderServicesTable() {
+    const q = document.getElementById('serviceSearch').value.trim().toLowerCase();
+    const sort = document.getElementById('serviceSort').value;
+    let rows = GB.services.getAll().filter(s => `${s.name || ''} ${s.desc || ''}`.toLowerCase().includes(q));
+    if (sort === 'name') rows.sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
+    if (sort === 'price-asc') rows.sort((a,b) => Number(a.price || 0) - Number(b.price || 0));
+    if (sort === 'price-desc') rows.sort((a,b) => Number(b.price || 0) - Number(a.price || 0));
+    const tbody = document.getElementById('servicesTable');
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="ad-empty">Nuk ka shërbime.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map(s => `
+        <tr>
+            <td><strong>${s.name}</strong></td>
+            <td>${s.desc || '—'}</td>
+            <td>${s.duration || 0} min</td>
+            <td>€${Number(s.price || 0).toFixed(2)}</td>
+            <td>
+                <div class="ad-actions">
+                    <button class="btn-sm btn-edit" title="Edito" onclick="openServiceModal(${s.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-sm btn-delete" title="Fshi" onclick="deleteService(${s.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderDesignCategoryFilter() {
+    const select = document.getElementById('designCategoryFilter');
+    const categories = [...new Set(GB.designs.getAll().map(d => d.category).filter(Boolean))].sort();
+    const current = select.value;
+    select.innerHTML = '<option value="">Gjithë kategoritë</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    if (categories.includes(current)) select.value = current;
+}
+
+function renderDesignsTable() {
+    renderDesignCategoryFilter();
+    const q = document.getElementById('designSearch').value.trim().toLowerCase();
+    const category = document.getElementById('designCategoryFilter').value;
+    const rows = GB.designs.getAll()
+        .filter(d => (!q || `${d.name || ''} ${d.category || ''}`.toLowerCase().includes(q)) && (!category || d.category === category))
+        .sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')));
+    const tbody = document.getElementById('designsTable');
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="ad-empty">Nuk ka dizajne.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map(d => `
+        <tr>
+            <td><strong>${d.name}</strong></td>
+            <td>${d.category || '—'}</td>
+            <td>${d.complexity || '—'}</td>
+            <td>€${Number(d.price || 0).toFixed(2)}</td>
+            <td>${Number(d.likes || 0)}</td>
+            <td>
+                <div class="ad-actions">
+                    <button class="btn-sm btn-edit" title="Edito" onclick="openDesignModal(${d.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-sm btn-delete" title="Fshi" onclick="deleteDesign(${d.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderReviewsTable() {
+    const q = document.getElementById('reviewSearch').value.trim().toLowerCase();
+    const rating = document.getElementById('reviewRatingFilter').value;
+    const sort = document.getElementById('reviewSort').value;
+    let rows = GB.reviews.getAll().filter(r => {
+        const text = `${r.userName || ''} ${r.serviceName || ''} ${r.comment || ''}`.toLowerCase();
+        return (!q || text.includes(q)) && (!rating || Number(r.rating) === Number(rating));
+    });
+    if (sort === 'latest') rows.sort((a,b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    if (sort === 'highest') rows.sort((a,b) => Number(b.rating || 0) - Number(a.rating || 0));
+    const tbody = document.getElementById('reviewsTable');
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="ad-empty">Nuk ka reviews.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map(r => `
+        <tr>
+            <td>${r.userName || r.userEmail || '—'}</td>
+            <td>${r.serviceName || '—'}</td>
+            <td>${'★'.repeat(Number(r.rating || 0))}</td>
+            <td>${(r.comment || '—').slice(0, 90)}</td>
+            <td>${fmtDate(r.createdAt)}</td>
+            <td>
+                <button class="btn-sm btn-delete" title="Fshi" onclick="deleteReview(${r.id})"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function openModal({ title, fields, onSubmit }) {
+    const overlay = document.getElementById('recordModal');
+    const host = document.getElementById('recordForm');
+    document.getElementById('recordModalTitle').textContent = title;
+    host.innerHTML = fields + `
+        <div class="ad-modal-actions">
+            <button type="button" class="btn-secondary" id="recordCancelBtn" style="flex:1">Anulo</button>
+            <button type="submit" class="btn-primary" style="flex:2"><i class="fa-solid fa-floppy-disk"></i> Ruaj</button>
+        </div>
+    `;
+    overlay.classList.add('open');
+    host.onsubmit = (e) => { e.preventDefault(); onSubmit(new FormData(host)); };
+    document.getElementById('recordCancelBtn').onclick = closeModal;
+}
+function closeModal() {
+    document.getElementById('recordModal').classList.remove('open');
+}
+
+function openServiceModal(id = null) {
+    const existing = id ? GB.services.getById(id) : null;
+    openModal({
+        title: id ? 'Edito Shërbimin' : 'Shto Shërbim',
+        fields: `
+            <div class="ad-field"><label>Emri</label><input name="name" value="${existing?.name || ''}" required></div>
+            <div class="ad-field"><label>Përshkrimi</label><textarea name="desc">${existing?.desc || ''}</textarea></div>
+            <div class="ad-settings-grid">
+                <div class="ad-field"><label>Çmimi (€)</label><input type="number" step="0.01" min="0" name="price" value="${existing?.price || 0}" required></div>
+                <div class="ad-field"><label>Kohëzgjatja (min)</label><input type="number" min="5" name="duration" value="${existing?.duration || 60}" required></div>
+            </div>
+        `,
+        onSubmit(form) {
+            const payload = {
+                name: String(form.get('name') || '').trim(),
+                desc: String(form.get('desc') || '').trim(),
+                price: Number(form.get('price') || 0),
+                duration: Number(form.get('duration') || 60),
+            };
+            if (!payload.name) { GB.toast('Emri i shërbimit është i detyrueshëm.', 'error'); return; }
+            if (id) {
+                GB.services.update(id, payload);
+                GB.toast('Shërbimi u përditësua.', 'success');
+            } else {
+                GB.services.add(payload);
+                GB.toast('Shërbimi u shtua.', 'success');
+            }
+            closeModal();
+            refreshAll();
+        }
+    });
+}
+
+function openDesignModal(id = null) {
+    const existing = id ? GB.designs.getAll().find(d => Number(d.id) === Number(id)) : null;
+    openModal({
+        title: id ? 'Edito Dizajnin' : 'Shto Dizajn',
+        fields: `
+            <div class="ad-field"><label>Emri</label><input name="name" value="${existing?.name || ''}" required></div>
+            <div class="ad-settings-grid">
+                <div class="ad-field"><label>Kategoria</label><input name="category" value="${existing?.category || 'Gel'}"></div>
+                <div class="ad-field"><label>Vështirësia</label>
+                    <select name="complexity">
+                        <option value="E lehtë" ${existing?.complexity === 'E lehtë' ? 'selected' : ''}>E lehtë</option>
+                        <option value="Mesatare" ${existing?.complexity === 'Mesatare' ? 'selected' : ''}>Mesatare</option>
+                        <option value="E vështirë" ${existing?.complexity === 'E vështirë' ? 'selected' : ''}>E vështirë</option>
+                    </select>
+                </div>
+            </div>
+            <div class="ad-settings-grid">
+                <div class="ad-field"><label>Çmimi (€)</label><input type="number" step="0.01" min="0" name="price" value="${existing?.price || 0}"></div>
+                <div class="ad-field"><label>Kohëzgjatja (min)</label><input type="number" min="5" name="duration" value="${existing?.duration || 60}"></div>
+            </div>
+            <div class="ad-field"><label>Imazhi (path)</label><input name="image" value="${existing?.image || ''}"></div>
+            <div class="ad-field"><label>Përshkrimi</label><textarea name="desc">${existing?.desc || ''}</textarea></div>
+        `,
+        onSubmit(form) {
+            const payload = {
+                name: String(form.get('name') || '').trim(),
+                category: String(form.get('category') || 'Gel').trim() || 'Gel',
+                complexity: String(form.get('complexity') || 'Mesatare'),
+                price: Number(form.get('price') || 0),
+                duration: Number(form.get('duration') || 60),
+                image: String(form.get('image') || '').trim(),
+                desc: String(form.get('desc') || '').trim(),
+            };
+            if (!payload.name) { GB.toast('Emri i dizajnit është i detyrueshëm.', 'error'); return; }
+            if (id) {
+                GB.designs.update(id, payload);
+                GB.toast('Dizajni u përditësua.', 'success');
+            } else {
+                GB.designs.add(payload);
+                GB.toast('Dizajni u shtua.', 'success');
+            }
+            closeModal();
+            refreshAll();
+        }
+    });
+}
+
+function openApptEditor(id) {
+    const appt = GB.appointments.getById(id);
+    if (!appt) return;
+    const dt = String(appt.date || '').slice(0,16);
+    openModal({
+        title: 'Edito Takimin',
+        fields: `
+            <div class="ad-field"><label>Klienti</label><input value="${appt.userName || appt.userEmail || ''}" disabled></div>
+            <div class="ad-field"><label>Shërbimi</label><input value="${appt.serviceName || ''}" disabled></div>
+            <div class="ad-settings-grid">
+                <div class="ad-field"><label>Data/Ora</label><input name="date" type="datetime-local" value="${dt}" required></div>
+                <div class="ad-field"><label>Statusi</label>
+                    <select name="status">
+                        <option value="Pending" ${appt.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Confirmed" ${appt.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="Done" ${appt.status === 'Done' ? 'selected' : ''}>Done</option>
+                        <option value="Cancelled" ${appt.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                    </select>
+                </div>
+            </div>
+        `,
+        onSubmit(form) {
+            const date = String(form.get('date') || '').trim();
+            const status = String(form.get('status') || 'Pending');
+            if (!date) { GB.toast('Data e takimit është e detyrueshme.', 'error'); return; }
+            const iso = date.length === 16 ? `${date}:00` : date;
+            const res = GB.appointments.update(id, { date: iso, status });
+            if (!res.ok) {
+                GB.toast(res.error || 'Ndodhi gabim gjatë përditësimit.', 'error');
+                return;
+            }
+            GB.toast('Takimi u përditësua.', 'success');
+            closeModal();
+            refreshAll();
+        }
+    });
+}
+
+function updateApptStatus(id, status) {
+    const res = GB.appointments.update(id, { status });
+    if (!res.ok) {
+        GB.toast(res.error || 'Statusi nuk u përditësua.', 'error');
+        return;
+    }
+    GB.toast('Statusi u përditësua.', 'success');
+    refreshAll();
+}
+
+function deleteAppointment(id) {
+    const appt = GB.appointments.getById(id);
+    if (!appt) return;
+    if (!confirm(`Fshi takimin e ${appt.userName || appt.userEmail}?`)) return;
+    GB.appointments.delete(id);
+    GB.toast('Takimi u fshi.', 'success');
+    refreshAll();
+}
+
+function deleteService(id) {
+    const s = GB.services.getById(id);
+    if (!s) return;
+    if (!confirm(`Fshi shërbimin "${s.name}"?`)) return;
+    GB.services.delete(id);
+    GB.toast('Shërbimi u fshi.', 'success');
+    refreshAll();
+}
+
+function deleteDesign(id) {
+    const d = GB.designs.getAll().find(x => Number(x.id) === Number(id));
+    if (!d) return;
+    if (!confirm(`Fshi dizajnin "${d.name}"?`)) return;
     GB.designs.delete(id);
-    GB.toast('Dizajni u fshi!','success');
-    load();
+    GB.toast('Dizajni u fshi.', 'success');
+    refreshAll();
 }
 
-document.getElementById('designModal').addEventListener('click', e => {
-    if (e.target === document.getElementById('designModal')) closeAddDesign();
+function deleteReview(id) {
+    if (!confirm('Fshi këtë review?')) return;
+    const res = GB.reviews.remove(id);
+    if (!res.ok) {
+        GB.toast(res.error || 'Review nuk u fshi.', 'error');
+        return;
+    }
+    GB.toast('Review u fshi.', 'success');
+    refreshAll();
+}
+
+function loadSettings() {
+    const s = readSettings();
+    document.getElementById('sBusinessName').value = s.businessName || 'GlowBook Studio';
+    document.getElementById('sSupportEmail').value = s.supportEmail || 'hello@glowbook.com';
+    document.getElementById('sPhone').value = s.phone || '+383 44 123 456';
+    document.getElementById('sAddress').value = s.address || 'Prishtinë, Kosovë';
+    document.getElementById('sOpenHour').value = s.openHour || '09:00';
+    document.getElementById('sCloseHour').value = s.closeHour || '18:00';
+    document.getElementById('sNotes').value = s.notes || '';
+}
+
+function handleSettingsSubmit(e) {
+    e.preventDefault();
+    const payload = {
+        businessName: document.getElementById('sBusinessName').value.trim(),
+        supportEmail: document.getElementById('sSupportEmail').value.trim(),
+        phone: document.getElementById('sPhone').value.trim(),
+        address: document.getElementById('sAddress').value.trim(),
+        openHour: document.getElementById('sOpenHour').value.trim(),
+        closeHour: document.getElementById('sCloseHour').value.trim(),
+        notes: document.getElementById('sNotes').value.trim(),
+        updatedAt: new Date().toISOString(),
+    };
+    saveSettings(payload);
+    GB.toast('Settings u ruajtën me sukses.', 'success');
+}
+
+function refreshAll() {
+    updateKpis();
+    renderAppointmentsTable();
+    renderUsersMini();
+    renderPaymentsMini();
+    renderServicesTable();
+    renderDesignsTable();
+    renderReviewsTable();
+}
+
+document.querySelectorAll('.ad-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => setTab(btn.dataset.tab));
+});
+document.getElementById('apptSearch').addEventListener('input', renderAppointmentsTable);
+document.getElementById('apptStatusFilter').addEventListener('change', renderAppointmentsTable);
+document.getElementById('apptSort').addEventListener('change', renderAppointmentsTable);
+document.getElementById('userSearch').addEventListener('input', renderUsersMini);
+document.getElementById('userRoleFilter').addEventListener('change', renderUsersMini);
+document.getElementById('paymentSearch').addEventListener('input', renderPaymentsMini);
+document.getElementById('paymentMethodFilter').addEventListener('change', renderPaymentsMini);
+document.getElementById('serviceSearch').addEventListener('input', renderServicesTable);
+document.getElementById('serviceSort').addEventListener('change', renderServicesTable);
+document.getElementById('designSearch').addEventListener('input', renderDesignsTable);
+document.getElementById('designCategoryFilter').addEventListener('change', renderDesignsTable);
+document.getElementById('reviewSearch').addEventListener('input', renderReviewsTable);
+document.getElementById('reviewRatingFilter').addEventListener('change', renderReviewsTable);
+document.getElementById('reviewSort').addEventListener('change', renderReviewsTable);
+document.getElementById('addServiceBtn').addEventListener('click', () => openServiceModal());
+document.getElementById('addDesignBtn').addEventListener('click', () => openDesignModal());
+document.getElementById('settingsForm').addEventListener('submit', handleSettingsSubmit);
+document.getElementById('resetSettingsBtn').addEventListener('click', loadSettings);
+document.getElementById('recordModal').addEventListener('click', (e) => { if (e.target.id === 'recordModal') closeModal(); });
+window.addEventListener('storage', (e) => {
+    if (['gb_appointments', 'gb_users', 'gb_services', 'gb_designs', 'gb_reviews', 'gb_payments'].includes(e.key)) {
+        refreshAll();
+    }
 });
 
-load();
+loadSettings();
+refreshAll();
+const hashTab = String(window.location.hash || '').replace('#', '').trim();
+if (['appointments', 'services', 'gallery', 'reviews', 'settings'].includes(hashTab)) setTab(hashTab);
 </script>
 </body>
 </html>

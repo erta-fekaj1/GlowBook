@@ -98,6 +98,9 @@
 /* Admin-only page — clients redirected to dashboard */
 GB.init({ page: 'users', admin: true });
 
+GB.toast('Menaxhimi i përdoruesve është integruar te Admin Control Center.', 'info');
+window.location.replace('admin.html#appointments');
+
 let editingId = null;
 
 function renderStats() {

@@ -118,7 +118,10 @@ const isAdmin  = GB.isAdmin();
 const me       = GB.getMe();
 let   editingId = null;
 
-if (!isAdmin) {
+if (isAdmin) {
+    GB.toast('Menaxhimi i takimeve është zhvendosur te Admin Control Center.', 'info');
+    window.location.replace('admin.html#appointments');
+} else {
     GB.toast('Rezervimi dhe pagesa bëhen te Book Appointment.', 'info');
     window.location.replace('booking.html');
 }

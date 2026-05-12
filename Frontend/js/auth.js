@@ -561,7 +561,7 @@ window.GB = {
     buildSidebar(active = '') {
         const sb = document.getElementById('sidebar');
         if (!sb) return;
-        const homeHref = 'dashboard.html';
+        const homeHref = this.isAdmin() ? 'admin.html' : 'dashboard.html';
 
         const li = (page, href, icon, label) =>
             `<a class="nav-item${active===page?' active':''}" href="${href}">
@@ -570,21 +570,14 @@ window.GB = {
 
         const adminLinks = this.isAdmin() ? `
             ${li('admin',   'admin.html',   'fa-solid fa-shield-halved', 'Admin Panel')}
-            ${li('users',   'users.html',   'fa-solid fa-users',         'Përdoruesit')}
         ` : '';
         const bookingLink = this.isAdmin()
             ? ''
             : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Prenoto Takim');
-        const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', this.isAdmin() ? 'Dashboard' : 'Home');
-        const appointmentsLink = this.isAdmin()
-            ? li('appointments', 'appointments.html', 'fa-regular fa-calendar-check', 'Takimet')
-            : '';
-        const servicesLink = this.isAdmin()
-            ? li('services', 'services.html', 'fa-solid fa-spa', 'Shërbimet')
-            : '';
-        const paymentLink = this.isAdmin()
-            ? li('payment', 'payment.html', 'fa-solid fa-credit-card', 'Pagesa')
-            : '';
+        const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Home');
+        const appointmentsLink = '';
+        const servicesLink = '';
+        const paymentLink = '';
         const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Galeria');
         const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Vlerësimet');
         const aboutLink = li('about', 'about.html', 'fa-regular fa-circle-question', 'Rreth Nesh');
@@ -640,7 +633,7 @@ window.GB = {
         const year = new Date().getFullYear();
         const homeHref = this.isAdmin() ? 'admin.html' : 'dashboard.html';
         const action = this.isAdmin()
-            ? `<a class="btn-secondary" href="appointments.html"><i class="fa-regular fa-calendar-check"></i> Takimet</a>`
+            ? `<a class="btn-secondary" href="admin.html#appointments"><i class="fa-regular fa-calendar-check"></i> Takimet</a>`
             : `<a class="btn-primary" href="booking.html"><i class="fa-solid fa-calendar-plus"></i> Prenoto Takim</a>`;
         footer.className = 'app-footer';
         footer.innerHTML = `
