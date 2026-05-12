@@ -259,9 +259,10 @@
         <div style="font-size:2.2rem">✅</div>
         <h3>Prenotimi u konfirmua!</h3>
         <p id="successText">Takimi dhe pagesa u procesuan me sukses.</p>
-        <button class="cb-btn primary" style="margin-top:.65rem" onclick="window.location.href='dashboard.html'">
-            Kthehu te Dashboard
-        </button>
+        <div style="display:flex;gap:.55rem;margin-top:.65rem">
+            <button class="cb-btn secondary" style="flex:1" id="leaveReviewBtn">Lër Review</button>
+            <button class="cb-btn primary" style="flex:1" onclick="window.location.href='dashboard.html'">Dashboard</button>
+        </div>
     </div>
 </div>
 
@@ -295,6 +296,7 @@ const state = {
     notes: '',
     month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     submitting: false,
+    lastAppointmentId: null,
 };
 const services = GB.services.getAll();
 const designs = GB.designs.getAll();
@@ -612,6 +614,7 @@ function completeBooking() {
         GB.toast(apptRes.error || 'Ndodhi një gabim gjatë rezervimit.', 'error');
         return;
     }
+    state.lastAppointmentId = apptRes.appointment.id;
 
     addPaymentRecord({
         txId: '#GB-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000),
@@ -631,6 +634,11 @@ function completeBooking() {
     document.getElementById('successModal').classList.add('open');
     state.submitting = false;
 }
+
+document.getElementById('leaveReviewBtn').addEventListener('click', () => {
+    const apptId = state.lastAppointmentId ? `?appointmentId=${state.lastAppointmentId}` : '';
+    window.location.href = `reviews.html${apptId}`;
+});
 
 document.getElementById('servicesGrid').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-service-id]');

@@ -43,6 +43,14 @@
                 <i class="fa-solid fa-calendar-check"></i> Prenoto Tani
             </a>
         </div>
+        <div data-client-only class="card" style="margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div>
+                <div style="font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Komuniteti</div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--pink-deep);font-weight:700">Client Reviews</div>
+                <div style="font-size:.82rem;color:var(--text-subtle)">Mesatarja aktuale: <strong id="dashReviewAvg">0.0</strong> / 5</div>
+            </div>
+            <a href="reviews.html" class="btn-secondary"><i class="fa-solid fa-star"></i> Shiko Reviews</a>
+        </div>
 
         <!-- Admin shortcut bar -->
         <div data-admin class="card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(251,234,240,.8),rgba(238,237,254,.8));backdrop-filter:blur(12px);animation:slideUp .5s ease-out">
@@ -131,6 +139,7 @@ function load() {
     const myAppts   = admin ? allAppts : allAppts.filter(a => a.userEmail === me?.email?.toLowerCase());
     const allUsers  = GB.users.getAll();
     const services  = GB.services.getAll();
+    const reviews   = GB.reviews.getAll();
 
     /* Stats */
     document.getElementById('stAppts').textContent  = myAppts.length;
@@ -141,6 +150,9 @@ function load() {
     } else {
         document.getElementById('stUsers').textContent = myAppts.filter(a=>a.status==='Done').length;
         document.getElementById('lblUsers').textContent = 'Kryer';
+        document.getElementById('dashReviewAvg').textContent = reviews.length
+            ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
+            : '0.0';
     }
 
     /* Recent appointments list */

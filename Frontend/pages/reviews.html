@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Reviews</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .rv-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:1.2rem; }
+        .rv-card { background:#fff; border:1px solid var(--pink-border); border-radius:16px; box-shadow:var(--shadow); padding:1.2rem; }
+        .rv-head { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:1rem; }
+        .rv-head h2 { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--pink-deep); }
+        .rv-head p { font-size:.84rem; color:var(--text-muted); }
+        .rv-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.65rem; }
+        .rv-stat { border:1px solid var(--pink-border); border-radius:12px; background:linear-gradient(135deg,var(--pink-light),#fff); padding:.75rem; }
+        .rv-stat b { display:block; font-size:1.2rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
+        .rv-stat span { font-size:.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:.4px; }
+        .rv-stars { color:#f5b301; letter-spacing:1px; font-size:.9rem; }
+
+        .rv-filter { display:flex; justify-content:space-between; align-items:center; margin:1rem 0; gap:.65rem; flex-wrap:wrap; }
+        .rv-filter select { border:1.5px solid var(--pink-border); border-radius:10px; padding:.5rem .65rem; font-size:.83rem; }
+
+        .rv-featured-wrap { margin:1rem 0; }
+        .rv-featured-title { font-size:.82rem; font-weight:700; color:var(--text-mid); margin-bottom:.55rem; display:flex; align-items:center; gap:6px; }
+        .rv-featured { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:.7rem; }
+        .rv-featured .rv-review { border-color:#f6d795; background:linear-gradient(135deg,#fffaf0,#fff); }
+
+        .rv-list { display:grid; gap:.7rem; }
+        .rv-review { border:1px solid var(--pink-border); border-radius:12px; padding:.8rem; background:#fff; animation:slideUp .28s ease both; }
+        .rv-review-head { display:flex; justify-content:space-between; align-items:flex-start; gap:.75rem; }
+        .rv-user { display:flex; align-items:center; gap:.55rem; }
+        .rv-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:700; }
+        .rv-name { font-size:.84rem; font-weight:700; color:var(--text-dark); }
+        .rv-meta { font-size:.72rem; color:var(--text-muted); margin-top:2px; }
+        .rv-comment { font-size:.84rem; color:var(--text-subtle); line-height:1.65; margin-top:.55rem; }
+        .rv-tags { margin-top:.5rem; display:flex; gap:.45rem; flex-wrap:wrap; }
+        .rv-tag { font-size:.68rem; background:var(--pink-light); color:var(--pink-deep); border-radius:999px; padding:.2rem .55rem; font-weight:700; }
+        .rv-img { margin-top:.55rem; width:100%; max-height:190px; object-fit:cover; border-radius:10px; border:1px solid var(--pink-border); }
+
+        .rv-form .field { margin-bottom:.8rem; }
+        .rv-form label { display:block; margin-bottom:.3rem; font-size:.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:.45px; }
+        .rv-form select, .rv-form textarea, .rv-form input[type="file"] {
+            width:100%; border:1.5px solid var(--pink-border); border-radius:10px; padding:.62rem .7rem; font-size:.84rem; font-family:inherit;
+        }
+        .rv-form textarea { resize:vertical; min-height:110px; }
+        .rv-stars-pick { display:flex; gap:.35rem; }
+        .rv-star-btn { border:none; background:none; color:#d4d1c9; font-size:1.25rem; cursor:pointer; transition:var(--ease); }
+        .rv-star-btn.active, .rv-star-btn:hover { color:#f5b301; transform:scale(1.08); }
+        .rv-img-preview { margin-top:.5rem; display:none; width:100%; border-radius:10px; border:1px solid var(--pink-border); max-height:170px; object-fit:cover; }
+        .rv-form-actions { display:flex; gap:.55rem; margin-top:.85rem; }
+        .rv-empty { text-align:center; padding:1.3rem .8rem; color:var(--text-muted); font-size:.84rem; }
+
+        @media (max-width: 980px) { .rv-grid { grid-template-columns:1fr; } }
+        @media (max-width: 620px) { .rv-stats { grid-template-columns:1fr 1fr; } .rv-form-actions { flex-direction:column; } }
+    </style>
+</head>
+<body>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <div style="width:40px"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Reviews</h1>
+                <p>Rrit besimin me feedback real nga klientët.</p>
+            </div>
+        </div>
+
+        <div class="rv-grid">
+            <section class="rv-card">
+                <div class="rv-head">
+                    <div>
+                        <h2>Çfarë thonë klientët</h2>
+                        <p>Vlerësime reale për shërbimet dhe stilet e realizuara.</p>
+                    </div>
+                    <div class="rv-stars" id="avgStars">★★★★★</div>
+                </div>
+
+                <div class="rv-stats">
+                    <div class="rv-stat"><b id="avgValue">0.0</b><span>Mesatarja</span></div>
+                    <div class="rv-stat"><b id="totalReviews">0</b><span>Reviews</span></div>
+                    <div class="rv-stat"><b id="fiveStarCount">0</b><span>5 Yje</span></div>
+                </div>
+
+                <div class="rv-featured-wrap">
+                    <div class="rv-featured-title"><i class="fa-solid fa-crown" style="color:#d39a15"></i>Top Reviews</div>
+                    <div class="rv-featured" id="featuredReviews"></div>
+                </div>
+
+                <div class="rv-filter">
+                    <strong style="font-size:.83rem;color:var(--text-mid)">Të gjitha vlerësimet</strong>
+                    <select id="sortSelect">
+                        <option value="latest">Më të rejat</option>
+                        <option value="highest">Vlerësimi më i lartë</option>
+                    </select>
+                </div>
+                <div class="rv-list" id="reviewsList"></div>
+            </section>
+
+            <aside class="rv-card rv-form" data-client-only>
+                <h3 style="font-family:'Cormorant Garamond',serif;color:var(--pink-deep);font-size:1.35rem;margin-bottom:.7rem">Lër një Review</h3>
+                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.8rem">Vetëm për takimet e përfunduara. Një review për takim.</p>
+
+                <div class="field">
+                    <label for="apptSelect">Takimi i përfunduar</label>
+                    <select id="apptSelect"></select>
+                </div>
+
+                <div class="field">
+                    <label>Vlerësimi</label>
+                    <div class="rv-stars-pick" id="starPicker"></div>
+                </div>
+
+                <div class="field">
+                    <label for="reviewComment">Komenti</label>
+                    <textarea id="reviewComment" placeholder="Si ishte eksperienca juaj në sallon?"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="reviewImage">Foto rezultati (opsionale)</label>
+                    <input type="file" id="reviewImage" accept="image/*">
+                    <img id="imagePreview" class="rv-img-preview" alt="Preview">
+                </div>
+
+                <label style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-subtle);margin:.2rem 0 .6rem">
+                    <input type="checkbox" id="anonymousChk"> Publikoje si anonim (iniciale)
+                </label>
+
+                <div class="rv-form-actions">
+                    <button class="btn-secondary" style="flex:1" id="clearBtn">Pastro</button>
+                    <button class="btn-primary" style="flex:2" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> Dërgo Review</button>
+                </div>
+                <div id="formHint" style="margin-top:.6rem;font-size:.74rem;color:var(--text-muted)"></div>
+            </aside>
+        </div>
+    </main>
+</div>
+
+<div class="gb-toast" id="toast"></div>
+<script src="../js/auth.js"></script>
+<script>
+'use strict';
+GB.init({ page: 'reviews' });
+
+const me = GB.getMe();
+const isAdmin = GB.isAdmin();
+const state = {
+    rating: 0,
+    sort: 'latest',
+    imageData: '',
+    selectedApptId: null,
+};
+
+const stars = (n) => '★★★★★☆☆☆☆☆'.slice(5 - Number(n), 10 - Number(n));
+const fmtDate = (iso) => {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('sq-AL', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+function displayName(r) {
+    if (!r.isAnonymous) return r.userName || r.userEmail || 'Klient';
+    const source = (r.userName || r.userEmail || 'A');
+    return source.split(' ').map(x => x[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function reviewCard(r, featured = false) {
+    return `
+    <article class="rv-review">
+        <div class="rv-review-head">
+            <div class="rv-user">
+                <div class="rv-avatar">${displayName(r).slice(0, 2)}</div>
+                <div>
+                    <div class="rv-name">${displayName(r)}</div>
+                    <div class="rv-meta">${fmtDate(r.dateOfAppointment)} · ${r.serviceName || 'Shërbim'}</div>
+                </div>
+            </div>
+            <div class="rv-stars">${stars(r.rating)}</div>
+        </div>
+        <div class="rv-comment">${r.comment || 'Pa koment.'}</div>
+        <div class="rv-tags">
+            ${featured ? '<span class="rv-tag"><i class="fa-solid fa-crown"></i> Featured</span>' : ''}
+            ${r.designName ? `<span class="rv-tag">Stili: ${r.designName}</span>` : ''}
+            <span class="rv-tag">${fmtDate(r.createdAt)}</span>
+        </div>
+        ${r.image ? `<img class="rv-img" src="${r.image}" alt="Review image">` : ''}
+    </article>`;
+}
+
+function renderStatsAndFeatured() {
+    const all = GB.reviews.getAll();
+    const avg = GB.reviews.average();
+    const five = all.filter(r => Number(r.rating) === 5).length;
+    document.getElementById('avgValue').textContent = avg ? avg.toFixed(1) : '0.0';
+    document.getElementById('totalReviews').textContent = all.length;
+    document.getElementById('fiveStarCount').textContent = five;
+    document.getElementById('avgStars').textContent = stars(Math.round(avg || 0));
+
+    const featured = GB.reviews.featured(3).filter(r => Number(r.rating) >= 4);
+    document.getElementById('featuredReviews').innerHTML = featured.length
+        ? featured.map(r => reviewCard(r, true)).join('')
+        : '<div class="rv-empty">Ende nuk ka top reviews.</div>';
+}
+
+function renderReviews() {
+    const all = GB.reviews.getAll();
+    let arr = [...all];
+    if (state.sort === 'highest') {
+        arr.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    } else {
+        arr.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    }
+    const list = document.getElementById('reviewsList');
+    list.innerHTML = arr.length
+        ? arr.map((r) => reviewCard(r)).join('')
+        : '<div class="rv-empty">Ende nuk ka reviews. Bëhu i pari që lë një feedback.</div>';
+}
+
+function eligibleAppointments() {
+    if (isAdmin) return [];
+    return GB.appointments.getByUser(me.email).filter((a) => {
+        const status = String(a.status || '').toLowerCase();
+        return ['done', 'confirmed'].includes(status) && !GB.reviews.hasReviewedAppointment(me.email, a.id);
+    });
+}
+
+function renderAppointmentSelect() {
+    const select = document.getElementById('apptSelect');
+    const items = eligibleAppointments();
+    if (!items.length) {
+        select.innerHTML = '<option value="">Nuk ka takime të kualifikuara për review</option>';
+        select.disabled = true;
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('formHint').textContent = 'Bëni një takim të përfunduar për të lënë review.';
+        return;
+    }
+    select.disabled = false;
+    document.getElementById('submitBtn').disabled = false;
+    select.innerHTML = '<option value="">Zgjidh takimin...</option>' + items.map((a) => `
+        <option value="${a.id}">${a.serviceName || 'Shërbim'} · ${fmtDate(a.date)} · ${a.status}</option>
+    `).join('');
+    if (state.selectedApptId && items.some(a => a.id === Number(state.selectedApptId))) {
+        select.value = String(state.selectedApptId);
+    }
+    document.getElementById('formHint').textContent = '';
+}
+
+function renderStarPicker() {
+    const host = document.getElementById('starPicker');
+    host.innerHTML = Array.from({ length: 5 }, (_, i) => i + 1).map((n) => `
+        <button class="rv-star-btn ${n <= state.rating ? 'active' : ''}" data-star="${n}" title="${n} yje">
+            <i class="fa-solid fa-star"></i>
+        </button>
+    `).join('');
+}
+
+function resetForm() {
+    state.rating = 0;
+    state.imageData = '';
+    state.selectedApptId = null;
+    document.getElementById('reviewComment').value = '';
+    document.getElementById('reviewImage').value = '';
+    document.getElementById('anonymousChk').checked = false;
+    const preview = document.getElementById('imagePreview');
+    preview.src = '';
+    preview.style.display = 'none';
+    renderStarPicker();
+    renderAppointmentSelect();
+}
+
+function initPrefillFromQuery() {
+    if (isAdmin) return;
+    const params = new URLSearchParams(window.location.search);
+    const apptId = Number(params.get('appointmentId') || 0);
+    if (!apptId) return;
+    state.selectedApptId = apptId;
+}
+
+document.getElementById('sortSelect').addEventListener('change', (e) => {
+    state.sort = e.target.value;
+    renderReviews();
+});
+
+document.getElementById('starPicker').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-star]');
+    if (!btn) return;
+    state.rating = Number(btn.dataset.star);
+    renderStarPicker();
+});
+
+document.getElementById('reviewImage').addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    const preview = document.getElementById('imagePreview');
+    if (!file) {
+        state.imageData = '';
+        preview.src = '';
+        preview.style.display = 'none';
+        return;
+    }
+    if (!file.type.startsWith('image/')) {
+        GB.toast('Ngarko vetëm imazh valid.', 'error');
+        e.target.value = '';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        state.imageData = String(reader.result || '');
+        preview.src = state.imageData;
+        preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+});
+
+document.getElementById('submitBtn').addEventListener('click', () => {
+    const apptId = Number(document.getElementById('apptSelect').value || 0);
+    const comment = document.getElementById('reviewComment').value.trim();
+    const isAnonymous = document.getElementById('anonymousChk').checked;
+    if (!apptId) { GB.toast('Zgjidhni një takim.', 'error'); return; }
+    if (!state.rating) { GB.toast('Vendosni vlerësimin me yje.', 'error'); return; }
+
+    const appt = GB.appointments.getById(apptId);
+    const res = GB.reviews.add({
+        userEmail: me.email,
+        userName: me.name,
+        appointmentId: apptId,
+        rating: state.rating,
+        comment,
+        image: state.imageData,
+        isAnonymous,
+        serviceName: appt?.serviceName || '',
+        dateOfAppointment: appt?.date || '',
+        designName: appt?.selectedDesignName || '',
+    });
+    if (!res.ok) {
+        GB.toast(res.error || 'Review nuk u ruajt.', 'error');
+        return;
+    }
+    GB.toast('Faleminderit! Review u publikua.', 'success');
+    resetForm();
+    renderStatsAndFeatured();
+    renderReviews();
+});
+
+document.getElementById('clearBtn').addEventListener('click', resetForm);
+
+initPrefillFromQuery();
+renderStarPicker();
+renderAppointmentSelect();
+renderStatsAndFeatured();
+renderReviews();
+</script>
+</body>
+</html>

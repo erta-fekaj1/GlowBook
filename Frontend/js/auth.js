@@ -22,6 +22,7 @@ const _K = {
     APPTS   : 'gb_appointments',
     SVCS    : 'gb_services',
     DESIGNS : 'gb_designs',
+    REVIEWS : 'gb_reviews',
 };
 
 /* ── Tiny localStorage read/write helpers ──────────────────── */
@@ -89,6 +90,7 @@ function _seed() {
 
     /* ── Empty appointments array ── */
     if (!_r(_K.APPTS)) _w(_K.APPTS, []);
+    if (!_r(_K.REVIEWS)) _w(_K.REVIEWS, []);
 
     /* ── Default gallery designs (full dataset — all categories) ── */
     if (!_r(_K.DESIGNS)) {
@@ -437,6 +439,99 @@ window.GB = {
         delete(id) { _w(_K.DESIGNS, this.getAll().filter(d => d.id !== id)); },
     },
 
+    /* ── Reviews store ───────────────────────────────────────── */
+    reviews: {
+        getAll() {
+            return _r(_K.REVIEWS) ?? [];
+        },
+        getById(id) {
+            return this.getAll().find(r => r.id === id) ?? null;
+        },
+        getByUser(email) {
+            const norm = String(email || '').toLowerCase();
+            return this.getAll().filter(r => String(r.userEmail || '').toLowerCase() === norm);
+        },
+        hasReviewedAppointment(userEmail, appointmentId) {
+            const norm = String(userEmail || '').toLowerCase();
+            return this.getAll().some(r =>
+                String(r.userEmail || '').toLowerCase() === norm &&
+                Number(r.appointmentId) === Number(appointmentId)
+            );
+        },
+        canReviewAppointment(userEmail, appointmentId) {
+            const norm = String(userEmail || '').toLowerCase();
+            const appt = GB.appointments.getById(Number(appointmentId));
+            if (!appt) return { ok: false, error: 'Takimi nuk u gjet.' };
+            if (String(appt.userEmail || '').toLowerCase() !== norm) {
+                return { ok: false, error: 'Nuk lejohet të vlerësoni këtë takim.' };
+            }
+            if (!['done', 'confirmed'].includes(String(appt.status || '').toLowerCase())) {
+                return { ok: false, error: 'Vetëm takimet e përfunduara mund të vlerësohen.' };
+            }
+            if (this.hasReviewedAppointment(norm, appointmentId)) {
+                return { ok: false, error: 'Ky takim është vlerësuar tashmë.' };
+            }
+            return { ok: true, appointment: appt };
+        },
+        add({
+            userEmail,
+            userName,
+            appointmentId,
+            rating,
+            comment = '',
+            image = '',
+            serviceName = '',
+            dateOfAppointment = '',
+            designName = '',
+            isAnonymous = false
+        }) {
+            const stars = Number(rating);
+            if (!userEmail || !appointmentId || !stars) {
+                return { ok: false, error: 'Të dhënat e vlerësimit mungojnë.' };
+            }
+            if (stars < 1 || stars > 5) {
+                return { ok: false, error: 'Vlerësimi duhet të jetë nga 1 deri në 5.' };
+            }
+            const allowed = this.canReviewAppointment(userEmail, appointmentId);
+            if (!allowed.ok) return allowed;
+
+            const all = this.getAll();
+            const review = {
+                id: _nextId(all),
+                userEmail: String(userEmail).toLowerCase(),
+                userName: userName || String(userEmail).split('@')[0],
+                appointmentId: Number(appointmentId),
+                rating: stars,
+                comment: String(comment || '').trim(),
+                image: image || '',
+                serviceName: serviceName || allowed.appointment.serviceName || '',
+                dateOfAppointment: dateOfAppointment || allowed.appointment.date || '',
+                designName: designName || allowed.appointment.selectedDesignName || '',
+                isAnonymous: !!isAnonymous,
+                createdAt: _now(),
+            };
+            _w(_K.REVIEWS, [...all, review]);
+            return { ok: true, review };
+        },
+        remove(id) {
+            const all = this.getAll();
+            const filtered = all.filter(r => r.id !== id);
+            if (filtered.length === all.length) return { ok: false, error: 'Vlerësimi nuk u gjet.' };
+            _w(_K.REVIEWS, filtered);
+            return { ok: true };
+        },
+        average() {
+            const all = this.getAll();
+            if (!all.length) return 0;
+            return all.reduce((s, r) => s + Number(r.rating || 0), 0) / all.length;
+        },
+        featured(limit = 3) {
+            return [...this.getAll()]
+                .sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')))
+                .slice(0, limit);
+        },
+    },
+
     /* ================================================================
        UI HELPERS
        ================================================================ */
@@ -491,6 +586,7 @@ window.GB = {
             ? li('payment', 'payment.html', 'fa-solid fa-credit-card', 'Pagesa')
             : '';
         const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Galeria');
+        const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Reviews');
 
         sb.innerHTML = `
             <div class="logo">
@@ -508,6 +604,7 @@ window.GB = {
             ${appointmentsLink}
             ${servicesLink}
             ${galleryLink}
+            ${reviewsLink}
             ${paymentLink}
             <div class="nav-bottom">
                 <a class="nav-item nav-logout" onclick="GB.logout()">
@@ -560,6 +657,7 @@ window.GB = {
         console.log('Users:',        this.users.safeAll());
         console.log('Appointments:', this.appointments.getAll());
         console.log('Services:',     this.services.getAll());
+        console.log('Reviews:',      this.reviews.getAll());
         console.groupEnd();
     },
     reset() {
