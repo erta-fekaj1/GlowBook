@@ -29,6 +29,19 @@ const _r = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { re
 const _w = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 const _nextId = arr => arr.length ? Math.max(...arr.map(x => x.id ?? 0)) + 1 : 1;
 const _now    = () => new Date().toISOString();
+const _WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+
+function _slotKey(value) {
+    const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
+    return m ? `${m[1]}T${m[2]}:${m[3]}` : '';
+}
+function _dayKey(value) {
+    const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : '';
+}
+function _isActiveAppointment(a) {
+    return (a?.status || '').toLowerCase() !== 'cancelled';
+}
 
 /* ── Password obfuscation (not cryptographic) ──────────────── */
 function _hash(pw) {
@@ -278,10 +291,40 @@ window.GB = {
             const norm = email.toLowerCase();
             return this.getAll().filter(a => a.userEmail === norm);
         },
+        getBookedSlotsByDate(dateISO) {
+            const day = _dayKey(dateISO);
+            if (!day) return [];
+            return this.getAll()
+                .filter(a => _isActiveAppointment(a) && _dayKey(a.date) === day)
+                .map(a => _slotKey(a.date).split('T')[1])
+                .filter(Boolean);
+        },
+        isSlotTaken(dateISO, excludeId = null) {
+            const target = _slotKey(dateISO);
+            if (!target) return false;
+            return this.getAll().some(a =>
+                a.id !== excludeId &&
+                _isActiveAppointment(a) &&
+                _slotKey(a.date) === target
+            );
+        },
+        getDayAvailability(dateISO, slots = _WORKDAY_SLOTS) {
+            const booked = new Set(this.getBookedSlotsByDate(dateISO));
+            return {
+                slots,
+                bookedCount: booked.size,
+                freeCount: Math.max(0, slots.length - booked.size),
+                isFull: booked.size >= slots.length,
+                bookedSlots: [...booked],
+            };
+        },
 
         add({ userEmail, userName, serviceId, serviceName, date, notes='', status='Pending' }) {
             if (!userEmail || !serviceId || !date) {
                 return { ok:false, error:'Email, shërbimi dhe data janë të detyrueshme.' };
+            }
+            if (this.isSlotTaken(date)) {
+                return { ok:false, error:'Ky orar është i rezervuar. Ju lutem zgjidhni një orar tjetër.' };
             }
             const all  = this.getAll();
             const appt = {
@@ -299,7 +342,11 @@ window.GB = {
             const all = this.getAll();
             const idx = all.findIndex(a => a.id === id);
             if (idx < 0) return { ok:false, error:'Takimi nuk u gjet.' };
-            all[idx] = { ...all[idx], ...fields };
+            const updated = { ...all[idx], ...fields };
+            if (_isActiveAppointment(updated) && this.isSlotTaken(updated.date, id)) {
+                return { ok:false, error:'Ky orar është i rezervuar. Ju lutem zgjidhni një orar tjetër.' };
+            }
+            all[idx] = updated;
             _w(_K.APPTS, all);
             return { ok:true, appointment:all[idx] };
         },
@@ -403,6 +450,7 @@ window.GB = {
     buildSidebar(active = '') {
         const sb = document.getElementById('sidebar');
         if (!sb) return;
+        const homeHref = this.isAdmin() ? 'dashboard.html' : 'booking.html';
 
         const li = (page, href, icon, label) =>
             `<a class="nav-item${active===page?' active':''}" href="${href}">
@@ -413,10 +461,13 @@ window.GB = {
             ${li('admin',   'admin.html',   'fa-solid fa-shield-halved', 'Admin Panel')}
             ${li('users',   'users.html',   'fa-solid fa-users',         'Përdoruesit')}
         ` : '';
+        const bookingLink = this.isAdmin()
+            ? ''
+            : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Prenoto Takim');
 
         sb.innerHTML = `
             <div class="logo">
-                <a href="dashboard.html" class="logo-img-link">
+                <a href="${homeHref}" class="logo-img-link">
                     <img src="../images/logo.png" alt="Glow Book Logo" class="logo-img"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                     <span class="logo-img-fallback">💅</span>
@@ -425,6 +476,7 @@ window.GB = {
                 <p>Nail Salon</p>
             </div>
             ${adminLinks}
+            ${bookingLink}
             ${li('dashboard',    'dashboard.html',    'fa-solid fa-house',              'Dashboard')}
             ${li('appointments', 'appointments.html', 'fa-regular fa-calendar-check',   'Takimet')}
             ${li('services',     'services.html',     'fa-solid fa-spa',                'Shërbimet')}

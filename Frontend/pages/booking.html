@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Book - Prenoto Takim</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .qb-wrap { display:grid; grid-template-columns:1.2fr .75fr; gap:1.25rem; align-items:start; }
+        .qb-card { background:var(--white); border:1px solid var(--pink-border); border-radius:16px; padding:1.25rem; box-shadow:var(--shadow); }
+        .qb-headline { margin-bottom:1rem; }
+        .qb-headline h2 { font-family:'Cormorant Garamond',serif; font-size:1.45rem; color:var(--pink-deep); }
+        .qb-headline p { font-size:.84rem; color:var(--text-muted); margin-top:2px; }
+        .qb-steps { display:flex; gap:.55rem; margin-top:1rem; flex-wrap:wrap; }
+        .qb-step { border:1px solid var(--pink-border); background:var(--pink-light); border-radius:999px; padding:.35rem .75rem; font-size:.74rem; color:var(--pink-deep); font-weight:600; }
+        .qb-step.done { background:#e9f8f2; color:#0f6e56; border-color:#b7ead9; }
+        .qb-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; }
+        .qb-service { border:1px solid var(--pink-border); background:var(--white); border-radius:12px; padding:1rem; text-align:left; transition:var(--ease); }
+        .qb-service:hover { border-color:var(--pink); transform:translateY(-2px); box-shadow:var(--shadow); }
+        .qb-service.active { border-color:var(--pink); background:linear-gradient(135deg,var(--pink-light),#fff); box-shadow:var(--shadow-lg); }
+        .qb-service-name { font-size:.92rem; font-weight:700; color:var(--text-dark); }
+        .qb-service-meta { display:flex; justify-content:space-between; margin-top:.5rem; font-size:.8rem; color:var(--text-subtle); }
+        .qb-price { color:var(--pink-deep); font-weight:700; font-size:1rem; }
+        .qb-calendar-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem; gap:.5rem; }
+        .qb-month { font-size:1.2rem; font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-weight:700; }
+        .qb-nav { display:flex; gap:.45rem; }
+        .qb-nav button { border:1px solid var(--pink-border); background:var(--white); color:var(--pink-deep); border-radius:10px; padding:.45rem .55rem; transition:var(--ease); }
+        .qb-nav button:hover { background:var(--pink); color:#fff; border-color:var(--pink); }
+        .qb-days { display:grid; grid-template-columns:repeat(7,1fr); gap:.4rem; }
+        .qb-day-name { font-size:.7rem; color:var(--text-muted); text-align:center; padding:.3rem 0; font-weight:700; }
+        .qb-day-empty { aspect-ratio:1; }
+        .qb-day { aspect-ratio:1; border:1px solid var(--pink-border); border-radius:11px; background:var(--white); position:relative; font-weight:700; color:var(--text-dark); transition:var(--ease); }
+        .qb-day small { display:block; font-size:.58rem; font-weight:600; margin-top:1px; color:var(--text-muted); }
+        .qb-day.is-open { border-color:#c5ecd7; background:#f5fff9; }
+        .qb-day.is-limited { border-color:#f0d6a8; background:#fff9ee; }
+        .qb-day.is-full, .qb-day.is-past { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
+        .qb-day.selected { border-color:var(--pink); background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; box-shadow:var(--shadow); }
+        .qb-day.selected small { color:#ffe8f1; }
+        .qb-legend { display:flex; gap:.8rem; flex-wrap:wrap; margin-top:.75rem; font-size:.72rem; color:var(--text-subtle); }
+        .qb-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:5px; }
+        .qb-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(92px,1fr)); gap:.55rem; margin-top:.9rem; }
+        .qb-slot { border:1px solid var(--pink-border); border-radius:11px; background:#fff; padding:.65rem .4rem; font-weight:700; color:var(--text-mid); transition:var(--ease); }
+        .qb-slot:hover:not(:disabled) { border-color:var(--pink); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+        .qb-slot.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
+        .qb-slot:disabled { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
+        .qb-chip { margin-top:.75rem; padding:.5rem .8rem; border-radius:999px; font-size:.73rem; display:inline-flex; align-items:center; gap:6px; font-weight:600; }
+        .qb-chip.open { background:#e9f8f2; color:#0f6e56; }
+        .qb-chip.full { background:#fdeeee; color:#a32d2d; }
+        .qb-summary { position:sticky; top:1.5rem; }
+        .qb-row { display:flex; justify-content:space-between; gap:.8rem; padding:.55rem 0; border-bottom:1px solid var(--pink-light); font-size:.86rem; }
+        .qb-row span:first-child { color:var(--text-muted); }
+        .qb-row:last-child { border-bottom:none; }
+        .qb-total { display:flex; justify-content:space-between; margin-top:.8rem; align-items:flex-end; }
+        .qb-total b { font-size:1.55rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
+        .qb-checkout { width:100%; margin-top:1rem; padding:.9rem; border:none; border-radius:12px; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; font-weight:700; transition:var(--ease-out); }
+        .qb-checkout:hover:not(:disabled) { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+        .qb-checkout:disabled { opacity:.58; cursor:not-allowed; transform:none; }
+        .qb-hint { margin-top:.65rem; min-height:18px; font-size:.75rem; color:var(--text-muted); }
+        @media (max-width: 980px) { .qb-wrap { grid-template-columns:1fr; } .qb-summary { position:static; } }
+    </style>
+</head>
+<body>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <div style="width:40px"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Prenoto Takimin</h1>
+                <p>Flow i shpejtë: shërbimi → data → ora → pagesa</p>
+            </div>
+        </div>
+
+        <div class="qb-wrap">
+            <section class="qb-card">
+                <div class="qb-headline">
+                    <h2>Zgjidh dhe vazhdo direkt në pagesë</h2>
+                    <p>Disponueshmëria përditësohet në kohë reale për të shmangur dyfishimet.</p>
+                    <div class="qb-steps">
+                        <span class="qb-step" id="step-service">1. Shërbimi</span>
+                        <span class="qb-step" id="step-date">2. Data</span>
+                        <span class="qb-step" id="step-time">3. Ora</span>
+                        <span class="qb-step" id="step-pay">4. Pagesa</span>
+                    </div>
+                </div>
+
+                <div class="qb-card" style="padding:1rem;margin-bottom:1rem">
+                    <div class="card-title" style="margin-bottom:.75rem">
+                        <span><i class="fa-solid fa-spa" style="margin-right:6px;color:var(--pink)"></i>Zgjidh shërbimin</span>
+                    </div>
+                    <div class="qb-grid" id="servicesGrid"></div>
+                </div>
+
+                <div class="qb-card" style="padding:1rem;margin-bottom:1rem">
+                    <div class="card-title" style="margin-bottom:.75rem">
+                        <span><i class="fa-solid fa-calendar-days" style="margin-right:6px;color:var(--pink)"></i>Zgjidh datën</span>
+                    </div>
+                    <div class="qb-calendar-head">
+                        <div class="qb-nav">
+                            <button type="button" id="prevMonthBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button type="button" id="todayBtn">Sot</button>
+                            <button type="button" id="nextMonthBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="qb-month" id="monthLabel"></div>
+                    </div>
+                    <div class="qb-days" id="calendarGrid"></div>
+                    <div class="qb-legend">
+                        <span><i class="qb-dot" style="background:#c5ecd7"></i>Ditë e lirë</span>
+                        <span><i class="qb-dot" style="background:#f0d6a8"></i>Pjesërisht e mbushur</span>
+                        <span><i class="qb-dot" style="background:#e4e1da"></i>E plotë / e mbyllur</span>
+                    </div>
+                </div>
+
+                <div class="qb-card" style="padding:1rem">
+                    <div class="card-title" style="margin-bottom:.35rem">
+                        <span><i class="fa-regular fa-clock" style="margin-right:6px;color:var(--pink)"></i>Zgjidh orën</span>
+                    </div>
+                    <div class="qb-slots" id="slotsGrid"></div>
+                    <div id="availabilityChip" class="qb-chip open"><i class="fa-solid fa-circle-info"></i>Zgjidh një datë për të parë oraret.</div>
+                </div>
+            </section>
+
+            <aside class="qb-card qb-summary">
+                <div class="card-title"><span><i class="fa-solid fa-receipt" style="margin-right:6px;color:var(--pink)"></i>Përmbledhja e rezervimit</span></div>
+                <div class="qb-row"><span>Shërbimi</span><b id="sumService">–</b></div>
+                <div class="qb-row"><span>Data</span><b id="sumDate">–</b></div>
+                <div class="qb-row"><span>Ora</span><b id="sumTime">–</b></div>
+                <div class="qb-row"><span>Kohëzgjatja</span><b id="sumDuration">–</b></div>
+                <div class="qb-total"><span>Totali</span><b id="sumPrice">€0.00</b></div>
+                <button class="qb-checkout" id="continueBtn" type="button" disabled>
+                    <i class="fa-solid fa-credit-card"></i> Vazhdo te pagesa
+                </button>
+                <div class="qb-hint" id="autoHint"></div>
+            </aside>
+        </div>
+    </main>
+</div>
+
+<div class="gb-toast" id="toast"></div>
+<script src="../js/auth.js"></script>
+<script src="../js/animations.js"></script>
+<script>
+'use strict';
+GB.init({ page: 'booking' });
+
+if (!GB.isLoggedIn()) window.location.replace('./index.html');
+if (GB.isAdmin()) {
+    GB.toast('Ky flow është vetëm për klientë.', 'error');
+    window.location.replace('./appointments.html');
+}
+
+const BOOKING_DRAFT_KEY = 'gb_checkout_draft';
+const WORK_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+const monthNames = ['Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nëntor', 'Dhjetor'];
+const dayNames = ['Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht', 'Die'];
+
+const state = {
+    service: null,
+    date: null,
+    time: null,
+    month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+};
+let autoCheckoutTimer = null;
+
+const services = GB.services.getAll();
+const fmtMoney = n => `€${Number(n || 0).toFixed(2)}`;
+const toISODate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const formatLongDate = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('sq-AL', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+
+function updateSteps() {
+    const hasService = !!state.service;
+    const hasDate = !!state.date;
+    const hasTime = !!state.time;
+    document.getElementById('step-service').classList.toggle('done', hasService);
+    document.getElementById('step-date').classList.toggle('done', hasDate);
+    document.getElementById('step-time').classList.toggle('done', hasTime);
+    document.getElementById('step-pay').classList.toggle('done', hasService && hasDate && hasTime);
+}
+
+function updateSummary() {
+    document.getElementById('sumService').textContent = state.service?.name || '–';
+    document.getElementById('sumDate').textContent = state.date ? formatLongDate(state.date) : '–';
+    document.getElementById('sumTime').textContent = state.time || '–';
+    document.getElementById('sumDuration').textContent = state.service ? `${state.service.duration || 60} min` : '–';
+    document.getElementById('sumPrice').textContent = fmtMoney(state.service?.price || 0);
+
+    const ready = Boolean(state.service && state.date && state.time);
+    document.getElementById('continueBtn').disabled = !ready;
+    updateSteps();
+}
+
+function renderServices() {
+    const host = document.getElementById('servicesGrid');
+    if (!services.length) {
+        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">Nuk ka shërbime të disponueshme aktualisht.</p>';
+        return;
+    }
+    host.innerHTML = services.map((s) => `
+        <button type="button" class="qb-service ${state.service?.id === s.id ? 'active' : ''}" data-service-id="${s.id}">
+            <div class="qb-service-name">${s.name}</div>
+            <div class="qb-service-meta">
+                <span><i class="fa-regular fa-clock"></i> ${s.duration || 60} min</span>
+                <span class="qb-price">€${s.price}</span>
+            </div>
+        </button>
+    `).join('');
+}
+
+function dayAvailability(dayISO) {
+    return GB.appointments.getDayAvailability(`${dayISO}T09:00`, WORK_SLOTS);
+}
+
+function renderCalendar() {
+    const year = state.month.getFullYear();
+    const month = state.month.getMonth();
+    const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayISO = toISODate(new Date());
+
+    document.getElementById('monthLabel').textContent = `${monthNames[month]} ${year}`;
+    const cells = [];
+    dayNames.forEach((name) => cells.push(`<div class="qb-day-name">${name}</div>`));
+    for (let i = 0; i < firstDayIndex; i++) cells.push('<div class="qb-day-empty"></div>');
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dayISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const availability = dayAvailability(dayISO);
+        const isPast = dayISO < todayISO;
+        const isFull = availability.isFull;
+        const isSelected = state.date === dayISO;
+
+        const classes = ['qb-day'];
+        if (isPast) classes.push('is-past');
+        else if (isFull) classes.push('is-full');
+        else if (availability.bookedCount) classes.push('is-limited');
+        else classes.push('is-open');
+        if (isSelected) classes.push('selected');
+
+        const statusText = isPast ? 'Mbyllur' : isFull ? 'Plotë' : availability.bookedCount ? `${availability.freeCount} lirë` : 'Lirë';
+        const disabled = isPast || isFull ? 'disabled' : '';
+        cells.push(`<button type="button" class="${classes.join(' ')}" data-day="${dayISO}" ${disabled}>
+            ${d}<small>${statusText}</small>
+        </button>`);
+    }
+
+    document.getElementById('calendarGrid').innerHTML = cells.join('');
+}
+
+function renderSlots() {
+    const grid = document.getElementById('slotsGrid');
+    const chip = document.getElementById('availabilityChip');
+    if (!state.date) {
+        grid.innerHTML = '';
+        chip.className = 'qb-chip open';
+        chip.innerHTML = '<i class="fa-solid fa-circle-info"></i>Zgjidh një datë për të parë oraret.';
+        return;
+    }
+
+    const availability = dayAvailability(state.date);
+    if (state.time && availability.bookedSlots.includes(state.time)) {
+        state.time = null;
+    }
+
+    grid.innerHTML = WORK_SLOTS.map((slot) => {
+        const booked = availability.bookedSlots.includes(slot);
+        const selected = !booked && state.time === slot;
+        return `<button type="button" class="qb-slot ${selected ? 'active' : ''}" data-time="${slot}" ${booked ? 'disabled' : ''}>${slot}</button>`;
+    }).join('');
+
+    chip.className = `qb-chip ${availability.isFull ? 'full' : 'open'}`;
+    chip.innerHTML = availability.isFull
+        ? '<i class="fa-solid fa-ban"></i>Kjo ditë është e plotë.'
+        : `<i class="fa-solid fa-bolt"></i>${availability.freeCount} orare të lira, ${availability.bookedCount} të rezervuara.`;
+}
+
+function continueToCheckout() {
+    if (!state.service || !state.date || !state.time) {
+        GB.toast('Ju lutem plotësoni shërbimin, datën dhe orën.', 'error');
+        return;
+    }
+
+    const slotISO = `${state.date}T${state.time}:00`;
+    if (GB.appointments.isSlotTaken(slotISO)) {
+        GB.toast('Ky orar sapo u rezervua. Zgjidhni orar tjetër.', 'error');
+        state.time = null;
+        renderCalendar();
+        renderSlots();
+        updateSummary();
+        return;
+    }
+
+    localStorage.setItem(BOOKING_DRAFT_KEY, JSON.stringify({
+        serviceId: state.service.id,
+        serviceName: state.service.name,
+        servicePrice: Number(state.service.price || 0),
+        serviceDuration: Number(state.service.duration || 60),
+        date: state.date,
+        time: state.time,
+        slotISO,
+        createdAt: new Date().toISOString(),
+    }));
+    window.location.href = './payment.html?draft=1';
+}
+
+function scheduleAutoCheckout() {
+    clearTimeout(autoCheckoutTimer);
+    const hint = document.getElementById('autoHint');
+    hint.textContent = 'Duke ju ridrejtuar automatikisht te pagesa...';
+    autoCheckoutTimer = setTimeout(continueToCheckout, 650);
+}
+
+document.getElementById('servicesGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-service-id]');
+    if (!btn) return;
+    const id = Number(btn.dataset.serviceId);
+    const found = services.find((s) => s.id === id);
+    if (!found) return;
+    state.service = found;
+    document.getElementById('autoHint').textContent = '';
+    renderServices();
+    updateSummary();
+});
+
+document.getElementById('calendarGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-day]');
+    if (!btn || btn.disabled) return;
+    state.date = btn.dataset.day;
+    state.time = null;
+    document.getElementById('autoHint').textContent = '';
+    renderCalendar();
+    renderSlots();
+    updateSummary();
+});
+
+document.getElementById('slotsGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-time]');
+    if (!btn || btn.disabled) return;
+    state.time = btn.dataset.time;
+    renderSlots();
+    updateSummary();
+    scheduleAutoCheckout();
+});
+
+document.getElementById('continueBtn').addEventListener('click', continueToCheckout);
+document.getElementById('prevMonthBtn').addEventListener('click', () => { state.month.setMonth(state.month.getMonth() - 1); renderCalendar(); });
+document.getElementById('nextMonthBtn').addEventListener('click', () => { state.month.setMonth(state.month.getMonth() + 1); renderCalendar(); });
+document.getElementById('todayBtn').addEventListener('click', () => {
+    state.month = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    renderCalendar();
+});
+
+window.addEventListener('storage', (e) => {
+    if (e.key === 'gb_appointments') {
+        renderCalendar();
+        renderSlots();
+        updateSummary();
+    }
+});
+
+renderServices();
+renderCalendar();
+renderSlots();
+updateSummary();
+</script>
+</body>
+</html>
