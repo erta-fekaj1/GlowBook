@@ -336,6 +336,160 @@ img { max-width: 100%; display: block; }
     color: var(--text-subtle);
     text-align: right;
 }
+.page-stack {
+    display: grid;
+    gap: 1.2rem;
+}
+.hero-shell {
+    border: 1px solid var(--pink-border);
+    border-radius: 22px;
+    background: linear-gradient(135deg,#fff 0%,#fff5f8 45%,#f6f3ff 100%);
+    box-shadow: var(--shadow);
+    padding: 1.7rem;
+}
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.35fr .9fr;
+    gap: 1.1rem;
+    align-items: center;
+}
+.hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid var(--pink-border);
+    background: #fff;
+    padding: .35rem .7rem;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--pink-deep);
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+.hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    line-height: 1.06;
+    color: var(--pink-deep);
+    margin-top: .75rem;
+}
+.hero-subtitle {
+    margin-top: .6rem;
+    font-size: .9rem;
+    color: var(--text-subtle);
+    max-width: 60ch;
+}
+.hero-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: .65rem;
+    flex-wrap: wrap;
+}
+.hero-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: .6rem;
+}
+.hero-kpi {
+    border: 1px solid var(--pink-border);
+    border-radius: 14px;
+    padding: .75rem .8rem;
+    background: #fff;
+}
+.hero-kpi b {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--pink-deep);
+    font-family: 'Cormorant Garamond', serif;
+}
+.hero-kpi span {
+    color: var(--text-muted);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-weight: 700;
+}
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(190px,1fr));
+    gap: .75rem;
+}
+.feature-card {
+    border: 1px solid var(--pink-border);
+    background: #fff;
+    border-radius: 14px;
+    padding: .95rem;
+    transition: var(--ease);
+}
+.feature-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--pink);
+    box-shadow: var(--shadow-sm);
+}
+.feature-card h3 {
+    font-size: .86rem;
+    color: var(--text-mid);
+    margin-bottom: .35rem;
+}
+.feature-card p {
+    font-size: .78rem;
+    color: var(--text-subtle);
+}
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+.contact-item {
+    border: 1px solid var(--pink-border);
+    border-radius: 12px;
+    padding: .8rem;
+    background: #fff;
+}
+.contact-item strong {
+    display: block;
+    color: var(--pink-deep);
+    margin-bottom: .2rem;
+    font-size: .82rem;
+}
+.contact-item span, .contact-item a {
+    font-size: .8rem;
+    color: var(--text-subtle);
+}
+.form-shell {
+    border: 1px solid var(--pink-border);
+    border-radius: 16px;
+    background: #fff;
+    padding: 1rem;
+}
+.form-shell .field { margin-bottom: .85rem; }
+.form-shell .field label {
+    display: block;
+    margin-bottom: .35rem;
+    font-size: .74rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .45px;
+    font-weight: 700;
+}
+.form-shell .field input,
+.form-shell .field textarea,
+.form-shell .field select {
+    width: 100%;
+    border: 1.5px solid var(--pink-border);
+    border-radius: 10px;
+    padding: .65rem .72rem;
+    font-size: .84rem;
+}
+.form-shell .field textarea { min-height: 120px; resize: vertical; }
+.form-shell .field input:focus,
+.form-shell .field textarea:focus,
+.form-shell .field select:focus {
+    outline: none;
+    border-color: var(--pink);
+    box-shadow: 0 0 0 3px rgba(212,83,126,.13);
+}
 
 .user-badge  { 
     display: flex; 
@@ -2081,6 +2235,8 @@ tbody tr {
     .payment-summary-col  { position: static; order: -1; }
     .profile-grid         { grid-template-columns: 1fr; }
     .gallery-stats        { grid-template-columns: repeat(2,1fr); }
+    .hero-grid            { grid-template-columns: 1fr; }
+    .contact-grid         { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -2111,6 +2267,8 @@ tbody tr {
     .login-card { padding: 2rem; }
     .payment-summary-col { padding: 1.5rem; background: var(--pink-light); border-radius: 16px; }
     .profile-grid { grid-template-columns: 1fr; }
+    .hero-shell { padding: 1.2rem; }
+    .hero-kpi-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {

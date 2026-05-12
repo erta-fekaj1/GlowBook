@@ -21,7 +21,7 @@
     <main class="main">
         <div class="topbar">
             <div>
-                <h1>Dashboard</h1>
+                <h1>Home</h1>
                 <p id="topbarSub">Mirë se vini!</p>
             </div>
             <a href="booking.html" class="btn-primary" data-client-only>
@@ -34,38 +34,67 @@
             </div>
         </div>
 
-        <!-- CTA: Quick Booking (Clients Only) -->
-        <div data-client-only class="card" style="margin-bottom:2rem;background:linear-gradient(135deg,#D4537E 0%,#993556 100%);border:none;padding:2rem;text-align:center;color:var(--white);">
-            <img src="../images/brand-logo.svg" alt="GlowBook" style="height:42px;margin:0 auto 1rem;filter:brightness(0) invert(1);opacity:.95">
-            <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;margin-bottom:.5rem;font-weight:700">Takimi juaj i radhës fillon këtu</h2>
-            <p style="font-size:.9rem;margin-bottom:1.5rem;opacity:.95">Rezervo në pak hapa dhe vazhdo direkt në pagesë me konfirmim të menjëhershëm.</p>
-            <a href="booking.html" class="btn-primary" style="background:var(--white);color:#D4537E;font-weight:700;display:inline-flex;align-items:center;gap:8px;border:none">
-                <i class="fa-solid fa-calendar-check"></i> Prenoto Tani
-            </a>
-        </div>
-        <div data-client-only class="card" style="margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-            <div>
-                <div style="font-size:.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Komuniteti</div>
-                <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--pink-deep);font-weight:700">Client Reviews</div>
-                <div style="font-size:.82rem;color:var(--text-subtle)">Mesatarja aktuale: <strong id="dashReviewAvg">0.0</strong> / 5</div>
-            </div>
-            <a href="reviews.html" class="btn-secondary"><i class="fa-solid fa-star"></i> Shiko Reviews</a>
-        </div>
+        <div class="page-stack">
+            <section class="hero-shell" data-client-only>
+                <div class="hero-grid">
+                    <div>
+                        <span class="hero-tag"><i class="fa-solid fa-sparkles"></i> Premium Booking Experience</span>
+                        <h2 class="hero-title">Rezervo trajtimin tënd në pak hapa, me stil dhe siguri.</h2>
+                        <p class="hero-subtitle">
+                            GlowBook është platforma jote për menaxhim modern të rezervimeve: përzgjedh shërbimin, stilin nga galeria, orarin e lirë në kohë reale dhe paguan menjëherë.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-check"></i> Book Appointment</a>
+                            <a href="gallery.html" class="btn-secondary"><i class="fa-regular fa-images"></i> Shiko Galerinë</a>
+                            <a href="reviews.html" class="btn-secondary"><i class="fa-solid fa-star"></i> Lexo Vlerësimet</a>
+                        </div>
+                    </div>
+                    <div class="hero-kpi-grid">
+                        <div class="hero-kpi"><b id="dashReviewAvg">0.0</b><span>Mesatarja e Reviews</span></div>
+                        <div class="hero-kpi"><b id="dashDoneCount">0</b><span>Takime të Kryera</span></div>
+                        <div class="hero-kpi"><b id="dashUpcoming">0</b><span>Takime në Vazhdim</span></div>
+                        <div class="hero-kpi"><b>24/7</b><span>Rezervim Online</span></div>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Admin shortcut bar -->
-        <div data-admin class="card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(251,234,240,.8),rgba(238,237,254,.8));backdrop-filter:blur(12px);animation:slideUp .5s ease-out">
-            <div class="card-title" style="margin-bottom:1rem">
-                <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:8px"></i>Admin Shortcuts</span>
-            </div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
-                <a href="admin.html"        class="btn-primary"   style="font-size:.82rem"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
-                <a href="users.html"        class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-users"></i> Përdoruesit</a>
-                <a href="appointments.html" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Të gjitha Takimet</a>
-            </div>
-        </div>
+            <section class="card" data-client-only>
+                <div class="card-title">
+                    <span><i class="fa-solid fa-compass" style="margin-right:8px;color:var(--pink)"></i>Eksploro platformën</span>
+                </div>
+                <div class="feature-grid">
+                    <a class="feature-card" href="gallery.html">
+                        <h3>Gallery & Styles</h3>
+                        <p>Zgjidh dizajnin që të pëlqen dhe kalo direkt në rezervim.</p>
+                    </a>
+                    <a class="feature-card" href="reviews.html">
+                        <h3>Client Reviews</h3>
+                        <p>Shiko vlerësime reale dhe inspirim nga klientët tanë.</p>
+                    </a>
+                    <a class="feature-card" href="about.html">
+                        <h3>About Us</h3>
+                        <p>Mëso për standardin, ekipin dhe filozofinë e GlowBook.</p>
+                    </a>
+                    <a class="feature-card" href="contact.html">
+                        <h3>Contact</h3>
+                        <p>Na kontakto për pyetje, bashkëpunime apo kërkesa speciale.</p>
+                    </a>
+                </div>
+            </section>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
+            <section data-admin class="card">
+                <div class="card-title" style="margin-bottom:1rem">
+                    <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:8px"></i>Admin Shortcuts</span>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                    <a href="admin.html"        class="btn-primary"   style="font-size:.82rem"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
+                    <a href="users.html"        class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-users"></i> Përdoruesit</a>
+                    <a href="appointments.html" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Të gjitha Takimet</a>
+                </div>
+            </section>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
             <div class="stat-card pink">
                 <div class="stat-icon">👥</div>
                 <div class="stat-label" id="lblUsers">Klientë</div>
@@ -90,9 +119,9 @@
                 <div class="stat-value" id="stPending">–</div>
                 <div class="stat-sub">takime</div>
             </div>
-        </div>
+            </div>
 
-        <div class="grid-2">
+            <div class="grid-2">
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Takimet e fundit</span>
@@ -107,12 +136,13 @@
                 </div>
                 <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
-        </div>
+            </div>
 
-        <!-- Admin-only bar chart -->
-        <div class="card" data-admin style="animation:slideUp .5s ease-out .25s both">
-            <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Klientët sipas rolit</div>
-            <div class="bar-wrap" id="roleChart"></div>
+            <!-- Admin-only bar chart -->
+            <div class="card" data-admin style="animation:slideUp .5s ease-out .25s both">
+                <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Klientët sipas rolit</div>
+                <div class="bar-wrap" id="roleChart"></div>
+            </div>
         </div>
     </main>
 </div>
@@ -148,11 +178,19 @@ function load() {
     if (admin) {
         document.getElementById('stUsers').textContent = allUsers.length;
     } else {
-        document.getElementById('stUsers').textContent = myAppts.filter(a=>a.status==='Done').length;
+        const doneCount = myAppts.filter(a=>a.status==='Done').length;
+        const upcoming = myAppts.filter(a => ['Pending', 'Confirmed'].includes(a.status)).length;
+        document.getElementById('stUsers').textContent = doneCount;
         document.getElementById('lblUsers').textContent = 'Kryer';
-        document.getElementById('dashReviewAvg').textContent = reviews.length
+        const avgReview = reviews.length
             ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
             : '0.0';
+        const avgEl = document.getElementById('dashReviewAvg');
+        if (avgEl) avgEl.textContent = avgReview;
+        const doneEl = document.getElementById('dashDoneCount');
+        if (doneEl) doneEl.textContent = String(doneCount);
+        const upcomingEl = document.getElementById('dashUpcoming');
+        if (upcomingEl) upcomingEl.textContent = String(upcoming);
     }
 
     /* Recent appointments list */

@@ -561,7 +561,7 @@ window.GB = {
     buildSidebar(active = '') {
         const sb = document.getElementById('sidebar');
         if (!sb) return;
-        const homeHref = this.isAdmin() ? 'dashboard.html' : 'booking.html';
+        const homeHref = 'dashboard.html';
 
         const li = (page, href, icon, label) =>
             `<a class="nav-item${active===page?' active':''}" href="${href}">
@@ -575,7 +575,7 @@ window.GB = {
         const bookingLink = this.isAdmin()
             ? ''
             : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Prenoto Takim');
-        const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Dashboard');
+        const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', this.isAdmin() ? 'Dashboard' : 'Home');
         const appointmentsLink = this.isAdmin()
             ? li('appointments', 'appointments.html', 'fa-regular fa-calendar-check', 'Takimet')
             : '';
@@ -586,7 +586,9 @@ window.GB = {
             ? li('payment', 'payment.html', 'fa-solid fa-credit-card', 'Pagesa')
             : '';
         const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Galeria');
-        const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Reviews');
+        const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Vlerësimet');
+        const aboutLink = li('about', 'about.html', 'fa-regular fa-circle-question', 'Rreth Nesh');
+        const contactLink = li('contact', 'contact.html', 'fa-regular fa-envelope', 'Kontakt');
 
         sb.innerHTML = `
             <div class="logo">
@@ -605,6 +607,8 @@ window.GB = {
             ${servicesLink}
             ${galleryLink}
             ${reviewsLink}
+            ${aboutLink}
+            ${contactLink}
             ${paymentLink}
             <div class="nav-bottom">
                 <a class="nav-item nav-logout" onclick="GB.logout()">

@@ -58,6 +58,11 @@
         .cb-day.is-full, .cb-day.is-past { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
         .cb-day.selected { border-color:var(--pink); background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; box-shadow:var(--shadow-sm); }
         .cb-day.selected small { color:#ffe8f1; }
+        .cb-quick-wrap { margin-top:.7rem; border-top:1px solid var(--pink-light); padding-top:.7rem; }
+        .cb-quick-title { font-size:.7rem; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--text-muted); margin-bottom:.45rem; }
+        .cb-quick-days { display:flex; gap:.45rem; overflow:auto; padding-bottom:.1rem; }
+        .cb-quick-day { border:1px solid var(--pink-border); border-radius:999px; background:#fff; padding:.4rem .62rem; font-size:.72rem; white-space:nowrap; color:var(--text-mid); font-weight:700; }
+        .cb-quick-day.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
 
         .cb-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(86px,1fr)); gap:.5rem; margin-top:.7rem; }
         .cb-slot { border:1px solid var(--pink-border); border-radius:10px; background:#fff; padding:.56rem .35rem; font-weight:700; color:var(--text-mid); transition:var(--ease); }
@@ -67,6 +72,10 @@
         .cb-chip { margin-top:.7rem; display:inline-flex; gap:6px; align-items:center; padding:.46rem .76rem; border-radius:999px; font-size:.72rem; font-weight:700; }
         .cb-chip.open { background:#e9f8f2; color:#0f6e56; }
         .cb-chip.full { background:#fdeeee; color:#a32d2d; }
+        .cb-suggested { margin-top:.7rem; display:flex; align-items:center; flex-wrap:wrap; gap:.4rem; }
+        .cb-suggested-label { font-size:.72rem; color:var(--text-muted); font-weight:700; }
+        .cb-suggested button { border:1px solid var(--pink-border); background:#fff; color:var(--text-mid); border-radius:999px; font-size:.7rem; font-weight:700; padding:.3rem .55rem; }
+        .cb-suggested button:hover { border-color:var(--pink); color:var(--pink-deep); }
 
         .cb-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
         .cb-field { margin-top:.65rem; }
@@ -174,11 +183,16 @@
                             <div class="cb-month" id="monthLabel"></div>
                         </div>
                         <div class="cb-days" id="calendarGrid"></div>
+                        <div class="cb-quick-wrap">
+                            <div class="cb-quick-title">Datat e para të lira</div>
+                            <div class="cb-quick-days" id="quickDays"></div>
+                        </div>
                     </div>
 
                     <div class="cb-section">
                         <div class="cb-section-title"><i class="fa-regular fa-clock" style="color:var(--pink)"></i>Zgjidh Orën</div>
                         <div class="cb-slots" id="slotsGrid"></div>
+                        <div class="cb-suggested" id="suggestedSlots"></div>
                         <div id="availabilityChip" class="cb-chip open"><i class="fa-solid fa-circle-info"></i>Zgjidh datën për të parë oraret.</div>
                     </div>
 
@@ -461,6 +475,33 @@ function dayAvailability(dayISO) {
     return GB.appointments.getDayAvailability(`${dayISO}T09:00`, WORK_SLOTS);
 }
 
+function findNextAvailableDays(limit = 5) {
+    const out = [];
+    const cursor = new Date();
+    for (let i = 0; i < 40 && out.length < limit; i++) {
+        const day = new Date(cursor);
+        day.setDate(cursor.getDate() + i);
+        const iso = toISODate(day);
+        const av = dayAvailability(iso);
+        if (av.freeCount > 0) out.push({ iso, freeCount: av.freeCount, day });
+    }
+    return out;
+}
+
+function renderQuickDays() {
+    const host = document.getElementById('quickDays');
+    const items = findNextAvailableDays();
+    if (!items.length) {
+        host.innerHTML = '<span style="font-size:.75rem;color:var(--text-muted)">Nuk ka data të lira së shpejti.</span>';
+        return;
+    }
+    host.innerHTML = items.map((it) => {
+        const label = it.day.toLocaleDateString('sq-AL', { day:'2-digit', month:'short' });
+        const active = state.date === it.iso ? 'active' : '';
+        return `<button type="button" class="cb-quick-day ${active}" data-quick-day="${it.iso}">${label} · ${it.freeCount} lirë</button>`;
+    }).join('');
+}
+
 function renderCalendar() {
     const year = state.month.getFullYear();
     const month = state.month.getMonth();
@@ -495,13 +536,16 @@ function renderCalendar() {
     }
 
     document.getElementById('calendarGrid').innerHTML = cells.join('');
+    renderQuickDays();
 }
 
 function renderSlots() {
     const grid = document.getElementById('slotsGrid');
     const chip = document.getElementById('availabilityChip');
+    const suggested = document.getElementById('suggestedSlots');
     if (!state.date) {
         grid.innerHTML = '';
+        suggested.innerHTML = '';
         chip.className = 'cb-chip open';
         chip.innerHTML = '<i class="fa-solid fa-circle-info"></i>Zgjidh një datë për të parë oraret.';
         return;
@@ -517,6 +561,11 @@ function renderSlots() {
         const selected = !booked && state.time === slot;
         return `<button type="button" class="cb-slot ${selected ? 'active' : ''}" data-time="${slot}" ${booked ? 'disabled' : ''}>${slot}</button>`;
     }).join('');
+
+    const suggestedSlots = WORK_SLOTS.filter(s => !availability.bookedSlots.includes(s)).slice(0, 3);
+    suggested.innerHTML = suggestedSlots.length
+        ? `<span class="cb-suggested-label">Ora të rekomanduara:</span>${suggestedSlots.map(s => `<button type="button" data-time="${s}">${s}</button>`).join('')}`
+        : '';
 
     chip.className = `cb-chip ${availability.isFull ? 'full' : 'open'}`;
     chip.innerHTML = availability.isFull
@@ -676,6 +725,26 @@ document.getElementById('calendarGrid').addEventListener('click', (e) => {
 document.getElementById('slotsGrid').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-time]');
     if (!btn || btn.disabled) return;
+    state.time = btn.dataset.time;
+    renderSlots();
+    updateSummaryUI();
+});
+
+document.getElementById('quickDays').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-quick-day]');
+    if (!btn) return;
+    state.date = btn.dataset.quickDay;
+    state.time = null;
+    const d = new Date(`${state.date}T12:00:00`);
+    state.month = new Date(d.getFullYear(), d.getMonth(), 1);
+    renderCalendar();
+    renderSlots();
+    updateSummaryUI();
+});
+
+document.getElementById('suggestedSlots').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-time]');
+    if (!btn) return;
     state.time = btn.dataset.time;
     renderSlots();
     updateSummaryUI();

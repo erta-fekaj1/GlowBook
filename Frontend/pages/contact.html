@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowBook - Kontakt</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .contact-layout { display:grid; grid-template-columns:1fr 1.05fr; gap:1rem; align-items:start; }
+        .contact-map { border:1px solid var(--pink-border); border-radius:14px; background:linear-gradient(135deg,#fff,#fef7fa); padding:1rem; min-height:160px; display:grid; place-items:center; color:var(--text-muted); font-size:.82rem; text-align:center; }
+        .contact-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+        .contact-form-actions { display:flex; gap:.6rem; margin-top:.35rem; }
+        .contact-note { font-size:.75rem; color:var(--text-muted); margin-top:.45rem; }
+        @media (max-width: 980px) {
+            .contact-layout { grid-template-columns:1fr; }
+        }
+        @media (max-width: 640px) {
+            .contact-form-grid { grid-template-columns:1fr; }
+            .contact-form-actions { flex-direction:column; }
+        }
+    </style>
+</head>
+<body>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <div style="width:40px"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Kontakt</h1>
+                <p>Na shkruaj për pyetje, kërkesa speciale apo ndihmë gjatë rezervimit.</p>
+            </div>
+            <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>
+        </div>
+
+        <section class="hero-shell" style="margin-bottom:1rem">
+            <div class="hero-grid">
+                <div>
+                    <span class="hero-tag"><i class="fa-solid fa-headset"></i> Fast Support</span>
+                    <h2 class="hero-title">Ne jemi këtu për të të ndihmuar.</h2>
+                    <p class="hero-subtitle">Për rezervime grupore, pyetje rreth shërbimeve, ose ndryshime në takime, dërgo një mesazh dhe ekipi ynë të kthen përgjigje sa më shpejt.</p>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <strong>Telefoni</strong>
+                        <a href="tel:+38344123456">+383 44 123 456</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Email</strong>
+                        <a href="mailto:hello@glowbook.com">hello@glowbook.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Adresa</strong>
+                        <span>Prishtinë, Kosovë</span>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Orari</strong>
+                        <span>Hën - Sht · 09:00 - 18:00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="contact-layout">
+            <section class="card">
+                <div class="card-title">
+                    <span><i class="fa-regular fa-paper-plane" style="margin-right:7px;color:var(--pink)"></i>Dërgo mesazh</span>
+                </div>
+                <form class="form-shell" id="contactForm">
+                    <div class="contact-form-grid">
+                        <div class="field">
+                            <label for="cName">Emri</label>
+                            <input id="cName" type="text" placeholder="Ana Krasniqi" required>
+                        </div>
+                        <div class="field">
+                            <label for="cEmail">Email</label>
+                            <input id="cEmail" type="email" placeholder="ana@example.com" required>
+                        </div>
+                        <div class="field">
+                            <label for="cPhone">Telefoni</label>
+                            <input id="cPhone" type="text" placeholder="044 123 456">
+                        </div>
+                        <div class="field">
+                            <label for="cSubject">Subjekti</label>
+                            <select id="cSubject">
+                                <option value="Pyetje e përgjithshme">Pyetje e përgjithshme</option>
+                                <option value="Rezervim grupor">Rezervim grupor</option>
+                                <option value="Ndryshim i takimit">Ndryshim i takimit</option>
+                                <option value="Partneritet / Bashkëpunim">Partneritet / Bashkëpunim</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="cMessage">Mesazhi</label>
+                        <textarea id="cMessage" placeholder="Shkruaj detajet e kërkesës tënde..." required></textarea>
+                    </div>
+                    <div class="contact-form-actions">
+                        <button class="btn-secondary" type="reset" style="flex:1">Pastro</button>
+                        <button class="btn-primary" type="submit" style="flex:2"><i class="fa-solid fa-paper-plane"></i> Dërgo</button>
+                    </div>
+                    <div class="contact-note">Mesazhi ruhet në sistemin lokal për demo dhe ndjekje nga paneli.</div>
+                </form>
+            </section>
+
+            <aside class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-location-dot" style="margin-right:7px;color:var(--pink)"></i>Info shtesë</span>
+                </div>
+                <div class="contact-map">
+                    <div>
+                        <i class="fa-regular fa-map" style="font-size:1.4rem;color:var(--pink);margin-bottom:.35rem"></i><br>
+                        GlowBook Studio<br>
+                        Prishtinë, Kosovë
+                    </div>
+                </div>
+                <div class="feature-grid" style="margin-top:.75rem">
+                    <a href="booking.html" class="feature-card">
+                        <h3>Rezervo direkt</h3>
+                        <p>Flow i shpejtë me disponueshmëri në kohë reale dhe pagesë të integruar.</p>
+                    </a>
+                    <a href="about.html" class="feature-card">
+                        <h3>Pse GlowBook</h3>
+                        <p>Njih standardet tona të shërbimit dhe vlerat e brandit.</p>
+                    </a>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
+
+<div class="gb-toast" id="toast"></div>
+<script src="../js/auth.js"></script>
+<script>
+'use strict';
+GB.init({ page:'contact' });
+
+const CONTACT_KEY = 'gb_contact_messages';
+const me = GB.getMe();
+const form = document.getElementById('contactForm');
+const nameInput = document.getElementById('cName');
+const emailInput = document.getElementById('cEmail');
+const phoneInput = document.getElementById('cPhone');
+const subjectInput = document.getElementById('cSubject');
+const messageInput = document.getElementById('cMessage');
+
+if (me) {
+    nameInput.value = me.name || '';
+    emailInput.value = me.email || '';
+    phoneInput.value = me.phone || '';
+}
+
+function readMessages() {
+    try { return JSON.parse(localStorage.getItem(CONTACT_KEY) || '[]'); }
+    catch { return []; }
+}
+
+function saveMessage(payload) {
+    const all = readMessages();
+    const next = {
+        id: all.length ? Math.max(...all.map(m => Number(m.id || 0))) + 1 : 1,
+        ...payload,
+        createdAt: new Date().toISOString()
+    };
+    localStorage.setItem(CONTACT_KEY, JSON.stringify([...all, next]));
+}
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
+    const phone = phoneInput.value.trim();
+    const subject = subjectInput.value;
+    const message = messageInput.value.trim();
+
+    if (!name || !email || !message) {
+        GB.toast('Plotëso emrin, email-in dhe mesazhin.', 'error');
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        GB.toast('Email-i nuk është valid.', 'error');
+        return;
+    }
+
+    saveMessage({ userId: me?.id || null, name, email, phone, subject, message });
+    GB.toast('Mesazhi u dërgua me sukses. Faleminderit!', 'success');
+    messageInput.value = '';
+    subjectInput.value = 'Pyetje e përgjithshme';
+});
+</script>
+</body>
+</html>
