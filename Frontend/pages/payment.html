@@ -359,6 +359,7 @@ GB.init({ page: 'payment' });
 const me          = GB.getMe();
 const isAdmin     = GB.isAdmin();
 const PAYMENTS_KEY = 'gb_payments';
+const BOOKING_DRAFT_KEY = 'gb_checkout_draft';
 
 const state = {
     method      : 'card',
@@ -479,7 +480,7 @@ function loadAppointments() {
     if (!unpaid.length) {
         list.innerHTML = `<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem">
             Nuk keni takime të papaguara.
-            <a href="appointments.html" style="color:var(--pink);display:block;margin-top:.5rem">
+            <a href="booking.html" style="color:var(--pink);display:block;margin-top:.5rem">
                 <i class="fa-solid fa-plus"></i> Shto takim →
             </a>
         </div>`;
@@ -511,15 +512,25 @@ function loadAppointments() {
 
 function selectAppt(id) {
     const a   = GB.appointments.getById(id);
-    const svc = GB.services.getById(a?.serviceId);
-    if (!a || !svc) return;
+    if (!a) return;
+    applySelectedAppt(a, true);
+}
 
-    state.selectedAppt = a;
-    state.basePrice    = svc.price;
-    state.discount     = 0;
+function applySelectedAppt(appt, showToast = false) {
+    if (!appt) return;
+    const svc = GB.services.getById(appt.serviceId);
+    if (!svc) return;
+    state.selectedAppt = appt;
+    state.basePrice = svc.price;
+    state.discount = 0;
 
-    /* Show selected card */
-    const date = new Date(a.date).toLocaleDateString('sq-AL', { day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit' });
+    const date = new Date(appt.date).toLocaleDateString('sq-AL', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
     document.getElementById('selectedApptInfo').innerHTML = `
         <div class="appt-item">
             <div class="summary-item-icon">💅</div>
@@ -530,21 +541,60 @@ function selectAppt(id) {
             <span style="font-size:1rem;font-weight:600;color:var(--pink)">€${svc.price}</span>
         </div>`;
 
-    document.getElementById('apptPickCard').style.display    = 'none';
+    document.getElementById('apptPickCard').style.display = 'none';
     document.getElementById('selectedApptCard').style.display = '';
-
-    /* Update summary */
     document.getElementById('summaryService').textContent = svc.name;
-    document.getElementById('summaryDate').textContent    = date;
-    document.getElementById('summaryPrice').textContent   = fmtEur(svc.price);
-
-    /* Reset promo */
+    document.getElementById('summaryDate').textContent = date;
+    document.getElementById('summaryPrice').textContent = fmtEur(svc.price);
     document.getElementById('promoCode').value = '';
     document.getElementById('promoMsg').textContent = '';
-    document.getElementById('promoMsg').className   = 'promo-message';
-
+    document.getElementById('promoMsg').className = 'promo-message';
     updateSummary();
-    GB.toast(`"${svc.name}" u zgjodh!`, 'success');
+    if (showToast) GB.toast(`"${svc.name}" u zgjodh!`, 'success');
+}
+
+function hydrateDraftBooking() {
+    if (isAdmin) return;
+    let draft;
+    try {
+        draft = JSON.parse(localStorage.getItem(BOOKING_DRAFT_KEY) || 'null');
+    } catch {
+        draft = null;
+    }
+    if (!draft?.serviceId || !draft?.date || !draft?.time) return;
+
+    const slotISO = draft.slotISO || `${draft.date}T${draft.time}:00`;
+    const myPending = GB.appointments.getByUser(me.email).find(a =>
+        a.serviceId === Number(draft.serviceId) &&
+        String(a.date || '').startsWith(`${draft.date}T${draft.time}`) &&
+        (a.status === 'Pending' || a.status === 'Confirmed')
+    );
+
+    let target = myPending;
+    if (!target) {
+        const service = GB.services.getById(Number(draft.serviceId));
+        const addRes = GB.appointments.add({
+            userEmail: me.email,
+            userName: me.name,
+            userId: me.id,
+            serviceId: Number(draft.serviceId),
+            serviceName: draft.serviceName || service?.name || 'Shërbim',
+            date: slotISO,
+            status: 'Pending',
+            notes: 'Krijuar nga flow i shpejtë i prenotimit'
+        });
+        if (!addRes.ok) {
+            GB.toast(addRes.error || 'Orari nuk mund të rezervohet.', 'error');
+            localStorage.removeItem(BOOKING_DRAFT_KEY);
+            return;
+        }
+        target = addRes.appointment;
+    }
+
+    localStorage.removeItem(BOOKING_DRAFT_KEY);
+    loadAppointments();
+    applySelectedAppt(target, false);
+    document.getElementById('payBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function clearSelectedAppt() {
@@ -758,6 +808,7 @@ document.addEventListener('keydown', e => {
 updatePreview();
 switchMethod('card');
 loadAppointments();
+hydrateDraftBooking();
 loadPayHistory();
 </script>
 </body>

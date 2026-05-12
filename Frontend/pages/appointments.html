@@ -25,7 +25,7 @@
                 <h1>Takimet</h1>
                 <p id="apptSub">Takimet tuaja të rezervuara</p>
             </div>
-            <button class="btn-primary" onclick="openModal()">
+            <button class="btn-primary" id="topActionBtn" onclick="openModal()">
                 <i class="fa-solid fa-plus"></i> Shto Takim
             </button>
         </div>
@@ -123,6 +123,12 @@ document.getElementById('apptSub').textContent = isAdmin
     ? 'Menaxho të gjitha takimet'
     : 'Takimet tuaja të rezervuara';
 
+if (!isAdmin) {
+    const topActionBtn = document.getElementById('topActionBtn');
+    topActionBtn.innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Prenoto Takim';
+    topActionBtn.onclick = () => window.location.href = 'booking.html';
+}
+
 /* Populate selects */
 function populateSelects() {
     /* Users — admin only */
@@ -167,7 +173,7 @@ function renderTable() {
     const tbody = document.getElementById('apptTable');
     if (!appts.length) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">
-            ${isAdmin ? 'Nuk ka takime.' : 'Nuk keni asnjë takim akoma. <a href="#" onclick="openModal()" style="color:var(--pink)">Shto takim →</a>'}
+            ${isAdmin ? 'Nuk ka takime.' : 'Nuk keni asnjë takim akoma. <a href="booking.html" style="color:var(--pink)">Prenoto takim →</a>'}
         </td></tr>`;
         return;
     }
