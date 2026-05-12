@@ -12,18 +12,18 @@
 
 /* ── Category config ──────────────────────────────────────────── */
 const CATEGORIES = [
-    { key:'French',       label:'French',          icon:'fa-solid fa-star',              color:'#F8F4FF', accent:'#7F77DD' },
-    { key:'Gel',          label:'Gel',              icon:'fa-solid fa-droplet',           color:'#FFF0F5', accent:'#D4537E' },
-    { key:'Ombre',        label:'Ombre',            icon:'fa-solid fa-circle-half-stroke', color:'#F0F8FF', accent:'#5BABD4' },
-    { key:'Floral',       label:'Floral',           icon:'fa-solid fa-leaf',              color:'#F0FFF4', accent:'#1D9E75' },
-    { key:'Glitter',      label:'Glitter',          icon:'fa-solid fa-sparkles',          color:'#FFFBF0', accent:'#BA7517' },
-    { key:'Chrome',       label:'Chrome / Mirror',  icon:'fa-solid fa-circle',            color:'#F4F4F4', accent:'#555555' },
-    { key:'Animal Print', label:'Animal Print',     icon:'fa-solid fa-paw',               color:'#FFF8F0', accent:'#A0522D' },
-    { key:'Abstract',     label:'Abstract',         icon:'fa-solid fa-shapes',            color:'#F5F0FF', accent:'#6A4FC8' },
-    { key:'Swirls',       label:'Swirls',           icon:'fa-solid fa-rotate',            color:'#FFF0F8', accent:'#C4448A' },
-    { key:'3D',           label:'3D Nails',         icon:'fa-solid fa-cube',              color:'#EAFAF5', accent:'#0E8A6A' },
-    { key:'Foil',         label:'Foil Nails',       icon:'fa-solid fa-wand-magic-sparkles',color:'#FEFBEA', accent:'#9A7D0A' },
-    { key:'Seasonal',     label:'Seasonal',         icon:'fa-solid fa-snowflake',         color:'#F0F5FF', accent:'#3A6BC4' },
+    { key:'French',       label:'French',          icon:'fa-solid fa-star',              color:'#FFF7FB', accent:'#EC4899' },
+    { key:'Gel',          label:'Gel',              icon:'fa-solid fa-droplet',           color:'#FCE7F3', accent:'#F472B6' },
+    { key:'Ombre',        label:'Ombre',            icon:'fa-solid fa-circle-half-stroke', color:'#FFF7FB', accent:'#EC4899' },
+    { key:'Floral',       label:'Floral',           icon:'fa-solid fa-leaf',              color:'#FFF7FB', accent:'#DB2777' },
+    { key:'Glitter',      label:'Glitter',          icon:'fa-solid fa-sparkles',          color:'#FFF7FB', accent:'#EC4899' },
+    { key:'Chrome',       label:'Chrome / Mirror',  icon:'fa-solid fa-circle',            color:'#FFF7FB', accent:'#4B5563' },
+    { key:'Animal Print', label:'Animal Print',     icon:'fa-solid fa-paw',               color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Abstract',     label:'Abstract',         icon:'fa-solid fa-shapes',            color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Swirls',       label:'Swirls',           icon:'fa-solid fa-rotate',            color:'#FCE7F3', accent:'#BE185D' },
+    { key:'3D',           label:'3D Nails',         icon:'fa-solid fa-cube',              color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Foil',         label:'Foil Nails',       icon:'fa-solid fa-wand-magic-sparkles',color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Seasonal',     label:'Seasonal',         icon:'fa-solid fa-snowflake',         color:'#FFF7FB', accent:'#BE185D' },
 ];
 
 const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c]));
@@ -41,7 +41,7 @@ const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 const isAdmin = () => GB.isAdmin();
 
 function getCat(key) {
-    return CAT_MAP[key] || { color:'#FBEAF0', accent:'#D4537E', icon:'fa-solid fa-image' };
+    return CAT_MAP[key] || { color:'#FCE7F3', accent:'#F472B6', icon:'fa-solid fa-image' };
 }
 
 function complexityClass(c) {
