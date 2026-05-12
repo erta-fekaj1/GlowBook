@@ -580,7 +580,7 @@ window.GB = {
         const paymentLink = '';
         const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Galeria');
         const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Vlerësimet');
-        const aboutLink = li('about', 'about.html', 'fa-regular fa-circle-question', 'Rreth Nesh');
+        const offersLink = li('offers', 'offers.html', 'fa-solid fa-tags', 'Special Offers');
         const contactLink = li('contact', 'contact.html', 'fa-regular fa-envelope', 'Kontakt');
 
         sb.innerHTML = `
@@ -600,7 +600,7 @@ window.GB = {
             ${servicesLink}
             ${galleryLink}
             ${reviewsLink}
-            ${aboutLink}
+            ${offersLink}
             ${contactLink}
             ${paymentLink}
             <div class="nav-bottom">
