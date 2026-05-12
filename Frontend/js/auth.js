@@ -573,15 +573,15 @@ window.GB = {
         ` : '';
         const bookingLink = this.isAdmin()
             ? ''
-            : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Prenoto Takim');
+            : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Book Appointment');
         const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Home');
         const appointmentsLink = '';
         const servicesLink = '';
         const paymentLink = '';
-        const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Galeria');
-        const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Vlerësimet');
+        const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Gallery');
+        const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Reviews');
         const offersLink = li('offers', 'offers.html', 'fa-solid fa-tags', 'Special Offers');
-        const contactLink = li('contact', 'contact.html', 'fa-regular fa-envelope', 'Kontakt');
+        const contactLink = li('contact', 'contact.html', 'fa-regular fa-envelope', 'Contact');
 
         sb.innerHTML = `
             <div class="logo">
@@ -605,7 +605,7 @@ window.GB = {
             ${paymentLink}
             <div class="nav-bottom">
                 <a class="nav-item nav-logout" onclick="GB.logout()">
-                    <i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni
+                    <i class="fa-solid fa-right-from-bracket nav-icon"></i> Logout
                 </a>
             </div>`;
     },
@@ -633,8 +633,8 @@ window.GB = {
         const year = new Date().getFullYear();
         const homeHref = this.isAdmin() ? 'admin.html' : 'dashboard.html';
         const action = this.isAdmin()
-            ? `<a class="btn-secondary" href="admin.html#appointments"><i class="fa-regular fa-calendar-check"></i> Takimet</a>`
-            : `<a class="btn-primary" href="booking.html"><i class="fa-solid fa-calendar-plus"></i> Prenoto Takim</a>`;
+            ? `<a class="btn-secondary" href="admin.html#appointments"><i class="fa-regular fa-calendar-check"></i> Appointments</a>`
+            : `<a class="btn-primary" href="booking.html"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>`;
         footer.className = 'app-footer';
         footer.innerHTML = `
             <a href="${homeHref}" class="app-footer-brand">

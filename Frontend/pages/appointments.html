@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Book - Takimet</title>
+    <title>Glow Book - Appointments</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
@@ -22,11 +22,11 @@
     <main class="main">
         <div class="topbar">
             <div>
-                <h1>Takimet</h1>
-                <p id="apptSub">Takimet tuaja të rezervuara</p>
+                <h1>Appointments</h1>
+                <p id="apptSub">Your booked appointments</p>
             </div>
             <button class="btn-primary" id="topActionBtn" onclick="openModal()">
-                <i class="fa-solid fa-plus"></i> Shto Takim
+                <i class="fa-solid fa-plus"></i> Add Appointment
             </button>
         </div>
 
@@ -128,12 +128,12 @@ if (isAdmin) {
 
 /* Subtitle */
 document.getElementById('apptSub').textContent = isAdmin
-    ? 'Menaxho të gjitha takimet'
-    : 'Takimet tuaja të rezervuara';
+    ? 'Manage all appointments'
+    : 'Your booked appointments';
 
 if (!isAdmin) {
     const topActionBtn = document.getElementById('topActionBtn');
-    topActionBtn.innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Prenoto Takim';
+    topActionBtn.innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Book Appointment';
     topActionBtn.onclick = () => window.location.href = 'booking.html';
 }
 
