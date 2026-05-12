@@ -591,12 +591,12 @@ window.GB = {
         sb.innerHTML = `
             <div class="logo">
                 <a href="${homeHref}" class="logo-img-link">
-                    <img src="../images/logo.png" alt="Glow Book Logo" class="logo-img"
+                    <img src="../images/brand-mark.svg" alt="GlowBook Logo" class="logo-img"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                     <span class="logo-img-fallback">💅</span>
                 </a>
-                <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+                <h2>GlowBook</h2>
+                <p>Premium Nail Studio</p>
             </div>
             ${adminLinks}
             ${bookingLink}
@@ -611,6 +611,46 @@ window.GB = {
                     <i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni
                 </a>
             </div>`;
+    },
+
+    applyBranding() {
+        this.decorateMobileNav();
+        this.injectAppFooter();
+    },
+
+    decorateMobileNav() {
+        const mobileLogo = document.querySelector('.mobile-nav-logo');
+        if (!mobileLogo) return;
+        const badge = this.isAdmin() ? '<span class="mobile-brand-badge">admin</span>' : '';
+        mobileLogo.innerHTML = `
+            <img src="../images/brand-mark.svg" alt="GlowBook" class="mobile-brand-img">
+            <span class="mobile-brand-text">GlowBook</span>
+            ${badge}
+        `;
+    },
+
+    injectAppFooter() {
+        const main = document.querySelector('main.main');
+        if (!main || main.querySelector('.app-footer')) return;
+        const footer = document.createElement('footer');
+        const year = new Date().getFullYear();
+        const homeHref = this.isAdmin() ? 'admin.html' : 'dashboard.html';
+        const action = this.isAdmin()
+            ? `<a class="btn-secondary" href="appointments.html"><i class="fa-regular fa-calendar-check"></i> Takimet</a>`
+            : `<a class="btn-primary" href="booking.html"><i class="fa-solid fa-calendar-plus"></i> Prenoto Takim</a>`;
+        footer.className = 'app-footer';
+        footer.innerHTML = `
+            <a href="${homeHref}" class="app-footer-brand">
+                <img src="../images/brand-mark.svg" alt="GlowBook">
+                <span class="app-footer-brand-text">
+                    <strong>GlowBook</strong>
+                    <span>Premium Booking</span>
+                </span>
+            </a>
+            ${action}
+            <div class="app-footer-copy">© ${year} GlowBook · Professional Salon Experience</div>
+        `;
+        main.appendChild(footer);
     },
 
     /* Mobile sidebar toggle */
@@ -644,6 +684,7 @@ window.GB = {
         else       { if (!this.requireAuth())  return false; }
         this.applyRole();
         this.buildSidebar(page);
+        this.applyBranding();
         this.initSidebar();
         this.loadBadge();
         return true;

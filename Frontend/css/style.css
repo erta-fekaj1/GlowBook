@@ -66,7 +66,8 @@ body {
     line-height: 1.6;
 }
 a { text-decoration: none; color: inherit; }
-button { font-family: inherit; cursor: pointer; }
+button, input, select, textarea { font-family: inherit; transition: var(--ease); }
+button { cursor: pointer; }
 img { max-width: 100%; display: block; }
 
 /* ================================================================
@@ -161,6 +162,34 @@ img { max-width: 100%; display: block; }
     margin-bottom: 1.5rem;
     animation: slideInLeft .6s ease-out;
 }
+.logo-img-link {
+    width: 78px;
+    height: 78px;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 20px;
+    border: 1px solid var(--pink-border);
+    background: linear-gradient(135deg, #fff, var(--pink-light));
+    box-shadow: var(--shadow-sm);
+}
+.logo-img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 14px rgba(212,83,126,.24));
+}
+.logo-img-fallback {
+    display: none;
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,var(--pink),var(--pink-deep));
+    color: var(--white);
+    font-size: 1.5rem;
+}
 .logo-icon { 
     font-size: 2rem; 
     display: block; 
@@ -173,11 +202,12 @@ img { max-width: 100%; display: block; }
     color: var(--pink-deep); 
     font-weight: 700;
     letter-spacing: .5px;
+    margin-top: .7rem;
 }
 .logo p  { 
     font-size: .65rem; 
     color: var(--text-muted); 
-    letter-spacing: 2px; 
+    letter-spacing: 1.6px; 
     text-transform: uppercase;
     font-weight: 600;
 }
@@ -260,6 +290,52 @@ img { max-width: 100%; display: block; }
     margin-top: 3px;
     font-weight: 500;
 }
+.app-footer {
+    margin-top: 2rem;
+    border: 1px solid var(--pink-border);
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+    background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(251,234,240,.75));
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .9rem;
+    flex-wrap: wrap;
+}
+.app-footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+}
+.app-footer-brand img {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    border: 1px solid var(--pink-border);
+    background: #fff;
+    padding: 5px;
+}
+.app-footer-brand-text strong {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--pink-deep);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+.app-footer-brand-text span {
+    display: block;
+    color: var(--text-muted);
+    font-size: .67rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.app-footer-copy {
+    font-size: .76rem;
+    color: var(--text-subtle);
+    text-align: right;
+}
 
 .user-badge  { 
     display: flex; 
@@ -309,9 +385,33 @@ img { max-width: 100%; display: block; }
     box-shadow: var(--shadow-sm);
 }
 .mobile-nav-logo { 
-    font-family: 'Cormorant Garamond', serif; 
-    font-size: 1.3rem; 
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
     color: var(--pink-deep); 
+    font-weight: 700;
+}
+.mobile-brand-img {
+    width: 31px;
+    height: 31px;
+    border-radius: 10px;
+    border: 1px solid var(--pink-border);
+    background: linear-gradient(135deg,#fff,var(--pink-light));
+    padding: 4px;
+}
+.mobile-brand-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    letter-spacing: .3px;
+}
+.mobile-brand-badge {
+    font-size: .58rem;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+    color: var(--white);
     font-weight: 700;
 }
 .hamburger { 
@@ -1792,6 +1892,22 @@ tbody tr {
     margin-bottom: 2.5rem;
     animation: slideDown .5s ease-out;
 }
+.login-logo-mark {
+    width: 92px;
+    height: 92px;
+    margin: 0 auto .9rem;
+    border-radius: 24px;
+    border: 1px solid var(--pink-border);
+    background: linear-gradient(135deg,#fff,var(--pink-light));
+    box-shadow: var(--shadow);
+    padding: 11px;
+}
+.login-logo-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(212,83,126,.25));
+}
 .login-logo-icon { 
     font-size: 3rem; 
     margin-bottom: .75rem;
@@ -1812,6 +1928,18 @@ tbody tr {
     text-transform: uppercase;
     font-weight: 600;
     margin-top: 6px;
+}
+.login-footer {
+    margin-top: 1.1rem;
+    text-align: center;
+}
+.login-footer .app-footer-brand {
+    justify-content: center;
+    margin-bottom: .35rem;
+}
+.login-footer .app-footer-copy {
+    text-align: center;
+    font-size: .72rem;
 }
 
 .login-tabs { 
@@ -1968,6 +2096,8 @@ tbody tr {
     .main { margin-left: 0; padding: 1.2rem; padding-top: 5rem; }
     .topbar { margin-bottom: 1.2rem; }
     .topbar h1 { font-size: 1.5rem; }
+    .app-footer { padding: .9rem; }
+    .app-footer-copy { width: 100%; text-align: left; }
     .stats-grid    { grid-template-columns: repeat(2,1fr); gap: .75rem; }
     .gallery-stats { grid-template-columns: repeat(2,1fr); }
 }
@@ -1997,6 +2127,8 @@ tbody tr {
     .login-card { padding: 1.5rem; }
     .stats-mini-3 { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
+    .mobile-brand-text { font-size: 1.03rem; }
+    .mobile-brand-badge { display: none; }
 }
 
 /* ================================================================
