@@ -480,6 +480,17 @@ window.GB = {
         const bookingLink = this.isAdmin()
             ? ''
             : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Prenoto Takim');
+        const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Dashboard');
+        const appointmentsLink = this.isAdmin()
+            ? li('appointments', 'appointments.html', 'fa-regular fa-calendar-check', 'Takimet')
+            : '';
+        const servicesLink = this.isAdmin()
+            ? li('services', 'services.html', 'fa-solid fa-spa', 'Shërbimet')
+            : '';
+        const paymentLink = this.isAdmin()
+            ? li('payment', 'payment.html', 'fa-solid fa-credit-card', 'Pagesa')
+            : '';
+        const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Galeria');
 
         sb.innerHTML = `
             <div class="logo">
@@ -493,11 +504,11 @@ window.GB = {
             </div>
             ${adminLinks}
             ${bookingLink}
-            ${li('dashboard',    'dashboard.html',    'fa-solid fa-house',              'Dashboard')}
-            ${li('appointments', 'appointments.html', 'fa-regular fa-calendar-check',   'Takimet')}
-            ${li('services',     'services.html',     'fa-solid fa-spa',                'Shërbimet')}
-            ${li('gallery',      'gallery.html',      'fa-regular fa-images',           'Galeria')}
-            ${li('payment',      'payment.html',      'fa-solid fa-credit-card',        'Pagesa')}
+            ${dashboardLink}
+            ${appointmentsLink}
+            ${servicesLink}
+            ${galleryLink}
+            ${paymentLink}
             <div class="nav-bottom">
                 <a class="nav-item nav-logout" onclick="GB.logout()">
                     <i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni

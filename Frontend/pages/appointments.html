@@ -118,6 +118,11 @@ const isAdmin  = GB.isAdmin();
 const me       = GB.getMe();
 let   editingId = null;
 
+if (!isAdmin) {
+    GB.toast('Rezervimi dhe pagesa bëhen te Book Appointment.', 'info');
+    window.location.replace('booking.html');
+}
+
 /* Subtitle */
 document.getElementById('apptSub').textContent = isAdmin
     ? 'Menaxho të gjitha takimet'

@@ -88,14 +88,14 @@
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Takimet e fundit</span>
-                    <a href="appointments.html">Shiko të gjitha →</a>
+                    <a href="appointments.html" id="recentApptLink">Shiko të gjitha →</a>
                 </div>
                 <div id="apptList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-sparkles" style="margin-right:8px;color:var(--pink)"></i>Shërbimet</span>
-                    <a href="services.html">Shiko të gjitha →</a>
+                    <a href="services.html" id="servicesLink">Shiko të gjitha →</a>
                 </div>
                 <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
@@ -117,6 +117,12 @@ GB.init({ page:'dashboard' });
 
 const me    = GB.getMe();
 const admin = GB.isAdmin();
+if (!admin) {
+    const apptLink = document.getElementById('recentApptLink');
+    const svcLink = document.getElementById('servicesLink');
+    if (apptLink) { apptLink.href = 'booking.html'; apptLink.textContent = 'Book Appointment →'; }
+    if (svcLink) { svcLink.href = 'booking.html'; svcLink.textContent = 'Zgjidh në booking →'; }
+}
 
 document.getElementById('topbarSub').textContent = `Mirë se vini, ${me?.name||''}! Ja përmbledhja e aktivitetit.`;
 

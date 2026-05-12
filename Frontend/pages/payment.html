@@ -368,6 +368,11 @@ const isAdmin     = GB.isAdmin();
 const PAYMENTS_KEY = 'gb_payments';
 const BOOKING_DRAFT_KEY = 'gb_checkout_draft';
 
+if (!isAdmin) {
+    GB.toast('Pagesa tani kryhet brenda Book Appointment.', 'info');
+    window.location.replace('booking.html');
+}
+
 const state = {
     method      : 'card',
     submitting  : false,

@@ -103,6 +103,11 @@ GB.init({ page: 'services' });
 const isAdmin  = GB.isAdmin();
 let   editingId = null;
 
+if (!isAdmin) {
+    GB.toast('Shërbimet janë të integruara te Book Appointment.', 'info');
+    window.location.replace('booking.html');
+}
+
 function renderTable() {
     const fn       = document.getElementById('filterName').value.toLowerCase();
     const services = GB.services.getAll().filter(s => !fn || s.name.toLowerCase().includes(fn));

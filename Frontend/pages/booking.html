@@ -3,67 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glow Book - Prenoto Takim</title>
+    <title>Glow Book - Book Appointment</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        .qb-wrap { display:grid; grid-template-columns:1.2fr .75fr; gap:1.25rem; align-items:start; }
-        .qb-card { background:var(--white); border:1px solid var(--pink-border); border-radius:16px; padding:1.25rem; box-shadow:var(--shadow); }
-        .qb-headline { margin-bottom:1rem; }
-        .qb-headline h2 { font-family:'Cormorant Garamond',serif; font-size:1.45rem; color:var(--pink-deep); }
-        .qb-headline p { font-size:.84rem; color:var(--text-muted); margin-top:2px; }
-        .qb-design-prefill { display:none; margin:0 0 1rem; padding:.75rem; border:1px solid var(--pink-border); border-radius:12px; background:linear-gradient(135deg,var(--pink-light),#fff); }
-        .qb-design-prefill.show { display:flex; align-items:center; gap:.75rem; }
-        .qb-design-img { width:52px; height:52px; border-radius:10px; object-fit:cover; background:#fff; border:1px solid var(--pink-border); }
-        .qb-design-title { font-size:.85rem; font-weight:700; color:var(--text-dark); }
-        .qb-design-meta { font-size:.72rem; color:var(--text-muted); }
-        .qb-design-clear { margin-left:auto; border:none; background:#fff; border:1px solid var(--pink-border); border-radius:8px; padding:.35rem .55rem; color:var(--text-mid); }
-        .qb-steps { display:flex; gap:.55rem; margin-top:1rem; flex-wrap:wrap; }
-        .qb-step { border:1px solid var(--pink-border); background:var(--pink-light); border-radius:999px; padding:.35rem .75rem; font-size:.74rem; color:var(--pink-deep); font-weight:600; }
-        .qb-step.done { background:#e9f8f2; color:#0f6e56; border-color:#b7ead9; }
-        .qb-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; }
-        .qb-service { border:1px solid var(--pink-border); background:var(--white); border-radius:12px; padding:1rem; text-align:left; transition:var(--ease); }
-        .qb-service:hover { border-color:var(--pink); transform:translateY(-2px); box-shadow:var(--shadow); }
-        .qb-service.active { border-color:var(--pink); background:linear-gradient(135deg,var(--pink-light),#fff); box-shadow:var(--shadow-lg); }
-        .qb-service-name { font-size:.92rem; font-weight:700; color:var(--text-dark); }
-        .qb-service-meta { display:flex; justify-content:space-between; margin-top:.5rem; font-size:.8rem; color:var(--text-subtle); }
-        .qb-price { color:var(--pink-deep); font-weight:700; font-size:1rem; }
-        .qb-calendar-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem; gap:.5rem; }
-        .qb-month { font-size:1.2rem; font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-weight:700; }
-        .qb-nav { display:flex; gap:.45rem; }
-        .qb-nav button { border:1px solid var(--pink-border); background:var(--white); color:var(--pink-deep); border-radius:10px; padding:.45rem .55rem; transition:var(--ease); }
-        .qb-nav button:hover { background:var(--pink); color:#fff; border-color:var(--pink); }
-        .qb-days { display:grid; grid-template-columns:repeat(7,1fr); gap:.4rem; }
-        .qb-day-name { font-size:.7rem; color:var(--text-muted); text-align:center; padding:.3rem 0; font-weight:700; }
-        .qb-day-empty { aspect-ratio:1; }
-        .qb-day { aspect-ratio:1; border:1px solid var(--pink-border); border-radius:11px; background:var(--white); position:relative; font-weight:700; color:var(--text-dark); transition:var(--ease); }
-        .qb-day small { display:block; font-size:.58rem; font-weight:600; margin-top:1px; color:var(--text-muted); }
-        .qb-day.is-open { border-color:#c5ecd7; background:#f5fff9; }
-        .qb-day.is-limited { border-color:#f0d6a8; background:#fff9ee; }
-        .qb-day.is-full, .qb-day.is-past { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
-        .qb-day.selected { border-color:var(--pink); background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; box-shadow:var(--shadow); }
-        .qb-day.selected small { color:#ffe8f1; }
-        .qb-legend { display:flex; gap:.8rem; flex-wrap:wrap; margin-top:.75rem; font-size:.72rem; color:var(--text-subtle); }
-        .qb-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:5px; }
-        .qb-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(92px,1fr)); gap:.55rem; margin-top:.9rem; }
-        .qb-slot { border:1px solid var(--pink-border); border-radius:11px; background:#fff; padding:.65rem .4rem; font-weight:700; color:var(--text-mid); transition:var(--ease); }
-        .qb-slot:hover:not(:disabled) { border-color:var(--pink); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
-        .qb-slot.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
-        .qb-slot:disabled { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
-        .qb-chip { margin-top:.75rem; padding:.5rem .8rem; border-radius:999px; font-size:.73rem; display:inline-flex; align-items:center; gap:6px; font-weight:600; }
-        .qb-chip.open { background:#e9f8f2; color:#0f6e56; }
-        .qb-chip.full { background:#fdeeee; color:#a32d2d; }
-        .qb-summary { position:sticky; top:1.5rem; }
-        .qb-row { display:flex; justify-content:space-between; gap:.8rem; padding:.55rem 0; border-bottom:1px solid var(--pink-light); font-size:.86rem; }
-        .qb-row span:first-child { color:var(--text-muted); }
-        .qb-row:last-child { border-bottom:none; }
-        .qb-total { display:flex; justify-content:space-between; margin-top:.8rem; align-items:flex-end; }
-        .qb-total b { font-size:1.55rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
-        .qb-checkout { width:100%; margin-top:1rem; padding:.9rem; border:none; border-radius:12px; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; font-weight:700; transition:var(--ease-out); }
-        .qb-checkout:hover:not(:disabled) { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
-        .qb-checkout:disabled { opacity:.58; cursor:not-allowed; transform:none; }
-        .qb-hint { margin-top:.65rem; min-height:18px; font-size:.75rem; color:var(--text-muted); }
-        @media (max-width: 980px) { .qb-wrap { grid-template-columns:1fr; } .qb-summary { position:static; } }
+        .cb-layout { display:grid; grid-template-columns:1.2fr .75fr; gap:1.2rem; align-items:start; }
+        .cb-card { background:var(--white); border:1px solid var(--pink-border); border-radius:16px; box-shadow:var(--shadow); }
+        .cb-main { padding:1.25rem; }
+        .cb-progress { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:1rem; }
+        .cb-progress-pill { border:1px solid var(--pink-border); background:var(--pink-light); border-radius:999px; padding:.35rem .75rem; font-size:.74rem; color:var(--pink-deep); font-weight:600; }
+        .cb-progress-pill.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:var(--pink); }
+        .cb-progress-pill.done { background:#e9f8f2; color:#0f6e56; border-color:#b7ead9; }
+
+        .cb-step-panel { display:none; animation:slideUp .28s ease; }
+        .cb-step-panel.active { display:block; }
+        .cb-headline h2 { font-family:'Cormorant Garamond',serif; font-size:1.45rem; color:var(--pink-deep); }
+        .cb-headline p { font-size:.84rem; color:var(--text-muted); margin-top:2px; }
+
+        .cb-section { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:1rem; margin-top:1rem; }
+        .cb-section-title { font-size:.86rem; color:var(--text-mid); font-weight:700; margin-bottom:.7rem; display:flex; align-items:center; gap:6px; }
+
+        .cb-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:.7rem; }
+        .cb-service { border:1px solid var(--pink-border); background:#fff; border-radius:12px; padding:.85rem; text-align:left; transition:var(--ease); }
+        .cb-service:hover { border-color:var(--pink); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+        .cb-service.active { border-color:var(--pink); background:linear-gradient(135deg,var(--pink-light),#fff); box-shadow:var(--shadow); }
+        .cb-service-name { font-size:.88rem; font-weight:700; color:var(--text-dark); }
+        .cb-service-meta { display:flex; justify-content:space-between; margin-top:.45rem; font-size:.76rem; color:var(--text-subtle); }
+        .cb-price { color:var(--pink-deep); font-weight:700; }
+
+        .cb-design-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.65rem; }
+        .cb-design { border:1px solid var(--pink-border); border-radius:10px; overflow:hidden; background:#fff; transition:var(--ease); text-align:left; }
+        .cb-design:hover { border-color:var(--pink); transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+        .cb-design.active { border-color:var(--pink); box-shadow:var(--shadow); }
+        .cb-design-img { width:100%; height:95px; object-fit:cover; display:block; background:linear-gradient(135deg,var(--pink-light),var(--purple-light)); }
+        .cb-design-body { padding:.5rem; }
+        .cb-design-name { font-size:.74rem; font-weight:700; color:var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .cb-design-meta { font-size:.66rem; color:var(--text-muted); margin-top:2px; }
+        .cb-design-actions { margin-top:.5rem; display:flex; gap:.35rem; }
+        .cb-mini-btn { border:1px solid var(--pink-border); background:var(--pink-light); border-radius:8px; font-size:.66rem; font-weight:700; color:var(--pink-deep); padding:.28rem .45rem; }
+        .cb-mini-btn.clear { background:#fff; color:var(--text-subtle); }
+
+        .cb-calendar-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:.65rem; gap:.5rem; }
+        .cb-month { font-size:1.15rem; font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-weight:700; }
+        .cb-nav { display:flex; gap:.42rem; }
+        .cb-nav button { border:1px solid var(--pink-border); background:#fff; color:var(--pink-deep); border-radius:9px; padding:.38rem .52rem; transition:var(--ease); }
+        .cb-nav button:hover { background:var(--pink); color:#fff; border-color:var(--pink); }
+        .cb-days { display:grid; grid-template-columns:repeat(7,1fr); gap:.35rem; }
+        .cb-day-name { font-size:.67rem; color:var(--text-muted); text-align:center; padding:.3rem 0; font-weight:700; }
+        .cb-day-empty { aspect-ratio:1; }
+        .cb-day { aspect-ratio:1; border:1px solid var(--pink-border); border-radius:10px; background:#fff; font-weight:700; color:var(--text-dark); transition:var(--ease); }
+        .cb-day small { display:block; font-size:.54rem; color:var(--text-muted); font-weight:600; }
+        .cb-day.is-open { border-color:#c5ecd7; background:#f5fff9; }
+        .cb-day.is-limited { border-color:#f0d6a8; background:#fff9ee; }
+        .cb-day.is-full, .cb-day.is-past { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
+        .cb-day.selected { border-color:var(--pink); background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; box-shadow:var(--shadow-sm); }
+        .cb-day.selected small { color:#ffe8f1; }
+
+        .cb-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(86px,1fr)); gap:.5rem; margin-top:.7rem; }
+        .cb-slot { border:1px solid var(--pink-border); border-radius:10px; background:#fff; padding:.56rem .35rem; font-weight:700; color:var(--text-mid); transition:var(--ease); }
+        .cb-slot:hover:not(:disabled) { border-color:var(--pink); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+        .cb-slot.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
+        .cb-slot:disabled { background:#f3f2f2; color:#b6b3ac; border-color:#e4e1da; cursor:not-allowed; }
+        .cb-chip { margin-top:.7rem; display:inline-flex; gap:6px; align-items:center; padding:.46rem .76rem; border-radius:999px; font-size:.72rem; font-weight:700; }
+        .cb-chip.open { background:#e9f8f2; color:#0f6e56; }
+        .cb-chip.full { background:#fdeeee; color:#a32d2d; }
+
+        .cb-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+        .cb-field { margin-top:.65rem; }
+        .cb-field label { display:block; margin-bottom:.3rem; font-size:.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+        .cb-field input, .cb-field textarea, .cb-field select {
+            width:100%; border:1.5px solid var(--pink-border); border-radius:10px; padding:.68rem .75rem; font-size:.85rem; font-family:inherit;
+        }
+        .cb-field textarea { resize:vertical; min-height:86px; }
+        .cb-field input:focus, .cb-field textarea:focus, .cb-field select:focus { outline:none; border-color:var(--pink); box-shadow:0 0 0 3px rgba(212,83,126,.12); }
+        .cb-pay-methods { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; }
+        .cb-pay-btn { border:1px solid var(--pink-border); border-radius:10px; padding:.58rem .55rem; font-size:.75rem; font-weight:700; color:var(--text-mid); background:#fff; transition:var(--ease); }
+        .cb-pay-btn.active { border-color:var(--pink); background:var(--pink-light); color:var(--pink-deep); box-shadow:var(--shadow-sm); }
+
+        .cb-actions { display:flex; gap:.65rem; margin-top:1rem; }
+        .cb-btn { border:none; border-radius:10px; font-weight:700; font-size:.84rem; padding:.72rem .85rem; flex:1; transition:var(--ease); }
+        .cb-btn.secondary { border:1px solid var(--pink-border); color:var(--text-mid); background:#fff; }
+        .cb-btn.primary { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; }
+        .cb-btn.primary:hover:not(:disabled) { transform:translateY(-1px); box-shadow:var(--shadow); }
+        .cb-btn:disabled { opacity:.58; cursor:not-allowed; }
+
+        .cb-summary { position:sticky; top:1.3rem; padding:1.1rem; }
+        .cb-row { display:flex; justify-content:space-between; gap:.6rem; border-bottom:1px solid var(--pink-light); padding:.5rem 0; font-size:.83rem; }
+        .cb-row span:first-child { color:var(--text-muted); }
+        .cb-row:last-child { border-bottom:none; }
+        .cb-total { display:flex; justify-content:space-between; align-items:flex-end; margin-top:.7rem; }
+        .cb-total b { font-size:1.45rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
+        .cb-hint { margin-top:.55rem; min-height:18px; font-size:.74rem; color:var(--text-muted); }
+        .cb-success-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.48); z-index:2100; align-items:center; justify-content:center; }
+        .cb-success-modal.open { display:flex; }
+        .cb-success-box { width:min(92vw,440px); background:#fff; border-radius:16px; padding:1.4rem; text-align:center; box-shadow:var(--shadow-xl); }
+        .cb-success-box h3 { font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-size:1.45rem; }
+        .cb-success-box p { font-size:.84rem; color:var(--text-subtle); margin:.45rem 0 .8rem; }
+
+        @media (max-width: 980px) { .cb-layout { grid-template-columns:1fr; } .cb-summary { position:static; } }
+        @media (max-width: 760px) {
+            .cb-form-grid { grid-template-columns:1fr; }
+            .cb-pay-methods { grid-template-columns:1fr; }
+            .cb-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
+            .cb-design-row { grid-template-columns:repeat(2,1fr); }
+            .cb-actions { flex-direction:column; }
+        }
     </style>
 </head>
 <body>
@@ -80,76 +124,145 @@
     <main class="main">
         <div class="topbar">
             <div>
-                <h1>Prenoto Takimin</h1>
-                <p>Flow i shpejtë: shërbimi → data → ora → pagesa</p>
+                <h1>Book Appointment</h1>
+                <p>Një eksperiencë e vetme: shërbimi, stili, orari dhe pagesa.</p>
             </div>
         </div>
 
-        <div class="qb-wrap">
-            <section class="qb-card">
-                <div class="qb-headline">
-                    <h2>Zgjidh dhe vazhdo direkt në pagesë</h2>
-                    <p>Disponueshmëria përditësohet në kohë reale për të shmangur dyfishimet.</p>
-                    <div class="qb-steps">
-                        <span class="qb-step" id="step-service">1. Shërbimi</span>
-                        <span class="qb-step" id="step-date">2. Data</span>
-                        <span class="qb-step" id="step-time">3. Ora</span>
-                        <span class="qb-step" id="step-pay">4. Pagesa</span>
+        <div class="cb-layout">
+            <section class="cb-card cb-main">
+                <div class="cb-headline">
+                    <h2>Prenoto në pak hapa</h2>
+                    <p>Zgjedh gjithçka në të njëjtën faqe pa kaluar në seksione të ndara.</p>
+                    <div class="cb-progress">
+                        <span class="cb-progress-pill active" id="pill1">1. Shërbimi & Stili</span>
+                        <span class="cb-progress-pill" id="pill2">2. Data & Ora</span>
+                        <span class="cb-progress-pill" id="pill3">3. Detajet & Pagesa</span>
                     </div>
                 </div>
-                <div id="designPrefill" class="qb-design-prefill"></div>
 
-                <div class="qb-card" style="padding:1rem;margin-bottom:1rem">
-                    <div class="card-title" style="margin-bottom:.75rem">
-                        <span><i class="fa-solid fa-spa" style="margin-right:6px;color:var(--pink)"></i>Zgjidh shërbimin</span>
+                <!-- STEP 1 -->
+                <div class="cb-step-panel active" id="step1">
+                    <div class="cb-section">
+                        <div class="cb-section-title"><i class="fa-solid fa-spa" style="color:var(--pink)"></i>Zgjidh Shërbimin</div>
+                        <div class="cb-grid" id="servicesGrid"></div>
                     </div>
-                    <div class="qb-grid" id="servicesGrid"></div>
+
+                    <div class="cb-section">
+                        <div class="cb-section-title"><i class="fa-solid fa-image" style="color:var(--pink)"></i>Zgjidh Stilin (Opsionale)</div>
+                        <div class="cb-design-row" id="designGrid"></div>
+                        <div class="cb-hint" id="designHint"></div>
+                    </div>
+
+                    <div class="cb-actions">
+                        <button class="cb-btn primary" id="toStep2Btn">
+                            Vazhdo te data/orari <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="qb-card" style="padding:1rem;margin-bottom:1rem">
-                    <div class="card-title" style="margin-bottom:.75rem">
-                        <span><i class="fa-solid fa-calendar-days" style="margin-right:6px;color:var(--pink)"></i>Zgjidh datën</span>
-                    </div>
-                    <div class="qb-calendar-head">
-                        <div class="qb-nav">
-                            <button type="button" id="prevMonthBtn"><i class="fa-solid fa-chevron-left"></i></button>
-                            <button type="button" id="todayBtn">Sot</button>
-                            <button type="button" id="nextMonthBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                <!-- STEP 2 -->
+                <div class="cb-step-panel" id="step2">
+                    <div class="cb-section">
+                        <div class="cb-section-title"><i class="fa-solid fa-calendar-days" style="color:var(--pink)"></i>Zgjidh Datën</div>
+                        <div class="cb-calendar-head">
+                            <div class="cb-nav">
+                                <button type="button" id="prevMonthBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button type="button" id="todayBtn">Sot</button>
+                                <button type="button" id="nextMonthBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                            <div class="cb-month" id="monthLabel"></div>
                         </div>
-                        <div class="qb-month" id="monthLabel"></div>
+                        <div class="cb-days" id="calendarGrid"></div>
                     </div>
-                    <div class="qb-days" id="calendarGrid"></div>
-                    <div class="qb-legend">
-                        <span><i class="qb-dot" style="background:#c5ecd7"></i>Ditë e lirë</span>
-                        <span><i class="qb-dot" style="background:#f0d6a8"></i>Pjesërisht e mbushur</span>
-                        <span><i class="qb-dot" style="background:#e4e1da"></i>E plotë / e mbyllur</span>
+
+                    <div class="cb-section">
+                        <div class="cb-section-title"><i class="fa-regular fa-clock" style="color:var(--pink)"></i>Zgjidh Orën</div>
+                        <div class="cb-slots" id="slotsGrid"></div>
+                        <div id="availabilityChip" class="cb-chip open"><i class="fa-solid fa-circle-info"></i>Zgjidh datën për të parë oraret.</div>
+                    </div>
+
+                    <div class="cb-actions">
+                        <button class="cb-btn secondary" id="backTo1Btn"><i class="fa-solid fa-arrow-left"></i> Mbrapa</button>
+                        <button class="cb-btn primary" id="toStep3Btn">Vazhdo te pagesa <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
 
-                <div class="qb-card" style="padding:1rem">
-                    <div class="card-title" style="margin-bottom:.35rem">
-                        <span><i class="fa-regular fa-clock" style="margin-right:6px;color:var(--pink)"></i>Zgjidh orën</span>
+                <!-- STEP 3 -->
+                <div class="cb-step-panel" id="step3">
+                    <div class="cb-section">
+                        <div class="cb-section-title"><i class="fa-solid fa-note-sticky" style="color:var(--pink)"></i>Detaje të prenotimit</div>
+                        <div class="cb-field">
+                            <label for="bookingNotes">Shënime shtesë</label>
+                            <textarea id="bookingNotes" placeholder="Preferenca, komente, kërkesa..."></textarea>
+                        </div>
                     </div>
-                    <div class="qb-slots" id="slotsGrid"></div>
-                    <div id="availabilityChip" class="qb-chip open"><i class="fa-solid fa-circle-info"></i>Zgjidh një datë për të parë oraret.</div>
+
+                    <div class="cb-section">
+                        <div class="cb-section-title"><i class="fa-solid fa-credit-card" style="color:var(--pink)"></i>Pagesa</div>
+                        <div class="cb-pay-methods">
+                            <button class="cb-pay-btn active" data-method="card"><i class="fa-regular fa-credit-card"></i> Kartë</button>
+                            <button class="cb-pay-btn" data-method="paypal"><i class="fa-brands fa-paypal"></i> PayPal</button>
+                            <button class="cb-pay-btn" data-method="cash"><i class="fa-solid fa-money-bill-wave"></i> Cash në sallon</button>
+                        </div>
+
+                        <div id="cardFields">
+                            <div class="cb-form-grid">
+                                <div class="cb-field">
+                                    <label for="payName">Emri i plotë</label>
+                                    <input id="payName" type="text" placeholder="Ana Krasniqi">
+                                </div>
+                                <div class="cb-field">
+                                    <label for="payCard">Numri i kartës</label>
+                                    <input id="payCard" type="text" inputmode="numeric" placeholder="1234 5678 9012 3456">
+                                </div>
+                                <div class="cb-field">
+                                    <label for="payExp">Skadimi (MM/VV)</label>
+                                    <input id="payExp" type="text" inputmode="numeric" placeholder="12/28">
+                                </div>
+                                <div class="cb-field">
+                                    <label for="payCvv">CVV</label>
+                                    <input id="payCvv" type="password" inputmode="numeric" placeholder="123">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cb-hint" id="paymentHint"></div>
+                    </div>
+
+                    <div class="cb-actions">
+                        <button class="cb-btn secondary" id="backTo2Btn"><i class="fa-solid fa-arrow-left"></i> Mbrapa</button>
+                        <button class="cb-btn primary" id="completeBtn"><i class="fa-solid fa-lock"></i> Konfirmo & Paguaj</button>
+                    </div>
                 </div>
             </section>
 
-            <aside class="qb-card qb-summary">
-                <div class="card-title"><span><i class="fa-solid fa-receipt" style="margin-right:6px;color:var(--pink)"></i>Përmbledhja e rezervimit</span></div>
-                <div class="qb-row" id="sumDesignRow" style="display:none"><span>Stili</span><b id="sumDesign">–</b></div>
-                <div class="qb-row"><span>Shërbimi</span><b id="sumService">–</b></div>
-                <div class="qb-row"><span>Data</span><b id="sumDate">–</b></div>
-                <div class="qb-row"><span>Ora</span><b id="sumTime">–</b></div>
-                <div class="qb-row"><span>Kohëzgjatja</span><b id="sumDuration">–</b></div>
-                <div class="qb-total"><span>Totali</span><b id="sumPrice">€0.00</b></div>
-                <button class="qb-checkout" id="continueBtn" type="button" disabled>
-                    <i class="fa-solid fa-credit-card"></i> Vazhdo te pagesa
-                </button>
-                <div class="qb-hint" id="autoHint"></div>
+            <aside class="cb-card cb-summary">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-receipt" style="margin-right:6px;color:var(--pink)"></i>Përmbledhje e plotë</span>
+                </div>
+                <div class="cb-row"><span>Shërbimi</span><b id="sumService">–</b></div>
+                <div class="cb-row" id="sumDesignRow" style="display:none"><span>Stili</span><b id="sumDesign">–</b></div>
+                <div class="cb-row"><span>Data</span><b id="sumDate">–</b></div>
+                <div class="cb-row"><span>Ora</span><b id="sumTime">–</b></div>
+                <div class="cb-row"><span>Kohëzgjatja</span><b id="sumDuration">–</b></div>
+                <div class="cb-row"><span>Nëntotali</span><b id="sumSubtotal">€0.00</b></div>
+                <div class="cb-row"><span>TVSH (18%)</span><b id="sumVat">€0.00</b></div>
+                <div class="cb-total"><span>Totali</span><b id="sumTotal">€0.00</b></div>
+                <div class="cb-hint" id="summaryHint"></div>
             </aside>
         </div>
     </main>
+</div>
+
+<div class="cb-success-modal" id="successModal">
+    <div class="cb-success-box">
+        <div style="font-size:2.2rem">✅</div>
+        <h3>Prenotimi u konfirmua!</h3>
+        <p id="successText">Takimi dhe pagesa u procesuan me sukses.</p>
+        <button class="cb-btn primary" style="margin-top:.65rem" onclick="window.location.href='dashboard.html'">
+            Kthehu te Dashboard
+        </button>
+    </div>
 </div>
 
 <div class="gb-toast" id="toast"></div>
@@ -161,88 +274,114 @@ GB.init({ page: 'booking' });
 
 if (!GB.isLoggedIn()) window.location.replace('./index.html');
 if (GB.isAdmin()) {
-    GB.toast('Ky flow është vetëm për klientë.', 'error');
+    GB.toast('Klientët rezervojnë këtu. Admin mund të menaxhojë takimet nga paneli.', 'info');
     window.location.replace('./appointments.html');
 }
 
-const BOOKING_DRAFT_KEY = 'gb_checkout_draft';
+const PAYMENTS_KEY = 'gb_payments';
 const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 const WORK_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
 const monthNames = ['Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nëntor', 'Dhjetor'];
 const dayNames = ['Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht', 'Die'];
+const me = GB.getMe();
 
 const state = {
+    step: 1,
     service: null,
     design: null,
     date: null,
     time: null,
+    paymentMethod: 'card',
+    notes: '',
     month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    submitting: false,
 };
-let autoCheckoutTimer = null;
-
 const services = GB.services.getAll();
-const fmtMoney = n => `€${Number(n || 0).toFixed(2)}`;
+const designs = GB.designs.getAll();
+const fmtMoney = (n) => `€${Number(n || 0).toFixed(2)}`;
 const toISODate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const formatLongDate = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('sq-AL', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 
-function updateSteps() {
-    const hasService = !!state.service;
-    const hasDate = !!state.date;
-    const hasTime = !!state.time;
-    document.getElementById('step-service').classList.toggle('done', hasService);
-    document.getElementById('step-date').classList.toggle('done', hasDate);
-    document.getElementById('step-time').classList.toggle('done', hasTime);
-    document.getElementById('step-pay').classList.toggle('done', hasService && hasDate && hasTime);
+const luhn = (num) => {
+    let sum = 0; let alt = false;
+    for (let i = num.length - 1; i >= 0; i--) {
+        let d = parseInt(num[i], 10);
+        if (alt) { d *= 2; if (d > 9) d -= 9; }
+        sum += d;
+        alt = !alt;
+    }
+    return sum % 10 === 0;
+};
+
+function calculateTotals() {
+    const service = Number(state.service?.price || 0);
+    const style = Number(state.design?.price || 0);
+    const subtotal = Math.max(service, style);
+    const vat = subtotal * 0.18;
+    const total = subtotal + vat;
+    return { subtotal, vat, total };
 }
 
-function updateSummary() {
+function updateProgress() {
+    [1, 2, 3].forEach((n) => {
+        const el = document.getElementById(`pill${n}`);
+        el.classList.toggle('active', n === state.step);
+        el.classList.toggle('done', n < state.step);
+    });
+}
+
+function showStep(step) {
+    state.step = step;
+    document.querySelectorAll('.cb-step-panel').forEach((el, idx) => {
+        el.classList.toggle('active', idx + 1 === step);
+    });
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateSummaryUI() {
+    const totals = calculateTotals();
     const hasDesign = !!state.design;
     document.getElementById('sumDesignRow').style.display = hasDesign ? 'flex' : 'none';
     document.getElementById('sumDesign').textContent = hasDesign ? state.design.name : '–';
+
     document.getElementById('sumService').textContent = state.service?.name || '–';
     document.getElementById('sumDate').textContent = state.date ? formatLongDate(state.date) : '–';
     document.getElementById('sumTime').textContent = state.time || '–';
     document.getElementById('sumDuration').textContent = state.service ? `${state.service.duration || 60} min` : '–';
-    document.getElementById('sumPrice').textContent = fmtMoney(state.service?.price || 0);
-
-    const ready = Boolean(state.service && state.date && state.time);
-    document.getElementById('continueBtn').disabled = !ready;
-    updateSteps();
+    document.getElementById('sumSubtotal').textContent = fmtMoney(totals.subtotal);
+    document.getElementById('sumVat').textContent = fmtMoney(totals.vat);
+    document.getElementById('sumTotal').textContent = fmtMoney(totals.total);
+    document.getElementById('summaryHint').textContent = state.paymentMethod === 'cash'
+        ? 'Cash në sallon: takimi konfirmohet tani, pagesa bëhet në vizitë.'
+        : 'Pagesa do të kryhet menjëherë online.';
 }
 
 function renderServices() {
     const host = document.getElementById('servicesGrid');
     if (!services.length) {
-        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">Nuk ka shërbime të disponueshme aktualisht.</p>';
+        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">Nuk ka shërbime të disponueshme.</p>';
         return;
     }
     host.innerHTML = services.map((s) => `
-        <button type="button" class="qb-service ${state.service?.id === s.id ? 'active' : ''}" data-service-id="${s.id}">
-            <div class="qb-service-name">${s.name}</div>
-            <div class="qb-service-meta">
+        <button type="button" class="cb-service ${state.service?.id === s.id ? 'active' : ''}" data-service-id="${s.id}">
+            <div class="cb-service-name">${s.name}</div>
+            <div class="cb-service-meta">
                 <span><i class="fa-regular fa-clock"></i> ${s.duration || 60} min</span>
-                <span class="qb-price">€${s.price}</span>
+                <span class="cb-price">€${s.price}</span>
             </div>
         </button>
     `).join('');
 }
 
-function renderDesignPrefill() {
-    const box = document.getElementById('designPrefill');
-    if (!state.design) {
-        box.className = 'qb-design-prefill';
-        box.innerHTML = '';
-        return;
-    }
-    box.className = 'qb-design-prefill show';
-    box.innerHTML = `
-        <img src="${state.design.image || ''}" class="qb-design-img" alt="${state.design.name}" onerror="this.style.visibility='hidden'">
-        <div>
-            <div class="qb-design-title">Stili nga galeria: ${state.design.name}</div>
-            <div class="qb-design-meta">${state.design.category || 'Design i përzgjedhur'} · i lidhur me prenotimin</div>
-        </div>
-        <button type="button" class="qb-design-clear" onclick="clearSelectedDesign()"><i class="fa-solid fa-xmark"></i></button>
-    `;
+function inferCategoryFromService() {
+    const name = String(state.service?.name || '').toLowerCase();
+    if (name.includes('french')) return 'French';
+    if (name.includes('gel')) return 'Gel';
+    if (name.includes('ombre')) return 'Ombre';
+    if (name.includes('nail art')) return 'Floral';
+    if (name.includes('akryl') || name.includes('acryl')) return '3D';
+    return '';
 }
 
 function suggestServiceByCategory(category = '', suggestedId = null) {
@@ -257,6 +396,32 @@ function suggestServiceByCategory(category = '', suggestedId = null) {
     if (cat.includes('ombre')) return pick(['ombre']);
     if (cat.includes('3d')) return pick(['akryl', 'acryl', 'nail art']);
     return pick(['nail art', 'gel', 'manikyr']) || null;
+}
+
+function renderDesigns() {
+    const host = document.getElementById('designGrid');
+    const preferredCategory = inferCategoryFromService();
+    const sorted = [...designs].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    const visible = preferredCategory
+        ? sorted.filter(d => d.category === preferredCategory).slice(0, 8)
+        : sorted.slice(0, 8);
+
+    host.innerHTML = visible.map((d) => `
+        <button type="button" class="cb-design ${state.design?.id === d.id ? 'active' : ''}" data-design-id="${d.id}">
+            <img src="${d.image || ''}" alt="${d.name}" class="cb-design-img" loading="lazy" onerror="this.style.opacity='.45'">
+            <div class="cb-design-body">
+                <div class="cb-design-name">${d.name}</div>
+                <div class="cb-design-meta">${d.category} · €${d.price}</div>
+                <div class="cb-design-actions">
+                    <span class="cb-mini-btn">${state.design?.id === d.id ? 'Zgjedhur' : 'Zgjidh'}</span>
+                    ${state.design?.id === d.id ? '<span class="cb-mini-btn clear">Ndrysho</span>' : ''}
+                </div>
+            </div>
+        </button>
+    `).join('');
+    document.getElementById('designHint').textContent = state.design
+        ? `"${state.design.name}" u shtua në përmbledhje.`
+        : 'Opsionale: zgjidh stil nga galeria për ta lidhur me rezervimin.';
 }
 
 function hydrateGalleryPrefill() {
@@ -277,15 +442,16 @@ function hydrateGalleryPrefill() {
     const suggested = suggestServiceByCategory(prefill.designCategory, prefill.suggestedServiceId);
     if (suggested) state.service = suggested;
     localStorage.removeItem(BOOKING_PREFILL_KEY);
-    renderDesignPrefill();
     renderServices();
-    document.getElementById('autoHint').textContent = `"${state.design.name}" u soll nga galeria dhe u shtua te përmbledhja.`;
+    renderDesigns();
+    updateSummaryUI();
+    GB.toast(`Stili "${state.design.name}" u importua nga galeria.`, 'success');
 }
 
 function clearSelectedDesign() {
     state.design = null;
-    renderDesignPrefill();
-    updateSummary();
+    renderDesigns();
+    updateSummaryUI();
 }
 window.clearSelectedDesign = clearSelectedDesign;
 
@@ -302,8 +468,8 @@ function renderCalendar() {
 
     document.getElementById('monthLabel').textContent = `${monthNames[month]} ${year}`;
     const cells = [];
-    dayNames.forEach((name) => cells.push(`<div class="qb-day-name">${name}</div>`));
-    for (let i = 0; i < firstDayIndex; i++) cells.push('<div class="qb-day-empty"></div>');
+    dayNames.forEach((name) => cells.push(`<div class="cb-day-name">${name}</div>`));
+    for (let i = 0; i < firstDayIndex; i++) cells.push('<div class="cb-day-empty"></div>');
 
     for (let d = 1; d <= daysInMonth; d++) {
         const dayISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -312,7 +478,7 @@ function renderCalendar() {
         const isFull = availability.isFull;
         const isSelected = state.date === dayISO;
 
-        const classes = ['qb-day'];
+        const classes = ['cb-day'];
         if (isPast) classes.push('is-past');
         else if (isFull) classes.push('is-full');
         else if (availability.bookedCount) classes.push('is-limited');
@@ -334,7 +500,7 @@ function renderSlots() {
     const chip = document.getElementById('availabilityChip');
     if (!state.date) {
         grid.innerHTML = '';
-        chip.className = 'qb-chip open';
+        chip.className = 'cb-chip open';
         chip.innerHTML = '<i class="fa-solid fa-circle-info"></i>Zgjidh një datë për të parë oraret.';
         return;
     }
@@ -347,18 +513,67 @@ function renderSlots() {
     grid.innerHTML = WORK_SLOTS.map((slot) => {
         const booked = availability.bookedSlots.includes(slot);
         const selected = !booked && state.time === slot;
-        return `<button type="button" class="qb-slot ${selected ? 'active' : ''}" data-time="${slot}" ${booked ? 'disabled' : ''}>${slot}</button>`;
+        return `<button type="button" class="cb-slot ${selected ? 'active' : ''}" data-time="${slot}" ${booked ? 'disabled' : ''}>${slot}</button>`;
     }).join('');
 
-    chip.className = `qb-chip ${availability.isFull ? 'full' : 'open'}`;
+    chip.className = `cb-chip ${availability.isFull ? 'full' : 'open'}`;
     chip.innerHTML = availability.isFull
         ? '<i class="fa-solid fa-ban"></i>Kjo ditë është e plotë.'
         : `<i class="fa-solid fa-bolt"></i>${availability.freeCount} orare të lira, ${availability.bookedCount} të rezervuara.`;
 }
 
-function continueToCheckout() {
+function validateStep(step) {
+    if (step === 1 && !state.service) {
+        GB.toast('Zgjidhni një shërbim për të vazhduar.', 'error');
+        return false;
+    }
+    if (step === 2 && (!state.date || !state.time)) {
+        GB.toast('Zgjidhni datën dhe orën.', 'error');
+        return false;
+    }
+    return true;
+}
+
+function validatePayment() {
+    if (state.paymentMethod !== 'card') return true;
+    const name = document.getElementById('payName').value.trim();
+    const card = document.getElementById('payCard').value.replace(/\s/g, '');
+    const exp = document.getElementById('payExp').value.trim();
+    const cvv = document.getElementById('payCvv').value.trim();
+    if (!name || name.length < 3) { GB.toast('Shkruani emrin e plotë.', 'error'); return false; }
+    if (!/^\d{13,16}$/.test(card) || !luhn(card)) { GB.toast('Numri i kartës nuk është valid.', 'error'); return false; }
+    const m = exp.match(/^(\d{2})\/(\d{2})$/);
+    if (!m) { GB.toast('Data e skadimit duhet MM/VV.', 'error'); return false; }
+    const mm = Number(m[1]); const yy = 2000 + Number(m[2]);
+    if (mm < 1 || mm > 12) { GB.toast('Muaji i skadimit është invalid.', 'error'); return false; }
+    if (new Date(yy, mm - 1, 1) < new Date(new Date().getFullYear(), new Date().getMonth(), 1)) {
+        GB.toast('Karta duket e skaduar.', 'error');
+        return false;
+    }
+    if (!/^\d{3,4}$/.test(cvv)) { GB.toast('CVV duhet të ketë 3 ose 4 shifra.', 'error'); return false; }
+    return true;
+}
+
+function addPaymentRecord(record) {
+    let all;
+    try { all = JSON.parse(localStorage.getItem(PAYMENTS_KEY) || '[]'); }
+    catch { all = []; }
+    const payment = {
+        id: all.length ? Math.max(...all.map(p => p.id || 0)) + 1 : 1,
+        ...record,
+        createdAt: new Date().toISOString()
+    };
+    localStorage.setItem(PAYMENTS_KEY, JSON.stringify([...all, payment]));
+    return payment;
+}
+
+function completeBooking() {
+    if (state.submitting) return;
+    if (!validateStep(1) || !validateStep(2)) return;
+    if (!validatePayment()) return;
+
     if (!state.service || !state.date || !state.time) {
-        GB.toast('Ju lutem plotësoni shërbimin, datën dhe orën.', 'error');
+        GB.toast('Plotësoni të gjitha hapat e rezervimit.', 'error');
         return;
     }
 
@@ -368,32 +583,53 @@ function continueToCheckout() {
         state.time = null;
         renderCalendar();
         renderSlots();
-        updateSummary();
+        updateSummaryUI();
         return;
     }
 
-    localStorage.setItem(BOOKING_DRAFT_KEY, JSON.stringify({
+    state.submitting = true;
+    const totals = calculateTotals();
+    const status = state.paymentMethod === 'cash' ? 'Confirmed' : 'Done';
+    const methodLabel = state.paymentMethod === 'card' ? 'Kartë Krediti' : state.paymentMethod === 'paypal' ? 'PayPal' : 'Cash në Sallon';
+
+    const apptRes = GB.appointments.add({
+        userEmail: me.email,
+        userName: me.name,
+        userId: me.id,
         serviceId: state.service.id,
         serviceName: state.service.name,
-        servicePrice: Number(state.service.price || 0),
-        serviceDuration: Number(state.service.duration || 60),
+        date: `${state.date}T${state.time}:00`,
+        status,
+        notes: document.getElementById('bookingNotes').value.trim(),
         selectedDesignId: state.design?.id || null,
         selectedDesignName: state.design?.name || null,
         selectedDesignImage: state.design?.image || null,
-        selectedDesignCategory: state.design?.category || null,
-        date: state.date,
-        time: state.time,
-        slotISO,
-        createdAt: new Date().toISOString(),
-    }));
-    window.location.href = './payment.html?draft=1';
-}
+        selectedDesignCategory: state.design?.category || null
+    });
 
-function scheduleAutoCheckout() {
-    clearTimeout(autoCheckoutTimer);
-    const hint = document.getElementById('autoHint');
-    hint.textContent = 'Duke ju ridrejtuar automatikisht te pagesa...';
-    autoCheckoutTimer = setTimeout(continueToCheckout, 650);
+    if (!apptRes.ok) {
+        state.submitting = false;
+        GB.toast(apptRes.error || 'Ndodhi një gabim gjatë rezervimit.', 'error');
+        return;
+    }
+
+    addPaymentRecord({
+        txId: '#GB-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000),
+        userEmail: me.email,
+        userName: me.name,
+        appointmentId: apptRes.appointment.id,
+        serviceId: state.service.id,
+        serviceName: state.service.name,
+        selectedDesignName: state.design?.name || null,
+        amount: totals.total,
+        method: methodLabel,
+        status: state.paymentMethod === 'cash' ? 'Në Sallon' : 'Paguar'
+    });
+
+    document.getElementById('successText').textContent =
+        `${state.service.name} · ${formatLongDate(state.date)} në ${state.time} · Totali ${fmtMoney(totals.total)}`;
+    document.getElementById('successModal').classList.add('open');
+    state.submitting = false;
 }
 
 document.getElementById('servicesGrid').addEventListener('click', (e) => {
@@ -403,9 +639,20 @@ document.getElementById('servicesGrid').addEventListener('click', (e) => {
     const found = services.find((s) => s.id === id);
     if (!found) return;
     state.service = found;
-    document.getElementById('autoHint').textContent = '';
     renderServices();
-    updateSummary();
+    renderDesigns();
+    updateSummaryUI();
+});
+
+document.getElementById('designGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-design-id]');
+    if (!btn) return;
+    const id = Number(btn.dataset.designId);
+    const found = designs.find((d) => d.id === id);
+    if (!found) return;
+    state.design = state.design?.id === found.id ? null : found;
+    renderDesigns();
+    updateSummaryUI();
 });
 
 document.getElementById('calendarGrid').addEventListener('click', (e) => {
@@ -413,10 +660,9 @@ document.getElementById('calendarGrid').addEventListener('click', (e) => {
     if (!btn || btn.disabled) return;
     state.date = btn.dataset.day;
     state.time = null;
-    document.getElementById('autoHint').textContent = '';
     renderCalendar();
     renderSlots();
-    updateSummary();
+    updateSummaryUI();
 });
 
 document.getElementById('slotsGrid').addEventListener('click', (e) => {
@@ -424,11 +670,30 @@ document.getElementById('slotsGrid').addEventListener('click', (e) => {
     if (!btn || btn.disabled) return;
     state.time = btn.dataset.time;
     renderSlots();
-    updateSummary();
-    scheduleAutoCheckout();
+    updateSummaryUI();
 });
 
-document.getElementById('continueBtn').addEventListener('click', continueToCheckout);
+document.querySelectorAll('.cb-pay-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        state.paymentMethod = btn.dataset.method;
+        document.querySelectorAll('.cb-pay-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('cardFields').style.display = state.paymentMethod === 'card' ? 'block' : 'none';
+        document.getElementById('paymentHint').textContent = state.paymentMethod === 'cash'
+            ? 'Takimi konfirmohet pa pagesë online.'
+            : state.paymentMethod === 'paypal'
+                ? 'Do të procesohet si pagesë e menjëhershme PayPal.'
+                : 'Pagesë e sigurt me kartë.';
+        updateSummaryUI();
+    });
+});
+
+document.getElementById('toStep2Btn').addEventListener('click', () => { if (validateStep(1)) showStep(2); });
+document.getElementById('backTo1Btn').addEventListener('click', () => showStep(1));
+document.getElementById('toStep3Btn').addEventListener('click', () => { if (validateStep(2)) showStep(3); });
+document.getElementById('backTo2Btn').addEventListener('click', () => showStep(2));
+document.getElementById('completeBtn').addEventListener('click', completeBooking);
+
 document.getElementById('prevMonthBtn').addEventListener('click', () => { state.month.setMonth(state.month.getMonth() - 1); renderCalendar(); });
 document.getElementById('nextMonthBtn').addEventListener('click', () => { state.month.setMonth(state.month.getMonth() + 1); renderCalendar(); });
 document.getElementById('todayBtn').addEventListener('click', () => {
@@ -440,16 +705,17 @@ window.addEventListener('storage', (e) => {
     if (e.key === 'gb_appointments') {
         renderCalendar();
         renderSlots();
-        updateSummary();
+        updateSummaryUI();
     }
 });
 
 renderServices();
 hydrateGalleryPrefill();
+renderDesigns();
 renderCalendar();
 renderSlots();
-renderDesignPrefill();
-updateSummary();
+updateSummaryUI();
+showStep(1);
 </script>
 </body>
 </html>
