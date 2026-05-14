@@ -188,13 +188,14 @@ window.GB = {
         const token = this.getToken();
         const finalHeaders = { ...headers };
         if (token) finalHeaders.Authorization = `Bearer ${token}`;
-        if (body !== undefined) finalHeaders['Content-Type'] = 'application/json';
+        const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+        if (body !== undefined && !isFormData) finalHeaders['Content-Type'] = 'application/json';
 
         const res = await fetch(`${_API_BASE}${path}`, {
             method,
             headers: finalHeaders,
             credentials: 'include',
-            body: body !== undefined ? JSON.stringify(body) : undefined,
+            body: body === undefined ? undefined : (isFormData ? body : JSON.stringify(body)),
         });
 
         let payload = null;
@@ -287,6 +288,13 @@ window.GB = {
         settings: {
             async getAdmin() { return window.GB._request('/settings/admin'); },
             async updateAdmin(data) { return window.GB._request('/settings/admin', { method: 'PUT', body: data }); },
+        },
+        uploads: {
+            async uploadReviewImage(file) {
+                const form = new FormData();
+                form.append('image', file);
+                return window.GB._request('/uploads/review-image', { method: 'POST', body: form });
+            },
         },
     },
 

@@ -156,6 +156,7 @@ const state = {
     sort: 'latest',
     imageData: '',
     selectedApptId: null,
+    uploadingImage: false,
 };
 async function refreshReviewsData() {
     await GB.syncFromServer();
@@ -267,6 +268,7 @@ function resetForm() {
     state.rating = 0;
     state.imageData = '';
     state.selectedApptId = null;
+    state.uploadingImage = false;
     document.getElementById('reviewComment').value = '';
     document.getElementById('reviewImage').value = '';
     document.getElementById('anonymousChk').checked = false;
@@ -302,6 +304,7 @@ document.getElementById('reviewImage').addEventListener('change', (e) => {
     const preview = document.getElementById('imagePreview');
     if (!file) {
         state.imageData = '';
+        state.uploadingImage = false;
         preview.src = '';
         preview.style.display = 'none';
         return;
@@ -311,13 +314,29 @@ document.getElementById('reviewImage').addEventListener('change', (e) => {
         e.target.value = '';
         return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-        state.imageData = String(reader.result || '');
-        preview.src = state.imageData;
-        preview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) {
+        GB.toast('Imazhi duhet të jetë deri në 5MB.', 'error');
+        e.target.value = '';
+        return;
+    }
+
+    state.uploadingImage = true;
+    GB.api.uploads.uploadReviewImage(file)
+        .then((res) => {
+            state.imageData = res?.file?.url || '';
+            preview.src = state.imageData;
+            preview.style.display = state.imageData ? 'block' : 'none';
+            GB.toast('Imazhi u ngarkua me sukses.', 'success');
+        })
+        .catch((err) => {
+            state.imageData = '';
+            preview.src = '';
+            preview.style.display = 'none';
+            GB.toast(err.message || 'Imazhi nuk u ngarkua.', 'error');
+        })
+        .finally(() => {
+            state.uploadingImage = false;
+        });
 });
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -326,6 +345,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     const isAnonymous = document.getElementById('anonymousChk').checked;
     if (!apptId) { GB.toast('Zgjidhni një takim.', 'error'); return; }
     if (!state.rating) { GB.toast('Vendosni vlerësimin me yje.', 'error'); return; }
+    if (state.uploadingImage) { GB.toast('Pritni derisa imazhi të ngarkohet.', 'error'); return; }
 
     const appt = GB.appointments.getById(apptId);
     try {

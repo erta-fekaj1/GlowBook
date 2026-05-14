@@ -5,10 +5,15 @@ function notFound(req, res) {
 function onError(err, req, res, next) { // eslint-disable-line no-unused-vars
     // eslint-disable-next-line no-console
     console.error('[api:error]', err);
-    const status = Number(err.statusCode || 500);
+    let status = Number(err.statusCode || 500);
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        status = 400;
+    }
     res.status(status).json({
         ok: false,
-        error: err.message || 'Internal server error.',
+        error: err.code === 'LIMIT_FILE_SIZE'
+            ? 'Uploaded image is too large.'
+            : (err.message || 'Internal server error.'),
     });
 }
 
