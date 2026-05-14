@@ -157,6 +157,9 @@ const state = {
     imageData: '',
     selectedApptId: null,
 };
+async function refreshReviewsData() {
+    await GB.syncFromServer();
+}
 
 const stars = (n) => '★★★★★☆☆☆☆☆'.slice(5 - Number(n), 10 - Number(n));
 const fmtDate = (iso) => {
@@ -317,7 +320,7 @@ document.getElementById('reviewImage').addEventListener('change', (e) => {
     reader.readAsDataURL(file);
 });
 
-document.getElementById('submitBtn').addEventListener('click', () => {
+document.getElementById('submitBtn').addEventListener('click', async () => {
     const apptId = Number(document.getElementById('apptSelect').value || 0);
     const comment = document.getElementById('reviewComment').value.trim();
     const isAnonymous = document.getElementById('anonymousChk').checked;
@@ -325,20 +328,20 @@ document.getElementById('submitBtn').addEventListener('click', () => {
     if (!state.rating) { GB.toast('Vendosni vlerësimin me yje.', 'error'); return; }
 
     const appt = GB.appointments.getById(apptId);
-    const res = GB.reviews.add({
-        userEmail: me.email,
-        userName: me.name,
-        appointmentId: apptId,
-        rating: state.rating,
-        comment,
-        image: state.imageData,
-        isAnonymous,
-        serviceName: appt?.serviceName || '',
-        dateOfAppointment: appt?.date || '',
-        designName: appt?.selectedDesignName || '',
-    });
-    if (!res.ok) {
-        GB.toast(res.error || 'Review nuk u ruajt.', 'error');
+    try {
+        await GB.api.reviews.create({
+            appointmentId: apptId,
+            rating: state.rating,
+            comment,
+            image: state.imageData,
+            isAnonymous,
+            serviceName: appt?.serviceName || '',
+            dateOfAppointment: appt?.date || '',
+            designName: appt?.selectedDesignName || '',
+        });
+        await refreshReviewsData();
+    } catch (err) {
+        GB.toast(err.message || 'Review nuk u ruajt.', 'error');
         return;
     }
     GB.toast('Faleminderit! Review u publikua.', 'success');
@@ -349,11 +352,16 @@ document.getElementById('submitBtn').addEventListener('click', () => {
 
 document.getElementById('clearBtn').addEventListener('click', resetForm);
 
-initPrefillFromQuery();
-renderStarPicker();
-renderAppointmentSelect();
-renderStatsAndFeatured();
-renderReviews();
+async function bootstrapReviews() {
+    await refreshReviewsData();
+    initPrefillFromQuery();
+    renderStarPicker();
+    renderAppointmentSelect();
+    renderStatsAndFeatured();
+    renderReviews();
+}
+
+bootstrapReviews();
 </script>
 </body>
 </html>

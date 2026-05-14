@@ -125,7 +125,7 @@ function showErr(id, msg) {
     el.focus();
 }
 
-function doLogin() {
+async function doLogin() {
     clearAllErrors();
     const email = document.getElementById('loginEmail').value.trim();
     const pass  = document.getElementById('loginPassword').value;
@@ -136,18 +136,20 @@ function doLogin() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Duke u kyçur...';
 
-    const result = GB.login(email, pass);
-    if (result.ok) {
-        GB.toast(`Mirë se vini, ${result.user.name}! (${result.role==='admin'?'👑 Admin':'🙋 Klient'})`, 'success');
-        setTimeout(() => window.location.replace(result.role==='admin'?'./admin.html':'./dashboard.html'), 700);
-    } else {
-        showErr('loginPassword', result.error);
+    try {
+        const result = await GB.api.auth.login({ email, password: pass });
+        const session = GB.applyAuthPayload(result);
+        await GB.syncFromServer();
+        GB.toast(`Mirë se vini, ${result.user.name}! (${session.role==='admin'?'👑 Admin':'🙋 Klient'})`, 'success');
+        setTimeout(() => window.location.replace(session.role==='admin'?'./admin.html':'./dashboard.html'), 700);
+    } catch (err) {
+        showErr('loginPassword', err.message || 'Login failed.');
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Kyçu';
     }
 }
 
-function doRegister() {
+async function doRegister() {
     clearAllErrors();
     const name  = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
@@ -159,13 +161,16 @@ function doRegister() {
     if (!phone)        { showErr('regPhone',   'Shkruani numrin e telefonit.');   return; }
     if (!pass||pass.length<4) { showErr('regPassword','Fjalëkalimi duhet ≥ 4 karaktere.'); return; }
 
-    const result = GB.register({ name, email, password:pass, phone });
-    if (result.ok) {
+    try {
+        const result = await GB.api.auth.register({ name, email, password: pass, phone });
+        GB.applyAuthPayload(result);
+        await GB.syncFromServer();
         GB.toast(`Llogaria u krijua! Mirë se vini, ${result.user.name}!`, 'success');
         setTimeout(() => window.location.replace('./dashboard.html'), 700);
-    } else {
-        const field = result.error.includes('email') ? 'regEmail' : 'regPassword';
-        showErr(field, result.error);
+    } catch (err) {
+        const msg = err.message || 'Register failed.';
+        const field = msg.toLowerCase().includes('email') ? 'regEmail' : 'regPassword';
+        showErr(field, msg);
     }
 }
 

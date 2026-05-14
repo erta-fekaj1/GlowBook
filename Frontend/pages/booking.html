@@ -312,7 +312,7 @@ const state = {
     submitting: false,
     lastAppointmentId: null,
 };
-const services = GB.services.getAll();
+let services = GB.services.getAll();
 const designs = GB.designs.getAll();
 const fmtMoney = (n) => `€${Number(n || 0).toFixed(2)}`;
 const toISODate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -618,7 +618,14 @@ function addPaymentRecord(record) {
     return payment;
 }
 
-function completeBooking() {
+async function syncBookingData() {
+    const sync = await GB.syncFromServer();
+    if (sync?.ok) {
+        services = GB.services.getAll();
+    }
+}
+
+async function completeBooking() {
     if (state.submitting) return;
     if (!validateStep(1) || !validateStep(2)) return;
     if (!validatePayment()) return;
@@ -628,60 +635,56 @@ function completeBooking() {
         return;
     }
 
-    const slotISO = `${state.date}T${state.time}:00`;
-    if (GB.appointments.isSlotTaken(slotISO)) {
-        GB.toast('Ky orar sapo u rezervua. Zgjidhni orar tjetër.', 'error');
-        state.time = null;
-        renderCalendar();
-        renderSlots();
-        updateSummaryUI();
-        return;
-    }
-
     state.submitting = true;
     const totals = calculateTotals();
     const status = state.paymentMethod === 'cash' ? 'Confirmed' : 'Done';
     const methodLabel = state.paymentMethod === 'card' ? 'Kartë Krediti' : state.paymentMethod === 'paypal' ? 'PayPal' : 'Cash në Sallon';
 
-    const apptRes = GB.appointments.add({
-        userEmail: me.email,
-        userName: me.name,
-        userId: me.id,
-        serviceId: state.service.id,
-        serviceName: state.service.name,
-        date: `${state.date}T${state.time}:00`,
-        status,
-        notes: document.getElementById('bookingNotes').value.trim(),
-        selectedDesignId: state.design?.id || null,
-        selectedDesignName: state.design?.name || null,
-        selectedDesignImage: state.design?.image || null,
-        selectedDesignCategory: state.design?.category || null
-    });
+    try {
+        const apptRes = await GB.api.appointments.create({
+            serviceId: state.service.id,
+            date: state.date,
+            time: state.time,
+            status,
+            notes: document.getElementById('bookingNotes').value.trim(),
+            selectedDesignId: state.design?.id || null,
+            selectedDesignName: state.design?.name || null,
+            selectedDesignImage: state.design?.image || null,
+            selectedDesignCategory: state.design?.category || null
+        });
+        state.lastAppointmentId = apptRes.appointment.id;
 
-    if (!apptRes.ok) {
+        const localPayment = addPaymentRecord({
+            txId: '#GB-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000),
+            userEmail: me.email,
+            userName: me.name,
+            appointmentId: apptRes.appointment.id,
+            serviceId: state.service.id,
+            serviceName: state.service.name,
+            selectedDesignName: state.design?.name || null,
+            amount: totals.total,
+            method: methodLabel,
+            status: state.paymentMethod === 'cash' ? 'Në Sallon' : 'Paguar'
+        });
+        try {
+            await GB.api.payments.create(localPayment);
+        } catch (_) {
+            /* keep local payment fallback for UI compatibility */
+        }
+
+        await syncBookingData();
+        renderCalendar();
+        renderSlots();
+        updateSummaryUI();
+
+        document.getElementById('successText').textContent =
+            `${state.service.name} · ${formatLongDate(state.date)} në ${state.time} · Totali ${fmtMoney(totals.total)}`;
+        document.getElementById('successModal').classList.add('open');
+    } catch (err) {
+        GB.toast(err.message || 'Ndodhi një gabim gjatë rezervimit.', 'error');
+    } finally {
         state.submitting = false;
-        GB.toast(apptRes.error || 'Ndodhi një gabim gjatë rezervimit.', 'error');
-        return;
     }
-    state.lastAppointmentId = apptRes.appointment.id;
-
-    addPaymentRecord({
-        txId: '#GB-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000),
-        userEmail: me.email,
-        userName: me.name,
-        appointmentId: apptRes.appointment.id,
-        serviceId: state.service.id,
-        serviceName: state.service.name,
-        selectedDesignName: state.design?.name || null,
-        amount: totals.total,
-        method: methodLabel,
-        status: state.paymentMethod === 'cash' ? 'Në Sallon' : 'Paguar'
-    });
-
-    document.getElementById('successText').textContent =
-        `${state.service.name} · ${formatLongDate(state.date)} në ${state.time} · Totali ${fmtMoney(totals.total)}`;
-    document.getElementById('successModal').classList.add('open');
-    state.submitting = false;
 }
 
 document.getElementById('leaveReviewBtn').addEventListener('click', () => {
@@ -786,13 +789,18 @@ window.addEventListener('storage', (e) => {
     }
 });
 
-renderServices();
-hydrateGalleryPrefill();
-renderDesigns();
-renderCalendar();
-renderSlots();
-updateSummaryUI();
-showStep(1);
+async function bootstrapBooking() {
+    await syncBookingData();
+    renderServices();
+    hydrateGalleryPrefill();
+    renderDesigns();
+    renderCalendar();
+    renderSlots();
+    updateSummaryUI();
+    showStep(1);
+}
+
+bootstrapBooking();
 </script>
 </body>
 </html>

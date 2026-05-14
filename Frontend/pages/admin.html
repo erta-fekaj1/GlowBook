@@ -530,7 +530,10 @@ function openModal({ title, fields, onSubmit }) {
         </div>
     `;
     overlay.classList.add('open');
-    host.onsubmit = (e) => { e.preventDefault(); onSubmit(new FormData(host)); };
+    host.onsubmit = async (e) => {
+        e.preventDefault();
+        await onSubmit(new FormData(host));
+    };
     document.getElementById('recordCancelBtn').onclick = closeModal;
 }
 function closeModal() {
@@ -549,7 +552,7 @@ function openServiceModal(id = null) {
                 <div class="ad-field"><label>Kohëzgjatja (min)</label><input type="number" min="5" name="duration" value="${existing?.duration || 60}" required></div>
             </div>
         `,
-        onSubmit(form) {
+        async onSubmit(form) {
             const payload = {
                 name: String(form.get('name') || '').trim(),
                 desc: String(form.get('desc') || '').trim(),
@@ -557,12 +560,17 @@ function openServiceModal(id = null) {
                 duration: Number(form.get('duration') || 60),
             };
             if (!payload.name) { GB.toast('Emri i shërbimit është i detyrueshëm.', 'error'); return; }
-            if (id) {
-                GB.services.update(id, payload);
-                GB.toast('Shërbimi u përditësua.', 'success');
-            } else {
-                GB.services.add(payload);
-                GB.toast('Shërbimi u shtua.', 'success');
+            try {
+                if (id) {
+                    await GB.api.services.update(id, payload);
+                    GB.toast('Shërbimi u përditësua.', 'success');
+                } else {
+                    await GB.api.services.create(payload);
+                    GB.toast('Shërbimi u shtua.', 'success');
+                }
+            } catch (err) {
+                GB.toast(err.message || 'Nuk u ruajt shërbimi.', 'error');
+                return;
             }
             closeModal();
             refreshAll();
@@ -638,14 +646,19 @@ function openApptEditor(id) {
                 </div>
             </div>
         `,
-        onSubmit(form) {
+        async onSubmit(form) {
             const date = String(form.get('date') || '').trim();
             const status = String(form.get('status') || 'Pending');
             if (!date) { GB.toast('Data e takimit është e detyrueshme.', 'error'); return; }
-            const iso = date.length === 16 ? `${date}:00` : date;
-            const res = GB.appointments.update(id, { date: iso, status });
-            if (!res.ok) {
-                GB.toast(res.error || 'Ndodhi gabim gjatë përditësimit.', 'error');
+            const m = String(date).match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+            if (!m) {
+                GB.toast('Data/Ora nuk është valide.', 'error');
+                return;
+            }
+            try {
+                await GB.api.appointments.update(id, { date: m[1], time: m[2], status });
+            } catch (err) {
+                GB.toast(err.message || 'Ndodhi gabim gjatë përditësimit.', 'error');
                 return;
             }
             GB.toast('Takimi u përditësua.', 'success');
@@ -655,30 +668,41 @@ function openApptEditor(id) {
     });
 }
 
-function updateApptStatus(id, status) {
-    const res = GB.appointments.update(id, { status });
-    if (!res.ok) {
-        GB.toast(res.error || 'Statusi nuk u përditësua.', 'error');
+async function updateApptStatus(id, status) {
+    try {
+        await GB.api.appointments.update(id, { status });
+    } catch (err) {
+        GB.toast(err.message || 'Statusi nuk u përditësua.', 'error');
         return;
     }
     GB.toast('Statusi u përditësua.', 'success');
     refreshAll();
 }
 
-function deleteAppointment(id) {
+async function deleteAppointment(id) {
     const appt = GB.appointments.getById(id);
     if (!appt) return;
     if (!confirm(`Fshi takimin e ${appt.userName || appt.userEmail}?`)) return;
-    GB.appointments.delete(id);
+    try {
+        await GB.api.appointments.remove(id);
+    } catch (err) {
+        GB.toast(err.message || 'Takimi nuk u fshi.', 'error');
+        return;
+    }
     GB.toast('Takimi u fshi.', 'success');
     refreshAll();
 }
 
-function deleteService(id) {
+async function deleteService(id) {
     const s = GB.services.getById(id);
     if (!s) return;
     if (!confirm(`Fshi shërbimin "${s.name}"?`)) return;
-    GB.services.delete(id);
+    try {
+        await GB.api.services.remove(id);
+    } catch (err) {
+        GB.toast(err.message || 'Shërbimi nuk u fshi.', 'error');
+        return;
+    }
     GB.toast('Shërbimi u fshi.', 'success');
     refreshAll();
 }
@@ -692,19 +716,29 @@ function deleteDesign(id) {
     refreshAll();
 }
 
-function deleteReview(id) {
+async function deleteReview(id) {
     if (!confirm('Fshi këtë review?')) return;
-    const res = GB.reviews.remove(id);
-    if (!res.ok) {
-        GB.toast(res.error || 'Review nuk u fshi.', 'error');
+    try {
+        await GB.api.reviews.remove(id);
+    } catch (err) {
+        GB.toast(err.message || 'Review nuk u fshi.', 'error');
         return;
     }
     GB.toast('Review u fshi.', 'success');
     refreshAll();
 }
 
-function loadSettings() {
-    const s = readSettings();
+async function loadSettings() {
+    let s = readSettings();
+    try {
+        const remote = await GB.api.settings.getAdmin();
+        if (remote?.settings) {
+            s = remote.settings;
+            saveSettings(s);
+        }
+    } catch (_) {
+        /* fallback on local settings */
+    }
     document.getElementById('sBusinessName').value = s.businessName || 'GlowBook Studio';
     document.getElementById('sSupportEmail').value = s.supportEmail || 'hello@glowbook.com';
     document.getElementById('sPhone').value = s.phone || '+383 44 123 456';
@@ -714,7 +748,7 @@ function loadSettings() {
     document.getElementById('sNotes').value = s.notes || '';
 }
 
-function handleSettingsSubmit(e) {
+async function handleSettingsSubmit(e) {
     e.preventDefault();
     const payload = {
         businessName: document.getElementById('sBusinessName').value.trim(),
@@ -727,10 +761,17 @@ function handleSettingsSubmit(e) {
         updatedAt: new Date().toISOString(),
     };
     saveSettings(payload);
+    try {
+        await GB.api.settings.updateAdmin(payload);
+    } catch (err) {
+        GB.toast(err.message || 'Settings nuk u ruajtën në server.', 'error');
+        return;
+    }
     GB.toast('Settings u ruajtën me sukses.', 'success');
 }
 
-function refreshAll() {
+async function refreshAll(sync = true) {
+    if (sync) await GB.syncFromServer();
     updateKpis();
     renderAppointmentsTable();
     renderUsersMini();
@@ -764,9 +805,10 @@ document.getElementById('resetSettingsBtn').addEventListener('click', loadSettin
 document.getElementById('recordModal').addEventListener('click', (e) => { if (e.target.id === 'recordModal') closeModal(); });
 window.addEventListener('storage', (e) => {
     if (['gb_appointments', 'gb_users', 'gb_services', 'gb_designs', 'gb_reviews', 'gb_payments'].includes(e.key)) {
-        refreshAll();
+        refreshAll(false);
     }
 });
+window.addEventListener('gb:data-synced', () => refreshAll(false));
 
 loadSettings();
 refreshAll();

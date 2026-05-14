@@ -24,6 +24,8 @@ const _K = {
     DESIGNS : 'gb_designs',
     REVIEWS : 'gb_reviews',
     THEME   : 'gb_theme',
+    PAYMENTS: 'gb_payments',
+    ADMIN_SETTINGS: 'gb_admin_settings',
 };
 
 /* ── Tiny localStorage read/write helpers ──────────────────── */
@@ -32,6 +34,7 @@ const _w = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const _nextId = arr => arr.length ? Math.max(...arr.map(x => x.id ?? 0)) + 1 : 1;
 const _now    = () => new Date().toISOString();
 const _WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+const _API_BASE = '/api';
 
 function _slotKey(value) {
     const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
@@ -181,6 +184,48 @@ window.GB = {
     isClient () { return this.getRole() === 'client'; },
     isLoggedIn() { return !!this.getToken(); },
 
+    async _request(path, { method = 'GET', body, headers = {} } = {}) {
+        const token = this.getToken();
+        const finalHeaders = { ...headers };
+        if (token) finalHeaders.Authorization = `Bearer ${token}`;
+        if (body !== undefined) finalHeaders['Content-Type'] = 'application/json';
+
+        const res = await fetch(`${_API_BASE}${path}`, {
+            method,
+            headers: finalHeaders,
+            credentials: 'include',
+            body: body !== undefined ? JSON.stringify(body) : undefined,
+        });
+
+        let payload = null;
+        try { payload = await res.json(); } catch { payload = null; }
+        if (!res.ok || !payload?.ok) {
+            if (res.status === 401) {
+                [_K.TOKEN, _K.ME, _K.ROLE].forEach((k) => localStorage.removeItem(k));
+            }
+            const msg = payload?.error || `Request failed (${res.status})`;
+            throw new Error(msg);
+        }
+        return payload;
+    },
+    async syncFromServer() {
+        if (!this.isLoggedIn()) return { ok: false, error: 'Not logged in.' };
+        try {
+            const data = await this._request('/data/sync');
+            const p = data.payload || {};
+            if (p.me) _w(_K.ME, p.me);
+            if (Array.isArray(p.users)) _w(_K.USERS, p.users);
+            if (Array.isArray(p.services)) _w(_K.SVCS, p.services);
+            if (Array.isArray(p.appointments)) _w(_K.APPTS, p.appointments);
+            if (Array.isArray(p.reviews)) _w(_K.REVIEWS, p.reviews);
+            if (Array.isArray(p.payments)) _w(_K.PAYMENTS, p.payments);
+            if (p.settings && typeof p.settings === 'object') _w(_K.ADMIN_SETTINGS, p.settings);
+            return { ok: true, payload: p };
+        } catch (err) {
+            return { ok: false, error: err.message || 'Sync failed.' };
+        }
+    },
+
     _detectRole(user) {
         if (!user) return 'client';
         const ADMIN_EMAILS = ['admin@glowbook.com', 'admin@gmail.com'];
@@ -189,13 +234,60 @@ window.GB = {
         return 'client';
     },
 
-    _saveSession(user) {
+    _saveSession(user, tokenOverride = null) {
         const role  = this._detectRole(user);
-        const token = 'gb-' + _hash(user.email + Date.now()).slice(0, 12);
+        const token = tokenOverride || ('gb-' + _hash(user.email + Date.now()).slice(0, 12));
         localStorage.setItem(_K.TOKEN, token);
         _w(_K.ME,   user);
         _w(_K.ROLE, role);
         return role;
+    },
+    applyAuthPayload(payload = {}) {
+        if (!payload?.user) return { ok: false, error: 'Invalid auth payload.' };
+        const role = this._saveSession(payload.user, payload.token || null);
+        return { ok: true, role, user: payload.user };
+    },
+    api: {
+        auth: {
+            async register(data) { return window.GB._request('/auth/register', { method: 'POST', body: data }); },
+            async login(data) { return window.GB._request('/auth/login', { method: 'POST', body: data }); },
+            async me() { return window.GB._request('/auth/me'); },
+            async logout() { return window.GB._request('/auth/logout', { method: 'POST' }); },
+        },
+        data: {
+            async sync() { return window.GB.syncFromServer(); },
+        },
+        users: {
+            async list() { return window.GB._request('/users'); },
+            async update(id, data) { return window.GB._request(`/users/${id}`, { method: 'PATCH', body: data }); },
+            async remove(id) { return window.GB._request(`/users/${id}`, { method: 'DELETE' }); },
+        },
+        services: {
+            async list() { return window.GB._request('/services'); },
+            async create(data) { return window.GB._request('/services', { method: 'POST', body: data }); },
+            async update(id, data) { return window.GB._request(`/services/${id}`, { method: 'PUT', body: data }); },
+            async remove(id) { return window.GB._request(`/services/${id}`, { method: 'DELETE' }); },
+        },
+        appointments: {
+            async list() { return window.GB._request('/appointments'); },
+            async availability(day) { return window.GB._request(`/appointments/availability?date=${encodeURIComponent(day)}`); },
+            async create(data) { return window.GB._request('/appointments', { method: 'POST', body: data }); },
+            async update(id, data) { return window.GB._request(`/appointments/${id}`, { method: 'PUT', body: data }); },
+            async remove(id) { return window.GB._request(`/appointments/${id}`, { method: 'DELETE' }); },
+        },
+        reviews: {
+            async list() { return window.GB._request('/reviews'); },
+            async create(data) { return window.GB._request('/reviews', { method: 'POST', body: data }); },
+            async remove(id) { return window.GB._request(`/reviews/${id}`, { method: 'DELETE' }); },
+        },
+        payments: {
+            async list() { return window.GB._request('/payments'); },
+            async create(data) { return window.GB._request('/payments', { method: 'POST', body: data }); },
+        },
+        settings: {
+            async getAdmin() { return window.GB._request('/settings/admin'); },
+            async updateAdmin(data) { return window.GB._request('/settings/admin', { method: 'PUT', body: data }); },
+        },
     },
 
     /* ── Auth ────────────────────────────────────────────────── */
@@ -240,6 +332,7 @@ window.GB = {
     },
 
     logout() {
+        this.api.auth.logout().catch(() => {});
         [_K.TOKEN, _K.ME, _K.ROLE].forEach(k => localStorage.removeItem(k));
         window.location.replace('index.html');
     },
@@ -730,6 +823,12 @@ window.GB = {
         this.applyBranding();
         this.initSidebar();
         this.loadBadge();
+        this.syncFromServer().then((result) => {
+            if (result?.ok) {
+                this.loadBadge();
+                window.dispatchEvent(new CustomEvent('gb:data-synced', { detail: result.payload || {} }));
+            }
+        });
         return true;
     },
 
@@ -769,4 +868,11 @@ _seed();
 if (typeof document !== 'undefined') {
     GB.applyTheme();
     GB.injectThemeToggle();
+    if (GB.isLoggedIn()) {
+        GB.syncFromServer().then((result) => {
+            if (result?.ok) {
+                window.dispatchEvent(new CustomEvent('gb:data-synced', { detail: result.payload || {} }));
+            }
+        });
+    }
 }

@@ -22,3 +22,8 @@ Thumbs.db
 
 # Runtime data
 GlowBook.Infrastructure/Data/Database/*.csv
+
+# Node
+node_modules/
+.env
+npm-debug.log*
