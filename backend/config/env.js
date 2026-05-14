@@ -1,7 +1,10 @@
 const path = require('path');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+const backendRoot = path.resolve(__dirname, '..');
+const workspaceRoot = path.resolve(backendRoot, '..');
+
+dotenv.config({ path: path.join(backendRoot, '.env') });
 
 const env = {
     nodeEnv: process.env.NODE_ENV || 'development',
@@ -9,7 +12,7 @@ const env = {
     mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/glowbook',
     jwtSecret: process.env.JWT_SECRET || 'dev-glowbook-secret-change-me',
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    frontendDir: path.join(process.cwd(), 'Frontend'),
+    frontendDir: path.join(workspaceRoot, 'Frontend'),
     corsOrigin: process.env.CORS_ORIGIN || '*',
 };
 
