@@ -12,18 +12,18 @@
 
 /* ── Category config ──────────────────────────────────────────── */
 const CATEGORIES = [
-    { key:'French',       label:'French',          icon:'fa-solid fa-star',              color:'#F8F4FF', accent:'#7F77DD' },
-    { key:'Gel',          label:'Gel',              icon:'fa-solid fa-droplet',           color:'#FFF0F5', accent:'#D4537E' },
-    { key:'Ombre',        label:'Ombre',            icon:'fa-solid fa-circle-half-stroke', color:'#F0F8FF', accent:'#5BABD4' },
-    { key:'Floral',       label:'Floral',           icon:'fa-solid fa-leaf',              color:'#F0FFF4', accent:'#1D9E75' },
-    { key:'Glitter',      label:'Glitter',          icon:'fa-solid fa-sparkles',          color:'#FFFBF0', accent:'#BA7517' },
-    { key:'Chrome',       label:'Chrome / Mirror',  icon:'fa-solid fa-circle',            color:'#F4F4F4', accent:'#555555' },
-    { key:'Animal Print', label:'Animal Print',     icon:'fa-solid fa-paw',               color:'#FFF8F0', accent:'#A0522D' },
-    { key:'Abstract',     label:'Abstract',         icon:'fa-solid fa-shapes',            color:'#F5F0FF', accent:'#6A4FC8' },
-    { key:'Swirls',       label:'Swirls',           icon:'fa-solid fa-rotate',            color:'#FFF0F8', accent:'#C4448A' },
-    { key:'3D',           label:'3D Nails',         icon:'fa-solid fa-cube',              color:'#EAFAF5', accent:'#0E8A6A' },
-    { key:'Foil',         label:'Foil Nails',       icon:'fa-solid fa-wand-magic-sparkles',color:'#FEFBEA', accent:'#9A7D0A' },
-    { key:'Seasonal',     label:'Seasonal',         icon:'fa-solid fa-snowflake',         color:'#F0F5FF', accent:'#3A6BC4' },
+    { key:'French',       label:'French',          icon:'fa-solid fa-star',              color:'#FFF7FB', accent:'#EC4899' },
+    { key:'Gel',          label:'Gel',              icon:'fa-solid fa-droplet',           color:'#FCE7F3', accent:'#F472B6' },
+    { key:'Ombre',        label:'Ombre',            icon:'fa-solid fa-circle-half-stroke', color:'#FFF7FB', accent:'#EC4899' },
+    { key:'Floral',       label:'Floral',           icon:'fa-solid fa-leaf',              color:'#FFF7FB', accent:'#DB2777' },
+    { key:'Glitter',      label:'Glitter',          icon:'fa-solid fa-sparkles',          color:'#FFF7FB', accent:'#EC4899' },
+    { key:'Chrome',       label:'Chrome / Mirror',  icon:'fa-solid fa-circle',            color:'#FFF7FB', accent:'#4B5563' },
+    { key:'Animal Print', label:'Animal Print',     icon:'fa-solid fa-paw',               color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Abstract',     label:'Abstract',         icon:'fa-solid fa-shapes',            color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Swirls',       label:'Swirls',           icon:'fa-solid fa-rotate',            color:'#FCE7F3', accent:'#BE185D' },
+    { key:'3D',           label:'3D Nails',         icon:'fa-solid fa-cube',              color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Foil',         label:'Foil Nails',       icon:'fa-solid fa-wand-magic-sparkles',color:'#FFF7FB', accent:'#BE185D' },
+    { key:'Seasonal',     label:'Seasonal',         icon:'fa-solid fa-snowflake',         color:'#FFF7FB', accent:'#BE185D' },
 ];
 
 const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c]));
@@ -35,16 +35,34 @@ const state = {
     editingId    : null,
     detailId     : null,
 };
+const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 
 /* ── Helpers ──────────────────────────────────────────────────── */
 const isAdmin = () => GB.isAdmin();
 
 function getCat(key) {
-    return CAT_MAP[key] || { color:'#FBEAF0', accent:'#D4537E', icon:'fa-solid fa-image' };
+    return CAT_MAP[key] || { color:'#FCE7F3', accent:'#F472B6', icon:'fa-solid fa-image' };
 }
 
 function complexityClass(c) {
     return c === 'E lehtë' ? 'gl-badge-easy' : c === 'Mesatare' ? 'gl-badge-med' : 'gl-badge-hard';
+}
+
+function suggestServiceForDesign(design) {
+    const allServices = GB.services.getAll();
+    const cat = String(design?.category || '').toLowerCase();
+    const byKeyword = (keywords) =>
+        allServices.find(s => keywords.some(k => String(s.name || '').toLowerCase().includes(k)));
+
+    if (cat.includes('french')) return byKeyword(['french']);
+    if (cat.includes('gel')) return byKeyword(['gel']);
+    if (cat.includes('ombre')) return byKeyword(['ombre']);
+    if (cat.includes('3d')) return byKeyword(['akryl', 'acryl', 'nail art']);
+    if (cat.includes('chrome') || cat.includes('foil')) return byKeyword(['gel', 'nail art']);
+    if (cat.includes('floral') || cat.includes('animal') || cat.includes('abstract') || cat.includes('swirls')) {
+        return byKeyword(['nail art', 'gel']);
+    }
+    return byKeyword(['nail art', 'gel', 'manikyr']) || allServices[0] || null;
 }
 
 /* Fallback placeholder when image fails to load */
@@ -190,6 +208,9 @@ function buildGridCard(d) {
             <div class="gl-card-meta">
                 <span class="gl-card-dur"><i class="fa-regular fa-clock"></i> ${d.duration} min</span>
             </div>
+            <button class="gl-card-book-inline" onclick="event.stopPropagation();bookFromCard(${d.id})">
+                <i class="fa-solid fa-calendar-check"></i> Rezervo këtë stil
+            </button>
         </div>
     </div>`;
 }
@@ -227,6 +248,11 @@ function buildListRow(d) {
         <td><span class="gl-complexity-badge ${comp}">${d.complexity}</span></td>
         <td style="font-weight:600;color:var(--pink)">€${d.price}</td>
         <td style="color:var(--text-subtle)">${d.duration} min</td>
+        <td>
+            <button class="btn-sm btn-edit" style="background:var(--pink-light);color:var(--pink-deep)" onclick="event.stopPropagation();bookFromCard(${d.id})">
+                <i class="fa-solid fa-calendar-check"></i> Rezervo
+            </button>
+        </td>
         <td>
             <button class="gl-like-btn ${d.liked?'liked':''}" style="position:static;transform:none;box-shadow:none;background:var(--pink-light);border-radius:20px;padding:4px 10px;font-size:.78rem"
                 onclick="event.stopPropagation();toggleLike(${d.id})" id="like-${d.id}">
@@ -280,6 +306,7 @@ function render() {
                         <th>Vështirësia</th>
                         <th>Çmimi</th>
                         <th>Kohëzgjatja</th>
+                        <th>Rezervo</th>
                         <th>Pëlqimet</th>
                         ${adminHeader}
                     </tr></thead>
@@ -428,15 +455,36 @@ function closeDetailModal() {
 window.closeDetailModal = closeDetailModal;
 
 function bookDesign() {
-    closeDetailModal();
-    window.location.href = 'appointments.html';
+    if (!state.detailId) return;
+    startBookingTransition(state.detailId, true);
 }
 window.bookDesign = bookDesign;
 
 function bookFromCard(id) {
-    window.location.href = 'appointments.html';
+    startBookingTransition(id, false);
 }
 window.bookFromCard = bookFromCard;
+
+function startBookingTransition(id, closeModalFirst) {
+    const design = GB.designs.getAll().find(x => x.id === id);
+    if (!design) return;
+
+    const suggestedService = suggestServiceForDesign(design);
+    localStorage.setItem(BOOKING_PREFILL_KEY, JSON.stringify({
+        designId: design.id,
+        designName: design.name,
+        designImage: design.image || '',
+        designCategory: design.category || '',
+        designPrice: Number(design.price || 0),
+        designDuration: Number(design.duration || 0),
+        suggestedServiceId: suggestedService?.id || null,
+        suggestedServiceName: suggestedService?.name || null,
+        createdAt: new Date().toISOString(),
+    }));
+
+    if (closeModalFirst) closeDetailModal();
+    window.location.href = 'booking.html?source=gallery';
+}
 
 /* ================================================================
    ADMIN: ADD / EDIT / DELETE

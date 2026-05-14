@@ -22,6 +22,10 @@ const _K = {
     APPTS   : 'gb_appointments',
     SVCS    : 'gb_services',
     DESIGNS : 'gb_designs',
+    REVIEWS : 'gb_reviews',
+    THEME   : 'gb_theme',
+    PAYMENTS: 'gb_payments',
+    ADMIN_SETTINGS: 'gb_admin_settings',
 };
 
 /* ── Tiny localStorage read/write helpers ──────────────────── */
@@ -30,6 +34,7 @@ const _w = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const _nextId = arr => arr.length ? Math.max(...arr.map(x => x.id ?? 0)) + 1 : 1;
 const _now    = () => new Date().toISOString();
 const _WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+const _API_BASE = '/api';
 
 function _slotKey(value) {
     const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
@@ -89,6 +94,7 @@ function _seed() {
 
     /* ── Empty appointments array ── */
     if (!_r(_K.APPTS)) _w(_K.APPTS, []);
+    if (!_r(_K.REVIEWS)) _w(_K.REVIEWS, []);
 
     /* ── Default gallery designs (full dataset — all categories) ── */
     if (!_r(_K.DESIGNS)) {
@@ -178,6 +184,48 @@ window.GB = {
     isClient () { return this.getRole() === 'client'; },
     isLoggedIn() { return !!this.getToken(); },
 
+    async _request(path, { method = 'GET', body, headers = {} } = {}) {
+        const token = this.getToken();
+        const finalHeaders = { ...headers };
+        if (token) finalHeaders.Authorization = `Bearer ${token}`;
+        if (body !== undefined) finalHeaders['Content-Type'] = 'application/json';
+
+        const res = await fetch(`${_API_BASE}${path}`, {
+            method,
+            headers: finalHeaders,
+            credentials: 'include',
+            body: body !== undefined ? JSON.stringify(body) : undefined,
+        });
+
+        let payload = null;
+        try { payload = await res.json(); } catch { payload = null; }
+        if (!res.ok || !payload?.ok) {
+            if (res.status === 401) {
+                [_K.TOKEN, _K.ME, _K.ROLE].forEach((k) => localStorage.removeItem(k));
+            }
+            const msg = payload?.error || `Request failed (${res.status})`;
+            throw new Error(msg);
+        }
+        return payload;
+    },
+    async syncFromServer() {
+        if (!this.isLoggedIn()) return { ok: false, error: 'Not logged in.' };
+        try {
+            const data = await this._request('/data/sync');
+            const p = data.payload || {};
+            if (p.me) _w(_K.ME, p.me);
+            if (Array.isArray(p.users)) _w(_K.USERS, p.users);
+            if (Array.isArray(p.services)) _w(_K.SVCS, p.services);
+            if (Array.isArray(p.appointments)) _w(_K.APPTS, p.appointments);
+            if (Array.isArray(p.reviews)) _w(_K.REVIEWS, p.reviews);
+            if (Array.isArray(p.payments)) _w(_K.PAYMENTS, p.payments);
+            if (p.settings && typeof p.settings === 'object') _w(_K.ADMIN_SETTINGS, p.settings);
+            return { ok: true, payload: p };
+        } catch (err) {
+            return { ok: false, error: err.message || 'Sync failed.' };
+        }
+    },
+
     _detectRole(user) {
         if (!user) return 'client';
         const ADMIN_EMAILS = ['admin@glowbook.com', 'admin@gmail.com'];
@@ -186,13 +234,60 @@ window.GB = {
         return 'client';
     },
 
-    _saveSession(user) {
+    _saveSession(user, tokenOverride = null) {
         const role  = this._detectRole(user);
-        const token = 'gb-' + _hash(user.email + Date.now()).slice(0, 12);
+        const token = tokenOverride || ('gb-' + _hash(user.email + Date.now()).slice(0, 12));
         localStorage.setItem(_K.TOKEN, token);
         _w(_K.ME,   user);
         _w(_K.ROLE, role);
         return role;
+    },
+    applyAuthPayload(payload = {}) {
+        if (!payload?.user) return { ok: false, error: 'Invalid auth payload.' };
+        const role = this._saveSession(payload.user, payload.token || null);
+        return { ok: true, role, user: payload.user };
+    },
+    api: {
+        auth: {
+            async register(data) { return window.GB._request('/auth/register', { method: 'POST', body: data }); },
+            async login(data) { return window.GB._request('/auth/login', { method: 'POST', body: data }); },
+            async me() { return window.GB._request('/auth/me'); },
+            async logout() { return window.GB._request('/auth/logout', { method: 'POST' }); },
+        },
+        data: {
+            async sync() { return window.GB.syncFromServer(); },
+        },
+        users: {
+            async list() { return window.GB._request('/users'); },
+            async update(id, data) { return window.GB._request(`/users/${id}`, { method: 'PATCH', body: data }); },
+            async remove(id) { return window.GB._request(`/users/${id}`, { method: 'DELETE' }); },
+        },
+        services: {
+            async list() { return window.GB._request('/services'); },
+            async create(data) { return window.GB._request('/services', { method: 'POST', body: data }); },
+            async update(id, data) { return window.GB._request(`/services/${id}`, { method: 'PUT', body: data }); },
+            async remove(id) { return window.GB._request(`/services/${id}`, { method: 'DELETE' }); },
+        },
+        appointments: {
+            async list() { return window.GB._request('/appointments'); },
+            async availability(day) { return window.GB._request(`/appointments/availability?date=${encodeURIComponent(day)}`); },
+            async create(data) { return window.GB._request('/appointments', { method: 'POST', body: data }); },
+            async update(id, data) { return window.GB._request(`/appointments/${id}`, { method: 'PUT', body: data }); },
+            async remove(id) { return window.GB._request(`/appointments/${id}`, { method: 'DELETE' }); },
+        },
+        reviews: {
+            async list() { return window.GB._request('/reviews'); },
+            async create(data) { return window.GB._request('/reviews', { method: 'POST', body: data }); },
+            async remove(id) { return window.GB._request(`/reviews/${id}`, { method: 'DELETE' }); },
+        },
+        payments: {
+            async list() { return window.GB._request('/payments'); },
+            async create(data) { return window.GB._request('/payments', { method: 'POST', body: data }); },
+        },
+        settings: {
+            async getAdmin() { return window.GB._request('/settings/admin'); },
+            async updateAdmin(data) { return window.GB._request('/settings/admin', { method: 'PUT', body: data }); },
+        },
     },
 
     /* ── Auth ────────────────────────────────────────────────── */
@@ -237,6 +332,7 @@ window.GB = {
     },
 
     logout() {
+        this.api.auth.logout().catch(() => {});
         [_K.TOKEN, _K.ME, _K.ROLE].forEach(k => localStorage.removeItem(k));
         window.location.replace('index.html');
     },
@@ -319,7 +415,19 @@ window.GB = {
             };
         },
 
-        add({ userEmail, userName, serviceId, serviceName, date, notes='', status='Pending' }) {
+        add({
+            userEmail,
+            userName,
+            serviceId,
+            serviceName,
+            date,
+            notes='',
+            status='Pending',
+            selectedDesignId = null,
+            selectedDesignName = null,
+            selectedDesignImage = null,
+            selectedDesignCategory = null
+        }) {
             if (!userEmail || !serviceId || !date) {
                 return { ok:false, error:'Email, shërbimi dhe data janë të detyrueshme.' };
             }
@@ -332,6 +440,10 @@ window.GB = {
                 userEmail: userEmail.toLowerCase(), userName,
                 serviceId, serviceName, date,
                 notes: notes.trim(), status,
+                selectedDesignId,
+                selectedDesignName,
+                selectedDesignImage,
+                selectedDesignCategory,
                 createdAt: _now(),
             };
             _w(_K.APPTS, [...all, appt]);
@@ -421,6 +533,99 @@ window.GB = {
         delete(id) { _w(_K.DESIGNS, this.getAll().filter(d => d.id !== id)); },
     },
 
+    /* ── Reviews store ───────────────────────────────────────── */
+    reviews: {
+        getAll() {
+            return _r(_K.REVIEWS) ?? [];
+        },
+        getById(id) {
+            return this.getAll().find(r => r.id === id) ?? null;
+        },
+        getByUser(email) {
+            const norm = String(email || '').toLowerCase();
+            return this.getAll().filter(r => String(r.userEmail || '').toLowerCase() === norm);
+        },
+        hasReviewedAppointment(userEmail, appointmentId) {
+            const norm = String(userEmail || '').toLowerCase();
+            return this.getAll().some(r =>
+                String(r.userEmail || '').toLowerCase() === norm &&
+                Number(r.appointmentId) === Number(appointmentId)
+            );
+        },
+        canReviewAppointment(userEmail, appointmentId) {
+            const norm = String(userEmail || '').toLowerCase();
+            const appt = GB.appointments.getById(Number(appointmentId));
+            if (!appt) return { ok: false, error: 'Takimi nuk u gjet.' };
+            if (String(appt.userEmail || '').toLowerCase() !== norm) {
+                return { ok: false, error: 'Nuk lejohet të vlerësoni këtë takim.' };
+            }
+            if (!['done', 'confirmed'].includes(String(appt.status || '').toLowerCase())) {
+                return { ok: false, error: 'Vetëm takimet e përfunduara mund të vlerësohen.' };
+            }
+            if (this.hasReviewedAppointment(norm, appointmentId)) {
+                return { ok: false, error: 'Ky takim është vlerësuar tashmë.' };
+            }
+            return { ok: true, appointment: appt };
+        },
+        add({
+            userEmail,
+            userName,
+            appointmentId,
+            rating,
+            comment = '',
+            image = '',
+            serviceName = '',
+            dateOfAppointment = '',
+            designName = '',
+            isAnonymous = false
+        }) {
+            const stars = Number(rating);
+            if (!userEmail || !appointmentId || !stars) {
+                return { ok: false, error: 'Të dhënat e vlerësimit mungojnë.' };
+            }
+            if (stars < 1 || stars > 5) {
+                return { ok: false, error: 'Vlerësimi duhet të jetë nga 1 deri në 5.' };
+            }
+            const allowed = this.canReviewAppointment(userEmail, appointmentId);
+            if (!allowed.ok) return allowed;
+
+            const all = this.getAll();
+            const review = {
+                id: _nextId(all),
+                userEmail: String(userEmail).toLowerCase(),
+                userName: userName || String(userEmail).split('@')[0],
+                appointmentId: Number(appointmentId),
+                rating: stars,
+                comment: String(comment || '').trim(),
+                image: image || '',
+                serviceName: serviceName || allowed.appointment.serviceName || '',
+                dateOfAppointment: dateOfAppointment || allowed.appointment.date || '',
+                designName: designName || allowed.appointment.selectedDesignName || '',
+                isAnonymous: !!isAnonymous,
+                createdAt: _now(),
+            };
+            _w(_K.REVIEWS, [...all, review]);
+            return { ok: true, review };
+        },
+        remove(id) {
+            const all = this.getAll();
+            const filtered = all.filter(r => r.id !== id);
+            if (filtered.length === all.length) return { ok: false, error: 'Vlerësimi nuk u gjet.' };
+            _w(_K.REVIEWS, filtered);
+            return { ok: true };
+        },
+        average() {
+            const all = this.getAll();
+            if (!all.length) return 0;
+            return all.reduce((s, r) => s + Number(r.rating || 0), 0) / all.length;
+        },
+        featured(limit = 3) {
+            return [...this.getAll()]
+                .sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')))
+                .slice(0, limit);
+        },
+    },
+
     /* ================================================================
        UI HELPERS
        ================================================================ */
@@ -429,6 +634,49 @@ window.GB = {
     applyRole() {
         document.body.classList.toggle('role-admin',  this.isAdmin());
         document.body.classList.toggle('role-client', this.isClient());
+    },
+
+    getTheme() {
+        const mode = localStorage.getItem(_K.THEME);
+        return mode === 'dark' ? 'dark' : 'light';
+    },
+    applyTheme(mode = this.getTheme()) {
+        if (!document?.body) return;
+        const dark = mode === 'dark';
+        document.body.classList.toggle('theme-dark', dark);
+        document.body.classList.toggle('theme-light', !dark);
+        this.syncThemeToggleUI();
+    },
+    setTheme(mode = 'light') {
+        const theme = mode === 'dark' ? 'dark' : 'light';
+        localStorage.setItem(_K.THEME, theme);
+        this.applyTheme(theme);
+    },
+    toggleTheme() {
+        this.setTheme(this.getTheme() === 'dark' ? 'light' : 'dark');
+    },
+    syncThemeToggleUI() {
+        const btn = document.getElementById('themeToggleBtn');
+        if (!btn) return;
+        const dark = this.getTheme() === 'dark';
+        btn.innerHTML = dark
+            ? '<i class="fa-regular fa-sun"></i> Light'
+            : '<i class="fa-regular fa-moon"></i> Dark';
+        btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    },
+    injectThemeToggle() {
+        const host = document.querySelector('.topbar') || document.querySelector('.login-logo');
+        if (!host) return;
+        let btn = document.getElementById('themeToggleBtn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.id = 'themeToggleBtn';
+            btn.type = 'button';
+            btn.className = 'theme-toggle-btn';
+            btn.addEventListener('click', () => this.toggleTheme());
+        }
+        if (!host.contains(btn)) host.appendChild(btn);
+        this.syncThemeToggleUI();
     },
 
     /* Populate topbar user badge */
@@ -450,7 +698,7 @@ window.GB = {
     buildSidebar(active = '') {
         const sb = document.getElementById('sidebar');
         if (!sb) return;
-        const homeHref = this.isAdmin() ? 'dashboard.html' : 'booking.html';
+        const homeHref = this.isAdmin() ? 'admin.html' : 'dashboard.html';
 
         const li = (page, href, icon, label) =>
             `<a class="nav-item${active===page?' active':''}" href="${href}">
@@ -459,34 +707,85 @@ window.GB = {
 
         const adminLinks = this.isAdmin() ? `
             ${li('admin',   'admin.html',   'fa-solid fa-shield-halved', 'Admin Panel')}
-            ${li('users',   'users.html',   'fa-solid fa-users',         'Përdoruesit')}
         ` : '';
         const bookingLink = this.isAdmin()
             ? ''
-            : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Prenoto Takim');
+            : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Book Appointment');
+        const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Home');
+        const appointmentsLink = '';
+        const servicesLink = '';
+        const paymentLink = '';
+        const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Gallery');
+        const reviewsLink = li('reviews', 'reviews.html', 'fa-solid fa-star', 'Reviews');
+        const offersLink = li('offers', 'offers.html', 'fa-solid fa-tags', 'Special Offers');
+        const contactLink = li('contact', 'contact.html', 'fa-regular fa-envelope', 'Contact');
 
         sb.innerHTML = `
             <div class="logo">
                 <a href="${homeHref}" class="logo-img-link">
-                    <img src="../images/logo.png" alt="Glow Book Logo" class="logo-img"
+                    <img src="../images/brand-mark.svg" alt="GlowBook Logo" class="logo-img"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                     <span class="logo-img-fallback">💅</span>
                 </a>
-                <h2>Glow Book</h2>
-                <p>Nail Salon</p>
+                <h2>GlowBook</h2>
+                <p>Premium Nail Studio</p>
             </div>
             ${adminLinks}
             ${bookingLink}
-            ${li('dashboard',    'dashboard.html',    'fa-solid fa-house',              'Dashboard')}
-            ${li('appointments', 'appointments.html', 'fa-regular fa-calendar-check',   'Takimet')}
-            ${li('services',     'services.html',     'fa-solid fa-spa',                'Shërbimet')}
-            ${li('gallery',      'gallery.html',      'fa-regular fa-images',           'Galeria')}
-            ${li('payment',      'payment.html',      'fa-solid fa-credit-card',        'Pagesa')}
+            ${dashboardLink}
+            ${appointmentsLink}
+            ${servicesLink}
+            ${galleryLink}
+            ${reviewsLink}
+            ${offersLink}
+            ${contactLink}
+            ${paymentLink}
             <div class="nav-bottom">
                 <a class="nav-item nav-logout" onclick="GB.logout()">
-                    <i class="fa-solid fa-right-from-bracket nav-icon"></i> Dilni
+                    <i class="fa-solid fa-right-from-bracket nav-icon"></i> Logout
                 </a>
             </div>`;
+    },
+
+    applyBranding() {
+        this.decorateMobileNav();
+        this.injectThemeToggle();
+        this.injectAppFooter();
+    },
+
+    decorateMobileNav() {
+        const mobileLogo = document.querySelector('.mobile-nav-logo');
+        if (!mobileLogo) return;
+        const badge = this.isAdmin() ? '<span class="mobile-brand-badge">admin</span>' : '';
+        mobileLogo.innerHTML = `
+            <img src="../images/brand-mark.svg" alt="GlowBook" class="mobile-brand-img">
+            <span class="mobile-brand-text">GlowBook</span>
+            ${badge}
+        `;
+    },
+
+    injectAppFooter() {
+        const main = document.querySelector('main.main');
+        if (!main || main.querySelector('.app-footer')) return;
+        const footer = document.createElement('footer');
+        const year = new Date().getFullYear();
+        const homeHref = this.isAdmin() ? 'admin.html' : 'dashboard.html';
+        const action = this.isAdmin()
+            ? `<a class="btn-secondary" href="admin.html#appointments"><i class="fa-regular fa-calendar-check"></i> Appointments</a>`
+            : `<a class="btn-primary" href="booking.html"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>`;
+        footer.className = 'app-footer';
+        footer.innerHTML = `
+            <a href="${homeHref}" class="app-footer-brand">
+                <img src="../images/brand-mark.svg" alt="GlowBook">
+                <span class="app-footer-brand-text">
+                    <strong>GlowBook</strong>
+                    <span>Premium Booking</span>
+                </span>
+            </a>
+            ${action}
+            <div class="app-footer-copy">© ${year} GlowBook · Professional Salon Experience</div>
+        `;
+        main.appendChild(footer);
     },
 
     /* Mobile sidebar toggle */
@@ -518,10 +817,18 @@ window.GB = {
     init({ page='', admin=false }={}) {
         if (admin) { if (!this.requireAdmin()) return false; }
         else       { if (!this.requireAuth())  return false; }
+        this.applyTheme();
         this.applyRole();
         this.buildSidebar(page);
+        this.applyBranding();
         this.initSidebar();
         this.loadBadge();
+        this.syncFromServer().then((result) => {
+            if (result?.ok) {
+                this.loadBadge();
+                window.dispatchEvent(new CustomEvent('gb:data-synced', { detail: result.payload || {} }));
+            }
+        });
         return true;
     },
 
@@ -533,6 +840,7 @@ window.GB = {
         console.log('Users:',        this.users.safeAll());
         console.log('Appointments:', this.appointments.getAll());
         console.log('Services:',     this.services.getAll());
+        console.log('Reviews:',      this.reviews.getAll());
         console.groupEnd();
     },
     reset() {
@@ -557,3 +865,14 @@ window.redirectByRole = ()          => { window.location.replace(GB.isAdmin() ? 
 
 /* ── Auto-seed on every page load ──────────────────────────── */
 _seed();
+if (typeof document !== 'undefined') {
+    GB.applyTheme();
+    GB.injectThemeToggle();
+    if (GB.isLoggedIn()) {
+        GB.syncFromServer().then((result) => {
+            if (result?.ok) {
+                window.dispatchEvent(new CustomEvent('gb:data-synced', { detail: result.payload || {} }));
+            }
+        });
+    }
+}

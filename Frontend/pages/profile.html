@@ -26,7 +26,7 @@
                 <p>Detajet e plotë të llogarisë</p>
             </div>
             <!-- Back button — shown to admin when viewing other users -->
-            <a class="btn-back" id="backBtn" href="users.html" data-admin>
+            <a class="btn-back" id="backBtn" href="admin.html#appointments" data-admin>
                 <i class="fa-solid fa-arrow-left"></i> Kthehu
             </a>
         </div>
@@ -50,7 +50,7 @@
                 <div class="card" style="margin-top:1.25rem">
                     <div class="card-title">Statistikat</div>
                     <div class="stats-mini-3">
-                        <div class="stat-box"><div class="n" id="stTotal">0</div><div class="l">Takime</div></div>
+                        <div class="stat-box"><div class="n" id="stTotal">0</div><div class="l">Appointments</div></div>
                         <div class="stat-box"><div class="n" id="stDone">0</div><div class="l">Kryer</div></div>
                         <div class="stat-box"><div class="n" id="stPend">0</div><div class="l">Në pritje</div></div>
                     </div>
@@ -78,8 +78,8 @@
 
                 <div class="card">
                     <div class="card-title">
-                        <span>Takimet</span>
-                        <a href="appointments.html">Shiko të gjitha →</a>
+                        <span>Appointments</span>
+                        <a href="admin.html#appointments" id="profileApptLink">Shiko të gjitha →</a>
                     </div>
                     <div id="apptList"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
                 </div>
@@ -99,6 +99,10 @@ const isAdmin = GB.isAdmin();
 const me      = GB.getMe();
 let   userId  = null;
 let   viewUser = null;
+if (!isAdmin) {
+    const apptLink = document.getElementById('profileApptLink');
+    if (apptLink) apptLink.href = 'booking.html';
+}
 
 function load() {
     const params = new URLSearchParams(window.location.search);
@@ -149,8 +153,9 @@ function load() {
     /* Recent appointments */
     const al = document.getElementById('apptList');
     if (!appts.length) {
+        const addHref = isAdmin ? 'admin.html#appointments' : 'booking.html';
         al.innerHTML = `<div style="text-align:center;padding:1rem;color:var(--text-muted);font-size:.85rem">
-            Nuk ka takime. <a href="appointments.html" style="color:var(--pink)">Shto →</a></div>`;
+            Nuk ka takime. <a href="${addHref}" style="color:var(--pink)">Shto →</a></div>`;
     } else {
         al.innerHTML = [...appts].reverse().slice(0, 5).map(a => {
             const bc   = a.status === 'Pending' ? 'badge-pending' : a.status === 'Confirmed' ? 'badge-confirmed' : 'badge-done';

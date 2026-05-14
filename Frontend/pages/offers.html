@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowBook - Special Offers</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .of-layout { display:grid; gap:1rem; }
+        .of-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:.85rem; }
+        .of-card {
+            border:1px solid var(--pink-border);
+            border-radius:16px;
+            background:linear-gradient(135deg,#fff,var(--pink-light));
+            padding:1rem;
+            box-shadow:var(--shadow);
+            transition:var(--ease);
+            position:relative;
+            overflow:hidden;
+        }
+        .of-card:hover {
+            transform:translateY(-4px);
+            box-shadow:var(--shadow-lg);
+            border-color:var(--pink);
+        }
+        .of-badge {
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            font-size:.66rem;
+            font-weight:700;
+            letter-spacing:.45px;
+            text-transform:uppercase;
+            border-radius:999px;
+            padding:.24rem .56rem;
+            border:1px solid var(--pink-border);
+            background:#fff;
+            color:var(--pink-deep);
+            margin-bottom:.65rem;
+        }
+        .of-title {
+            font-family:'Cormorant Garamond',serif;
+            font-size:1.36rem;
+            color:var(--pink-deep);
+            margin-bottom:.2rem;
+            line-height:1.15;
+        }
+        .of-discount { font-size:1.05rem; font-weight:800; color:var(--pink-deep); margin-bottom:.45rem; }
+        .of-text { font-size:.82rem; color:var(--text-subtle); line-height:1.62; margin-bottom:.75rem; }
+        .of-meta { display:flex; justify-content:space-between; gap:.5rem; align-items:center; font-size:.74rem; color:var(--text-muted); margin-bottom:.75rem; }
+        .of-book-btn {
+            width:100%;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:7px;
+            border:none;
+            border-radius:10px;
+            font-size:.8rem;
+            font-weight:700;
+            padding:.62rem .72rem;
+            color:#fff;
+            background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+            transition:var(--ease);
+        }
+        .of-book-btn:hover { transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+        .of-kpis { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; }
+        .of-kpi { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.75rem; }
+        .of-kpi b { display:block; color:var(--pink-deep); font-size:1.15rem; font-family:'Cormorant Garamond',serif; }
+        .of-kpi span { display:block; font-size:.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; font-weight:700; }
+        @media (max-width:700px){ .of-kpis{ grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <div style="width:40px"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Special Offers</h1>
+                <p>Oferta të kuruara për konvertim të shpejtë dhe rezervim direkt.</p>
+            </div>
+            <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>
+        </div>
+
+        <div class="of-layout">
+            <section class="hero-shell">
+                <div class="hero-grid">
+                    <div>
+                        <span class="hero-tag"><i class="fa-solid fa-bolt"></i> Limited Promotions</span>
+                        <h2 class="hero-title">Zgjidh ofertën dhe rezervo menjëherë.</h2>
+                        <p class="hero-subtitle">Çdo kartë oferte është e ndërtuar për veprim të shpejtë — shiko vlerën, afatin dhe kliko “Book Now” për të hyrë direkt në flow-n e rezervimit.</p>
+                    </div>
+                    <div class="of-kpis">
+                        <div class="of-kpi"><b>4</b><span>Oferta Aktive</span></div>
+                        <div class="of-kpi"><b>48h</b><span>Oferta Flash</span></div>
+                        <div class="of-kpi"><b>-20%</b><span>Max Discount</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-tags" style="margin-right:7px;color:var(--pink)"></i>Oferta për klientët</span>
+                </div>
+                <div class="of-grid">
+                    <article class="of-card">
+                        <span class="of-badge"><i class="fa-solid fa-clock"></i> Limited Time</span>
+                        <h3 class="of-title">First Booking Discount</h3>
+                        <div class="of-discount">-10% për klientët e rinj</div>
+                        <p class="of-text">Perfekte për rezervimin e parë në GlowBook. Aktivizohet automatikisht te konsultimi fillestar në booking flow.</p>
+                        <div class="of-meta"><span>Vlen vetëm 1 herë</span><span>Afat: 7 ditë</span></div>
+                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
+                    </article>
+
+                    <article class="of-card">
+                        <span class="of-badge"><i class="fa-solid fa-crown"></i> Most Popular</span>
+                        <h3 class="of-title">Nails + Design Bundle</h3>
+                        <div class="of-discount">Paketa €49 (kursen €11)</div>
+                        <p class="of-text">Kombinim i manikyr-it me nail design premium në një paketë të vetme për rezultat të plotë dhe elegant.</p>
+                        <div class="of-meta"><span>Bundle Deal</span><span>Best Seller</span></div>
+                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
+                    </article>
+
+                    <article class="of-card">
+                        <span class="of-badge"><i class="fa-solid fa-fire"></i> Happy Hour</span>
+                        <h3 class="of-title">Weekend Glow Hours</h3>
+                        <div class="of-discount">-15% çdo të shtunë 10:00–13:00</div>
+                        <p class="of-text">Oferta fundjave për slot-et e mëngjesit. Ideale për klientët që duan çmim më të mirë në oraret premium.</p>
+                        <div class="of-meta"><span>Only Weekend</span><span>Slots të limituara</span></div>
+                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
+                    </article>
+
+                    <article class="of-card">
+                        <span class="of-badge"><i class="fa-solid fa-gem"></i> VIP Loyalty</span>
+                        <h3 class="of-title">Loyalty VIP Offer</h3>
+                        <div class="of-discount">-20% pas 5 rezervimeve</div>
+                        <p class="of-text">Shpërblim për klientët besnikë me zbritje ekstra dhe prioritet në rezervime të reja.</p>
+                        <div class="of-meta"><span>Client Retention</span><span>VIP Tier</span></div>
+                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<div class="gb-toast" id="toast"></div>
+<script src="../js/auth.js"></script>
+<script>
+'use strict';
+GB.init({ page:'offers' });
+</script>
+</body>
+</html>

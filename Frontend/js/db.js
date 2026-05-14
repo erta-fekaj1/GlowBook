@@ -439,18 +439,18 @@ const GBdb = {
 /* ── Default gallery designs ──────────────────────────────── */
 function _defaultDesigns() {
     return [
-        { id:1,  name:'French Classic',  emoji:'🤍', category:'French',  complexity:'E lehtë',    price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante.',   tags:['Klasik','Elegant'],  likes:24, liked:false, bg:'#F8F4FF' },
-        { id:2,  name:'Pink Ombre',       emoji:'🌸', category:'Ombre',   complexity:'Mesatare',   price:25, duration:45,  desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë.',tags:['Romantike','Ombre'], likes:31, liked:false, bg:'#FFF0F5' },
-        { id:3,  name:'Glitter Bomb',     emoji:'✨', category:'Glitter', complexity:'E lehtë',    price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht.',                   tags:['Festë','Glamour'],   likes:18, liked:false, bg:'#FFFBF0' },
-        { id:4,  name:'Floral Dream',     emoji:'🌺', category:'Floral',  complexity:'E vështirë', price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë.',                   tags:['Art','Lule'],        likes:45, liked:false, bg:'#F0FFF4' },
-        { id:5,  name:'Gel Nude',         emoji:'🍑', category:'Gel',     complexity:'E lehtë',    price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale.',                         tags:['Neutral','Gel'],     likes:29, liked:false, bg:'#FFF5F0' },
-        { id:6,  name:'Galaxy Nails',     emoji:'🌌', category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta.',                   tags:['Galaxy','Unique'],   likes:52, liked:false, bg:'#F0F0FF' },
-        { id:7,  name:'Marble Effect',    emoji:'🖤', category:'Gel',     complexity:'E vështirë', price:38, duration:80,  desc:'Efekt mermer luksoz me vija delikate.',                 tags:['Luks','Marble'],     likes:37, liked:false, bg:'#F8F8F8' },
-        { id:8,  name:'Floral Ombre',     emoji:'🌸', category:'Floral',  complexity:'E vështirë', price:50, duration:120, desc:'Kombinim ombre me lule të vizatuara.',                  tags:['Trending','Lule'],   likes:61, liked:false, bg:'#FFF0F8' },
-        { id:9,  name:'Red Glam',         emoji:'❤️', category:'Gel',     complexity:'E lehtë',    price:16, duration:30,  desc:'Ngjyrë e kuqe klasike. Ikonike dhe e fuqishme.',        tags:['Klasik','Red'],      likes:33, liked:false, bg:'#FFF0F0' },
-        { id:10, name:'Baby Blue',        emoji:'💙', category:'Ombre',   complexity:'Mesatare',   price:22, duration:45,  desc:'Kalim i butë në ngjyrë blu të çelët.',                  tags:['Pastel','Blue'],     likes:27, liked:false, bg:'#F0F8FF' },
-        { id:11, name:'Gold Tips',        emoji:'⭐', category:'French',  complexity:'Mesatare',   price:28, duration:50,  desc:'Majë të arta elegante.',                               tags:['Gold','French'],     likes:41, liked:false, bg:'#FFFDF0' },
-        { id:12, name:'Lavender Gel',     emoji:'💜', category:'Gel',     complexity:'E lehtë',    price:17, duration:30,  desc:'Ngjyrë lavanderi e butë dhe qetësuese.',               tags:['Pastel','Purple'],   likes:35, liked:false, bg:'#F8F0FF' },
+        { id:1,  name:'French Classic',  emoji:'🤍', category:'French',  complexity:'E lehtë',    price:15, duration:30,  desc:'Dizajni klasik francez me majë të bardhë elegante.',   tags:['Klasik','Elegant'],  likes:24, liked:false, bg:'#FFF7FB' },
+        { id:2,  name:'Pink Ombre',       emoji:'🌸', category:'Ombre',   complexity:'Mesatare',   price:25, duration:45,  desc:'Kalim gradual nga rozë e çelët te ngjyra më e thellë.',tags:['Romantike','Ombre'], likes:31, liked:false, bg:'#FCE7F3' },
+        { id:3,  name:'Glitter Bomb',     emoji:'✨', category:'Glitter', complexity:'E lehtë',    price:20, duration:40,  desc:'Shkëlqim dhe glamour në çdo gisht.',                   tags:['Festë','Glamour'],   likes:18, liked:false, bg:'#FFF7FB' },
+        { id:4,  name:'Floral Dream',     emoji:'🌺', category:'Floral',  complexity:'E vështirë', price:40, duration:90,  desc:'Lule të vogla të vizatuara me dorë.',                   tags:['Art','Lule'],        likes:45, liked:false, bg:'#FFF7FB' },
+        { id:5,  name:'Gel Nude',         emoji:'🍑', category:'Gel',     complexity:'E lehtë',    price:18, duration:35,  desc:'Ngjyrë neutrale dhe naturale.',                         tags:['Neutral','Gel'],     likes:29, liked:false, bg:'#FFF7FB' },
+        { id:6,  name:'Galaxy Nails',     emoji:'🌌', category:'Glitter', complexity:'E vështirë', price:45, duration:100, desc:'Efekt galaktik me ngjyra të errëta.',                   tags:['Galaxy','Unique'],   likes:52, liked:false, bg:'#FFF7FB' },
+        { id:7,  name:'Marble Effect',    emoji:'🖤', category:'Gel',     complexity:'E vështirë', price:38, duration:80,  desc:'Efekt mermer luksoz me vija delikate.',                 tags:['Luks','Marble'],     likes:37, liked:false, bg:'#FFF7FB' },
+        { id:8,  name:'Floral Ombre',     emoji:'🌸', category:'Floral',  complexity:'E vështirë', price:50, duration:120, desc:'Kombinim ombre me lule të vizatuara.',                  tags:['Trending','Lule'],   likes:61, liked:false, bg:'#FCE7F3' },
+        { id:9,  name:'Red Glam',         emoji:'❤️', category:'Gel',     complexity:'E lehtë',    price:16, duration:30,  desc:'Ngjyrë e kuqe klasike. Ikonike dhe e fuqishme.',        tags:['Klasik','Red'],      likes:33, liked:false, bg:'#FFF7FB' },
+        { id:10, name:'Baby Blue',        emoji:'💙', category:'Ombre',   complexity:'Mesatare',   price:22, duration:45,  desc:'Kalim i butë në ngjyrë blu të çelët.',                  tags:['Pastel','Blue'],     likes:27, liked:false, bg:'#FFF7FB' },
+        { id:11, name:'Gold Tips',        emoji:'⭐', category:'French',  complexity:'Mesatare',   price:28, duration:50,  desc:'Majë të arta elegante.',                               tags:['Gold','French'],     likes:41, liked:false, bg:'#FFF7FB' },
+        { id:12, name:'Lavender Gel',     emoji:'💜', category:'Gel',     complexity:'E lehtë',    price:17, duration:30,  desc:'Ngjyrë lavanderi e butë dhe qetësuese.',               tags:['Pastel','Purple'],   likes:35, liked:false, bg:'#FFF7FB' },
     ];
 }
 

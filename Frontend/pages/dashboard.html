@@ -21,11 +21,11 @@
     <main class="main">
         <div class="topbar">
             <div>
-                <h1>Dashboard</h1>
+                <h1>Home</h1>
                 <p id="topbarSub">Mirë se vini!</p>
             </div>
             <a href="booking.html" class="btn-primary" data-client-only>
-                <i class="fa-solid fa-calendar-plus"></i> Prenoto Takim
+                <i class="fa-solid fa-calendar-plus"></i> Book Appointment
             </a>
             <div class="user-badge">
                 <div class="user-avatar" id="userInitials">–</div>
@@ -34,6 +34,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         <!-- CTA: Quick Booking (Clients Only) -->
         <div data-client-only class="card" style="margin-bottom:2rem;background:linear-gradient(135deg,#D4537E 0%,#993556 100%);border:none;padding:2rem;text-align:center;color:var(--white);">
             <div style="font-size:2.5rem;margin-bottom:1rem">✨</div>
@@ -50,21 +51,69 @@
 >>>>>>> 7a928c7a7af12da7ca1825ec40dfbf35b5b6e6e5
             </a>
         </div>
+=======
+        <div class="page-stack">
+            <section class="hero-shell" data-client-only>
+                <div class="hero-grid">
+                    <div>
+                        <span class="hero-tag"><i class="fa-solid fa-sparkles"></i> Premium Booking Experience</span>
+                        <h2 class="hero-title">Rezervo trajtimin tënd në pak hapa, me stil dhe siguri.</h2>
+                        <p class="hero-subtitle">
+                            GlowBook është platforma jote për menaxhim modern të rezervimeve: përzgjedh shërbimin, stilin nga galeria, orarin e lirë në kohë reale dhe paguan menjëherë.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-check"></i> Book Appointment</a>
+                            <a href="gallery.html" class="btn-secondary"><i class="fa-regular fa-images"></i> Shiko Galerinë</a>
+                            <a href="reviews.html" class="btn-secondary"><i class="fa-solid fa-star"></i> Read Reviews</a>
+                        </div>
+                    </div>
+                    <div class="hero-kpi-grid">
+                        <div class="hero-kpi"><b id="dashReviewAvg">0.0</b><span>Mesatarja e Reviews</span></div>
+                        <div class="hero-kpi"><b id="dashDoneCount">0</b><span>Takime të Kryera</span></div>
+                        <div class="hero-kpi"><b id="dashUpcoming">0</b><span>Takime në Vazhdim</span></div>
+                        <div class="hero-kpi"><b>24/7</b><span>Rezervim Online</span></div>
+                    </div>
+                </div>
+            </section>
+>>>>>>> origin/cursor/booking-flow-redesign-b27a
 
-        <!-- Admin shortcut bar -->
-        <div data-admin class="card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(251,234,240,.8),rgba(238,237,254,.8));backdrop-filter:blur(12px);animation:slideUp .5s ease-out">
-            <div class="card-title" style="margin-bottom:1rem">
-                <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:8px"></i>Admin Shortcuts</span>
-            </div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
-                <a href="admin.html"        class="btn-primary"   style="font-size:.82rem"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
-                <a href="users.html"        class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-users"></i> Përdoruesit</a>
-                <a href="appointments.html" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Të gjitha Takimet</a>
-            </div>
-        </div>
+            <section class="card" data-client-only>
+                <div class="card-title">
+                    <span><i class="fa-solid fa-compass" style="margin-right:8px;color:var(--pink)"></i>Eksploro platformën</span>
+                </div>
+                <div class="feature-grid">
+                    <a class="feature-card" href="gallery.html">
+                        <h3>Gallery & Styles</h3>
+                        <p>Zgjidh dizajnin që të pëlqen dhe kalo direkt në rezervim.</p>
+                    </a>
+                    <a class="feature-card" href="reviews.html">
+                        <h3>Client Reviews</h3>
+                        <p>Shiko vlerësime reale dhe inspirim nga klientët tanë.</p>
+                    </a>
+                    <a class="feature-card" href="offers.html">
+                        <h3>Special Offers</h3>
+                        <p>Zbulo ofertat aktive dhe kalo direkt në rezervim me një klikim.</p>
+                    </a>
+                    <a class="feature-card" href="contact.html">
+                        <h3>Contact</h3>
+                        <p>Na kontakto për pyetje, bashkëpunime apo kërkesa speciale.</p>
+                    </a>
+                </div>
+            </section>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
+            <section data-admin class="card">
+                <div class="card-title" style="margin-bottom:1rem">
+                    <span><i class="fa-solid fa-shield-halved" style="color:var(--pink);margin-right:8px"></i>Admin Shortcuts</span>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                    <a href="admin.html"        class="btn-primary"   style="font-size:.82rem"><i class="fa-solid fa-shield-halved"></i> Admin Panel</a>
+                    <a href="admin.html#appointments" class="btn-secondary" style="font-size:.82rem"><i class="fa-regular fa-calendar-check"></i> Appointments</a>
+                    <a href="admin.html#settings" class="btn-secondary" style="font-size:.82rem"><i class="fa-solid fa-sliders"></i> Settings</a>
+                </div>
+            </section>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
             <div class="stat-card pink">
                 <div class="stat-icon">👥</div>
                 <div class="stat-label" id="lblUsers">Klientë</div>
@@ -73,7 +122,7 @@
             </div>
             <div class="stat-card purple">
                 <div class="stat-icon">📅</div>
-                <div class="stat-label">Takime</div>
+                <div class="stat-label">Appointments</div>
                 <div class="stat-value" id="stAppts">–</div>
                 <div class="stat-sub">total</div>
             </div>
@@ -89,29 +138,30 @@
                 <div class="stat-value" id="stPending">–</div>
                 <div class="stat-sub">takime</div>
             </div>
-        </div>
+            </div>
 
-        <div class="grid-2">
+            <div class="grid-2">
             <div class="card">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Takimet e fundit</span>
-                    <a href="appointments.html">Shiko të gjitha →</a>
+                    <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Recent Appointments</span>
+                    <a href="admin.html#appointments" id="recentApptLink">Shiko të gjitha →</a>
                 </div>
                 <div id="apptList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
             <div class="card">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-sparkles" style="margin-right:8px;color:var(--pink)"></i>Shërbimet</span>
-                    <a href="services.html">Shiko të gjitha →</a>
+                    <span><i class="fa-solid fa-sparkles" style="margin-right:8px;color:var(--pink)"></i>Services</span>
+                    <a href="admin.html#services" id="servicesLink">Shiko të gjitha →</a>
                 </div>
                 <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
             </div>
-        </div>
+            </div>
 
-        <!-- Admin-only bar chart -->
-        <div class="card" data-admin style="animation:slideUp .5s ease-out .25s both">
-            <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Klientët sipas rolit</div>
-            <div class="bar-wrap" id="roleChart"></div>
+            <!-- Admin-only bar chart -->
+            <div class="card" data-admin style="animation:slideUp .5s ease-out .25s both">
+                <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Klientët sipas rolit</div>
+                <div class="bar-wrap" id="roleChart"></div>
+            </div>
         </div>
     </main>
 </div>
@@ -124,6 +174,17 @@ GB.init({ page:'dashboard' });
 
 const me    = GB.getMe();
 const admin = GB.isAdmin();
+if (!admin) {
+    const apptLink = document.getElementById('recentApptLink');
+    const svcLink = document.getElementById('servicesLink');
+    if (apptLink) { apptLink.href = 'booking.html'; apptLink.textContent = 'Book Appointment →'; }
+    if (svcLink) { svcLink.href = 'booking.html'; svcLink.textContent = 'Zgjidh në booking →'; }
+} else {
+    const apptLink = document.getElementById('recentApptLink');
+    const svcLink = document.getElementById('servicesLink');
+    if (apptLink) { apptLink.href = 'admin.html#appointments'; apptLink.textContent = 'Menaxho te Admin →'; }
+    if (svcLink) { svcLink.href = 'admin.html#services'; svcLink.textContent = 'Menaxho te Admin →'; }
+}
 
 document.getElementById('topbarSub').textContent = `Mirë se vini, ${me?.name||''}! Ja përmbledhja e aktivitetit.`;
 
@@ -132,6 +193,7 @@ function load() {
     const myAppts   = admin ? allAppts : allAppts.filter(a => a.userEmail === me?.email?.toLowerCase());
     const allUsers  = GB.users.getAll();
     const services  = GB.services.getAll();
+    const reviews   = GB.reviews.getAll();
 
     /* Stats */
     document.getElementById('stAppts').textContent  = myAppts.length;
@@ -140,8 +202,19 @@ function load() {
     if (admin) {
         document.getElementById('stUsers').textContent = allUsers.length;
     } else {
-        document.getElementById('stUsers').textContent = myAppts.filter(a=>a.status==='Done').length;
+        const doneCount = myAppts.filter(a=>a.status==='Done').length;
+        const upcoming = myAppts.filter(a => ['Pending', 'Confirmed'].includes(a.status)).length;
+        document.getElementById('stUsers').textContent = doneCount;
         document.getElementById('lblUsers').textContent = 'Kryer';
+        const avgReview = reviews.length
+            ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
+            : '0.0';
+        const avgEl = document.getElementById('dashReviewAvg');
+        if (avgEl) avgEl.textContent = avgReview;
+        const doneEl = document.getElementById('dashDoneCount');
+        if (doneEl) doneEl.textContent = String(doneCount);
+        const upcomingEl = document.getElementById('dashUpcoming');
+        if (upcomingEl) upcomingEl.textContent = String(upcoming);
     }
 
     /* Recent appointments list */
@@ -189,11 +262,12 @@ function load() {
                 <div class="bar-track"><div class="bar-fill" style="width:${Math.round(admins/total*100)}%;animation:slideInLeft 1s ease-out"></div></div>
                 <span class="bar-val">${admins}</span></div>
             <div class="bar-row" style="animation-delay:.1s"><span class="bar-label">Customer</span>
-                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#7F77DD,#534AB7);animation:slideInLeft 1s ease-out .1s both"></div></div>
+                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(customers/total*100)}%;background:linear-gradient(90deg,#EC4899,#BE185D);animation:slideInLeft 1s ease-out .1s both"></div></div>
                 <span class="bar-val">${customers}</span></div>`;
     }
 }
 load();
+window.addEventListener('gb:data-synced', load);
 </script>
 </body>
 </html>
