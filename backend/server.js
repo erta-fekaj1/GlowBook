@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -46,6 +47,13 @@ app.use(express.static(env.frontendDir));
 app.use(express.static(path.join(env.frontendDir, 'pages')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(env.frontendDir, 'pages', 'index.html'));
+});
+app.get('/:page.html', (req, res, next) => {
+    const safeName = String(req.params.page || '').replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!safeName) return next();
+    const filePath = path.join(env.frontendDir, 'pages', `${safeName}.html`);
+    if (!fs.existsSync(filePath)) return next();
+    return res.sendFile(filePath);
 });
 
 app.use(notFound);
