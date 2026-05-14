@@ -290,7 +290,7 @@ GB.init({ page: 'booking' });
 if (!GB.isLoggedIn()) window.location.replace('./index.html');
 if (GB.isAdmin()) {
     GB.toast('Klientët rezervojnë këtu. Admin mund të menaxhojë takimet nga paneli.', 'info');
-    window.location.replace('./appointments.html');
+    window.location.replace('./admin.html#appointments');
 }
 
 const PAYMENTS_KEY = 'gb_payments';

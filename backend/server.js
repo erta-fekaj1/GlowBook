@@ -48,6 +48,10 @@ app.use(express.static(path.join(env.frontendDir, 'pages')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(env.frontendDir, 'pages', 'index.html'));
 });
+app.get('/appointments.html', (req, res) => res.redirect(302, '/booking.html'));
+app.get('/services.html', (req, res) => res.redirect(302, '/booking.html'));
+app.get('/payment.html', (req, res) => res.redirect(302, '/booking.html'));
+app.get('/users.html', (req, res) => res.redirect(302, '/admin.html#users'));
 app.get('/:page.html', (req, res, next) => {
     const safeName = String(req.params.page || '').replace(/[^a-zA-Z0-9_-]/g, '');
     if (!safeName) return next();
