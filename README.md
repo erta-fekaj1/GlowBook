@@ -1,98 +1,157 @@
-# 💅 Glow Book - Nail Salon Management System
+# GlowBook 💅
 
-![.NET](https://img.shields.io/badge/.NET-8.0-purple)
-![C#](https://img.shields.io/badge/C%23-12.0-green)
-![License](https://img.shields.io/badge/License-MIT-blue)
+Modern salon booking platform with a premium frontend and a real backend API.
 
-## 📌 About
-Glow Book është një sistem për menaxhimin e një saloni thonjsh. Aplikacioni digjitalizon procesin e rezervimeve duke zëvendësuar bllokun tradicional me një sistem automatik që menaxhon klientët, shërbimet, stafin dhe financat. Projekti është ndërtuar me **Clean Architecture** dhe **Repository Pattern** duke përdorur **C# 12** dhe **.NET 8**.
+## Overview
 
-## ✨ Features
+GlowBook is a full-stack booking application for nail salons.
 
-**Klientët:**
-- Regjistrim dhe login
-- Shikimi i shërbimeve
-- Rezervim dhe anulim terminesh
-- Historiku i rezervimeve
-- Komente dhe vlerësime
+It includes:
+- centralized booking flow (service + design + date + time + payment)
+- admin control center (appointments, users, services, gallery, reviews, settings)
+- reviews and loyalty logic
+- role-based access (admin/client)
+- MongoDB persistence (no longer localStorage-only)
 
-**Admin:**
-- Menaxhimi i rezervimeve (pranim/refuzim)
-- Shtimi dhe fshirja e shërbimeve
-- Menaxhimi i stafit
-- Statistikat e të ardhurave
+## Tech Stack
 
-**Specifike për Salon:**
-- Katalog shërbimesh (Manicure, Pedicure, Acrylic, Gel, Nail Art)
-- Menaxhimi i produkteve dhe stokut
-- Program besnikërie me pikë
-- Forma dhe gjatësi të ndryshme thonjsh
+### Frontend
+- HTML
+- CSS
+- Vanilla JavaScript
 
-## 🏗️ Architecture
+### Backend
+- Node.js
+- Express
+- MongoDB + Mongoose
+- JWT authentication
+- bcrypt password hashing
 
-```
-┌─────────────────────────────────────────┐
-│         GlowBook.ConsoleUI              │  ← Presentation
-├─────────────────────────────────────────┤
-│         GlowBook.Application            │  ← Business Logic
-├─────────────────────────────────────────┤
-│           GlowBook.Core                 │  ← Domain (Entities, Interfaces)
-├─────────────────────────────────────────┤
-│       GlowBook.Infrastructure           │  ← Data Access (CSV)
-└─────────────────────────────────────────┘
-```
+## Repository Structure
 
-**4 shtresa me Clean Architecture:**
-- **Core** - Entitetet, Enums, Interfaces
-- **Infrastructure** - FileRepository, CSV storage
-- **Application** - Logjika e biznesit, Services
-- **ConsoleUI** - Ndërfaqja e përdoruesit
-
-## 🛠 Tech Stack
-
-| Technology | Version |
-|------------|---------|
-| C# | 12.0 |
-| .NET | 8.0 |
-| CSV | Data Storage |
-| Git/GitHub | Version Control |
-
-## 📂 Project Structure
-
-```
+```bash
 GlowBook/
-├── GlowBook.Core/                 # Domain Layer
-│   ├── Entities/                  # User, Service, Appointment
-│   ├── Enums/                     # UserRole, AppointmentStatus
-│   └── Interfaces/                # IRepository<T>
-├── GlowBook.Infrastructure/       # Data Layer
-│   ├── Data/
-│   │   └── Database/              # CSV files
-│   └── Repositories/              # FileRepository<T>
-├── GlowBook.Application/          # Business Layer
-│   └── Services/
-├── GlowBook.ConsoleUI/            # UI Layer
-│   └── Program.cs
-├── Docs/                          # Documentation
+├── Frontend/                     # UI (pages, styles, client scripts)
+├── backend/                      # Node/Express API
+│   ├── server.js
+│   ├── package.json
+│   ├── .env.example
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── database/
+│   ├── services/
+│   └── uploads/
+├── Docs/                         # project docs
+├── GlowBook.Core/                # legacy .NET modules (kept in repo)
+├── GlowBook.Application/
+├── GlowBook.Infrastructure/
+├── GlowBook.ConsoleUI/
 └── README.md
 ```
 
-## 🚀 Getting Started
+## Quick Start
+
+### 1) Clone
 
 ```bash
 git clone https://github.com/ertafekaj/GlowBook.git
 cd GlowBook
-dotnet restore
-dotnet run --project GlowBook.ConsoleUI
-📚 Documentation
-Architecture
+```
 
-Class Documentation
+### 2) Configure backend env
 
-Repository Pattern
+Create:
 
-👩‍💻 Author
-Erta Fekaj
+`backend/.env`
 
-📌 Version
-1.0.0
+From:
+
+`backend/.env.example`
+
+Example:
+
+```env
+PORT=3000
+MONGO_URI=mongodb://127.0.0.1:27017/glowbook
+JWT_SECRET=change-this-secret
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=*
+```
+
+### 3) Install backend dependencies
+
+### macOS / Linux / Command Prompt
+```bash
+npm --prefix backend install
+```
+
+### Windows PowerShell (if script policy blocks npm)
+```powershell
+npm.cmd --prefix backend install
+```
+
+### 4) Start backend
+
+### macOS / Linux / Command Prompt
+```bash
+npm --prefix backend start
+```
+
+### Windows PowerShell
+```powershell
+npm.cmd --prefix backend start
+```
+
+When running, open:
+
+`http://localhost:3000`
+
+## Default Admin Seed
+
+Backend seed creates:
+
+- Email: `admin@glowbook.com`
+- Password: `admin123`
+
+## API Modules
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `GET /api/users` (admin)
+- `GET/POST/PUT/DELETE /api/services`
+- `GET/POST/PUT/DELETE /api/appointments`
+- `GET/POST/DELETE /api/reviews`
+- `GET/POST /api/payments`
+- `GET/PUT /api/settings/admin` (admin)
+- `GET /api/data/sync` (frontend sync payload)
+
+## Notes
+
+- Frontend design is intentionally kept unchanged while backend was integrated.
+- Old client pages were cleaned up; legacy URLs are redirected safely.
+- Backend and frontend are now clearly separated for scalability.
+
+## Troubleshooting
+
+### `ECONNREFUSED 127.0.0.1:27017`
+MongoDB is not running. Start MongoDB service or use Atlas URI in `backend/.env`.
+
+### `Route not found: /admin.html`
+Ensure backend is started from latest code and reload browser (`Ctrl + F5`).
+
+### PowerShell cannot run npm
+Use `npm.cmd` commands or set:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+## License
+
+MIT
