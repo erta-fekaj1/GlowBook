@@ -43,6 +43,7 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/data', dataRoutes);
 
 app.use(express.static(env.frontendDir));
+app.use(express.static(path.join(env.frontendDir, 'pages')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(env.frontendDir, 'pages', 'index.html'));
 });
