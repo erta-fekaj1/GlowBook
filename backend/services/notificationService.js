@@ -36,8 +36,19 @@ async function sendPaymentReceipt({ payment, appointment, user }) {
     return Promise.allSettled(tasks);
 }
 
+async function sendAppointmentReminder({ appointment, user }) {
+    const subject = 'GlowBook: Appointment Reminder';
+    const text = `Hi ${user.name || 'Client'}, reminder for your upcoming appointment: ${fmtAppointment(appointment)}.`;
+    const tasks = [
+        sendEmail({ to: user.email, subject, text }),
+        sendSms({ to: user.phone, body: text }),
+    ];
+    return Promise.allSettled(tasks);
+}
+
 module.exports = {
     sendAppointmentCreated,
     sendAppointmentUpdated,
     sendPaymentReceipt,
+    sendAppointmentReminder,
 };

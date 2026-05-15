@@ -33,6 +33,9 @@ const env = {
     twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || '',
     twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || '',
     twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || '',
+    reminderEnabled: String(process.env.REMINDER_ENABLED || 'false').toLowerCase() === 'true',
+    reminderIntervalMinutes: Number(process.env.REMINDER_INTERVAL_MINUTES || 30),
+    reminderLookaheadHours: Number(process.env.REMINDER_LOOKAHEAD_HOURS || 24),
 };
 
 module.exports = env;
