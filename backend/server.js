@@ -11,6 +11,8 @@ const runSeed = require('./config/seed');
 const { notFound, onError } = require('./middleware/errorMiddleware');
 const { applySecurity, apiLimiter, authLimiter } = require('./middleware/securityMiddleware');
 const { ensureUploadsDirectory } = require('./middleware/uploadMiddleware');
+const asyncHandler = require('./utils/asyncHandler');
+const { handleStripeWebhook } = require('./controllers/paymentWebhookController');
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -30,6 +32,7 @@ app.use(cors({
     credentials: true,
 }));
 applySecurity(app);
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), asyncHandler(handleStripeWebhook));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

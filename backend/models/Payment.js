@@ -16,8 +16,12 @@ const paymentSchema = new mongoose.Schema(
         serviceName: { type: String, required: true },
         selectedDesignName: { type: String, default: null },
         amount: { type: Number, required: true, min: 0 },
+        currency: { type: String, default: 'eur' },
         method: { type: String, required: true },
         status: { type: String, default: 'Paid' },
+        provider: { type: String, default: 'manual' },
+        stripeSessionId: { type: String, default: null, index: true },
+        stripePaymentIntentId: { type: String, default: null, index: true },
     },
     { timestamps: true }
 );

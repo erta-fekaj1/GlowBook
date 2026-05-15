@@ -294,6 +294,7 @@ window.GB = {
         payments: {
             async list() { return window.GB._request('/payments'); },
             async create(data) { return window.GB._request('/payments', { method: 'POST', body: data }); },
+            async checkout(data) { return window.GB._request('/payments/checkout-session', { method: 'POST', body: data }); },
         },
         settings: {
             async getAdmin() { return window.GB._request('/settings/admin'); },

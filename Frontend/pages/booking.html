@@ -637,7 +637,9 @@ async function completeBooking() {
 
     state.submitting = true;
     const totals = calculateTotals();
-    const status = state.paymentMethod === 'cash' ? 'Confirmed' : 'Done';
+    const status = state.paymentMethod === 'cash'
+        ? 'Confirmed'
+        : (state.paymentMethod === 'card' ? 'Pending' : 'Done');
     const methodLabel = state.paymentMethod === 'card' ? 'Kartë Krediti' : state.paymentMethod === 'paypal' ? 'PayPal' : 'Cash në Sallon';
 
     try {
@@ -654,6 +656,24 @@ async function completeBooking() {
         });
         state.lastAppointmentId = apptRes.appointment.id;
 
+        if (state.paymentMethod === 'card') {
+            try {
+                const checkout = await GB.api.payments.checkout({
+                    appointmentId: apptRes.appointment.id,
+                    amount: totals.total,
+                    currency: 'eur',
+                    successUrl: `${window.location.origin}/booking.html?payment=success&appointmentId=${apptRes.appointment.id}`,
+                    cancelUrl: `${window.location.origin}/booking.html?payment=cancelled&appointmentId=${apptRes.appointment.id}`
+                });
+                if (checkout?.checkoutUrl) {
+                    window.location.href = checkout.checkoutUrl;
+                    return;
+                }
+            } catch (_) {
+                // Stripe may be disabled in this environment; keep existing local/manual flow.
+            }
+        }
+
         const localPayment = addPaymentRecord({
             txId: '#GB-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000),
             userEmail: me.email,
@@ -664,7 +684,9 @@ async function completeBooking() {
             selectedDesignName: state.design?.name || null,
             amount: totals.total,
             method: methodLabel,
-            status: state.paymentMethod === 'cash' ? 'Në Sallon' : 'Paguar'
+            status: state.paymentMethod === 'cash'
+                ? 'Në Sallon'
+                : (state.paymentMethod === 'card' ? 'Në Proces' : 'Paguar')
         });
         try {
             await GB.api.payments.create(localPayment);
@@ -791,6 +813,13 @@ window.addEventListener('storage', (e) => {
 
 async function bootstrapBooking() {
     await syncBookingData();
+    const params = new URLSearchParams(window.location.search);
+    const paymentState = params.get('payment');
+    if (paymentState === 'success') {
+        GB.toast('Pagesa online u kompletua me sukses.', 'success');
+    } else if (paymentState === 'cancelled') {
+        GB.toast('Pagesa online u anulua. Mund të provoni përsëri.', 'info');
+    }
     renderServices();
     hydrateGalleryPrefill();
     renderDesigns();
