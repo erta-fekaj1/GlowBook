@@ -45,6 +45,8 @@ function noSqlSanitizeMiddleware(req, res, next) { // eslint-disable-line no-unu
 function applySecurity(app) {
     app.use(helmet({
         crossOriginResourcePolicy: false,
+        // Current frontend relies on inline scripts/styles in static HTML pages.
+        contentSecurityPolicy: false,
     }));
     app.use(noSqlSanitizeMiddleware);
     app.use(hpp());
