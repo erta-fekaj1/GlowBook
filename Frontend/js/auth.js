@@ -34,7 +34,17 @@ const _w = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const _nextId = arr => arr.length ? Math.max(...arr.map(x => x.id ?? 0)) + 1 : 1;
 const _now    = () => new Date().toISOString();
 const _WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
-const _API_BASE = '/api';
+const _API_BASE = (() => {
+    if (typeof window === 'undefined') return '/api';
+    const override = String(localStorage.getItem('gb_api_base') || '').trim();
+    if (override) return override.replace(/\/+$/, '');
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1';
+    if (isLocal && window.location.port && window.location.port !== '3000') {
+        return `${window.location.protocol}//${host}:3000/api`;
+    }
+    return '/api';
+})();
 
 function _slotKey(value) {
     const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
