@@ -300,6 +300,9 @@ window.GB = {
             async getAdmin() { return window.GB._request('/settings/admin'); },
             async updateAdmin(data) { return window.GB._request('/settings/admin', { method: 'PUT', body: data }); },
         },
+        analytics: {
+            async overview() { return window.GB._request('/analytics/overview'); },
+        },
         uploads: {
             async uploadReviewImage(file) {
                 const form = new FormData();

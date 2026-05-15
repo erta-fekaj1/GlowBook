@@ -23,6 +23,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const settingRoutes = require('./routes/settingRoutes');
 const dataRoutes = require('./routes/dataRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -53,6 +54,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.use(express.static(env.frontendDir));
 app.use(express.static(path.join(env.frontendDir, 'pages')));
