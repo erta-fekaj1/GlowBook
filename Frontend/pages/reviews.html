@@ -9,17 +9,62 @@
     <style>
         .rv-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:1.2rem; }
         .rv-card { background:#fff; border:1px solid var(--pink-border); border-radius:16px; box-shadow:var(--shadow); padding:1.2rem; }
-        .rv-head { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:1rem; }
-        .rv-head h2 { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--pink-deep); }
-        .rv-head p { font-size:.84rem; color:var(--text-muted); }
-        .rv-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.65rem; }
+
+        .rv-hero-shell {
+            border:1px solid var(--pink-border);
+            border-radius:18px;
+            background:linear-gradient(135deg,#fff,#FFF7FB);
+            box-shadow:var(--shadow);
+            padding:1rem;
+            margin-bottom:1rem;
+        }
+        .rv-hero-head { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+        .rv-hero-head h2 { font-family:'Cormorant Garamond',serif; font-size:1.65rem; color:var(--pink-deep); line-height:1.08; }
+        .rv-hero-head p { font-size:.84rem; color:var(--text-subtle); margin-top:.35rem; }
+        .rv-stars { color:#BE185D; letter-spacing:1px; font-size:.9rem; }
+        .rv-trust { display:flex; gap:.45rem; flex-wrap:wrap; margin-top:.75rem; }
+        .rv-trust-badge {
+            border:1px solid var(--pink-border);
+            border-radius:999px;
+            background:#fff;
+            padding:.3rem .62rem;
+            font-size:.68rem;
+            color:var(--pink-deep);
+            font-weight:700;
+        }
+
+        .rv-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.65rem; margin-top:.85rem; }
         .rv-stat { border:1px solid var(--pink-border); border-radius:12px; background:linear-gradient(135deg,var(--pink-light),#fff); padding:.75rem; }
         .rv-stat b { display:block; font-size:1.2rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
-        .rv-stat span { font-size:.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:.4px; }
-        .rv-stars { color:#BE185D; letter-spacing:1px; font-size:.9rem; }
+        .rv-stat span { font-size:.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:.42px; }
 
-        .rv-filter { display:flex; justify-content:space-between; align-items:center; margin:1rem 0; gap:.65rem; flex-wrap:wrap; }
-        .rv-filter select { border:1.5px solid var(--pink-border); border-radius:10px; padding:.5rem .65rem; font-size:.83rem; }
+        .rv-filter {
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            margin:1rem 0;
+            gap:.65rem;
+            flex-wrap:wrap;
+            border:1px solid var(--pink-border);
+            border-radius:12px;
+            background:#fff;
+            padding:.78rem;
+            position:sticky;
+            top:.85rem;
+            z-index:6;
+        }
+        .rv-filter-title { font-size:.78rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:.45px; }
+        .rv-filter-tools { display:flex; gap:.45rem; align-items:center; flex-wrap:wrap; }
+        .rv-filter select, .rv-filter input {
+            border:1.5px solid var(--pink-border);
+            border-radius:10px;
+            padding:.48rem .62rem;
+            font-size:.81rem;
+            color:var(--text-mid);
+            background:#fff;
+            font-family:inherit;
+        }
+        .rv-filter input { min-width:180px; }
 
         .rv-featured-wrap { margin:1rem 0; }
         .rv-featured-title { font-size:.82rem; font-weight:700; color:var(--text-mid); margin-bottom:.55rem; display:flex; align-items:center; gap:6px; }
@@ -27,38 +72,60 @@
         .rv-featured .rv-review { border-color:#FBCFE8; background:linear-gradient(135deg,#FFF7FB,#fff); }
 
         .rv-list { display:grid; gap:.7rem; }
-        .rv-review { border:1px solid var(--pink-border); border-radius:12px; padding:.8rem; background:#fff; animation:slideUp .28s ease both; }
+        .rv-review {
+            border:1px solid var(--pink-border);
+            border-radius:12px;
+            padding:.85rem;
+            background:#fff;
+            animation:slideUp .28s ease both;
+            transition:var(--ease);
+        }
+        .rv-review:hover { transform:translateY(-1px); box-shadow:var(--shadow-sm); border-color:var(--pink); }
         .rv-review-head { display:flex; justify-content:space-between; align-items:flex-start; gap:.75rem; }
         .rv-user { display:flex; align-items:center; gap:.55rem; }
-        .rv-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:700; }
-        .rv-name { font-size:.84rem; font-weight:700; color:var(--text-dark); }
+        .rv-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:700; }
+        .rv-name { font-size:.85rem; font-weight:700; color:var(--text-dark); }
         .rv-meta { font-size:.72rem; color:var(--text-muted); margin-top:2px; }
         .rv-comment { font-size:.84rem; color:var(--text-subtle); line-height:1.65; margin-top:.55rem; }
         .rv-tags { margin-top:.5rem; display:flex; gap:.45rem; flex-wrap:wrap; }
-        .rv-tag { font-size:.68rem; background:var(--pink-light); color:var(--pink-deep); border-radius:999px; padding:.2rem .55rem; font-weight:700; }
+        .rv-tag { font-size:.67rem; background:var(--pink-light); color:var(--pink-deep); border-radius:999px; padding:.2rem .55rem; font-weight:700; }
+        .rv-tag.verified { background:#FDF2F8; border:1px solid #FBCFE8; }
         .rv-img { margin-top:.55rem; width:100%; max-height:190px; object-fit:cover; border-radius:10px; border:1px solid var(--pink-border); }
 
+        .rv-form h3 { font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-size:1.35rem; margin-bottom:.55rem; }
+        .rv-form-intro { font-size:.8rem; color:var(--text-muted); margin-bottom:.8rem; }
         .rv-form .field { margin-bottom:.8rem; }
         .rv-form label { display:block; margin-bottom:.3rem; font-size:.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:.45px; }
         .rv-form select, .rv-form textarea, .rv-form input[type="file"] {
             width:100%; border:1.5px solid var(--pink-border); border-radius:10px; padding:.62rem .7rem; font-size:.84rem; font-family:inherit;
         }
         .rv-form textarea { resize:vertical; min-height:110px; }
-        .rv-stars-pick { display:flex; gap:.35rem; }
+        .rv-stars-pick { display:flex; gap:.35rem; align-items:center; }
         .rv-star-btn { border:none; background:none; color:#9CA3AF; font-size:1.25rem; cursor:pointer; transition:var(--ease); }
         .rv-star-btn.active, .rv-star-btn:hover { color:#BE185D; transform:scale(1.08); }
+        .rv-rating-hint { font-size:.75rem; color:var(--text-muted); }
         .rv-img-preview { margin-top:.5rem; display:none; width:100%; border-radius:10px; border:1px solid var(--pink-border); max-height:170px; object-fit:cover; }
         .rv-form-actions { display:flex; gap:.55rem; margin-top:.85rem; }
         .rv-empty { text-align:center; padding:1.3rem .8rem; color:var(--text-muted); font-size:.84rem; }
 
-        @media (max-width: 980px) { .rv-grid { grid-template-columns:1fr; } }
-        @media (max-width: 620px) { .rv-stats { grid-template-columns:1fr 1fr; } .rv-form-actions { flex-direction:column; } }
+        @media (max-width: 980px) { .rv-grid { grid-template-columns:1fr; } .rv-filter{position:static;} }
+        @media (max-width: 700px) {
+            .rv-stats { grid-template-columns:1fr 1fr; }
+            .rv-form-actions { flex-direction:column; }
+            .rv-filter-tools { width:100%; }
+            .rv-filter select, .rv-filter input { width:100%; }
+            .rv-filter input { min-width:0; }
+        }
     </style>
 </head>
 <body>
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
     <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -70,72 +137,91 @@
         <div class="topbar">
             <div>
                 <h1>Reviews</h1>
+                <p>Trusted feedback from real completed appointments.</p>
             </div>
         </div>
 
         <div class="rv-grid">
             <section class="rv-card">
-                <div class="rv-head">
-                    <div>
-                        <h2>Çfarë thonë klientët</h2>
-                        <p>Vlerësime reale për shërbimet dhe stilet e realizuara.</p>
+                <div class="rv-hero-shell">
+                    <div class="rv-hero-head">
+                        <div>
+                            <h2>What clients say about GlowBook</h2>
+                            <p>Explore authentic experiences, style outcomes, and service quality before your next booking.</p>
+                        </div>
+                        <div class="rv-stars" id="avgStars">★★★★★</div>
                     </div>
-                    <div class="rv-stars" id="avgStars">★★★★★</div>
+                    <div class="rv-trust">
+                        <span class="rv-trust-badge"><i class="fa-solid fa-shield-check"></i> Verified appointments</span>
+                        <span class="rv-trust-badge"><i class="fa-solid fa-star"></i> Real client ratings</span>
+                        <span class="rv-trust-badge"><i class="fa-solid fa-calendar-check"></i> Booking-linked reviews</span>
+                    </div>
                 </div>
 
                 <div class="rv-stats">
-                    <div class="rv-stat"><b id="avgValue">0.0</b><span>Mesatarja</span></div>
-                    <div class="rv-stat"><b id="totalReviews">0</b><span>Reviews</span></div>
-                    <div class="rv-stat"><b id="fiveStarCount">0</b><span>5 Yje</span></div>
+                    <div class="rv-stat"><b id="avgValue">0.0</b><span>Average Rating</span></div>
+                    <div class="rv-stat"><b id="totalReviews">0</b><span>Total Reviews</span></div>
+                    <div class="rv-stat"><b id="fiveStarCount">0</b><span>5-Star Reviews</span></div>
+                    <div class="rv-stat"><b id="recommendedPct">0%</b><span>Recommended (4★+)</span></div>
                 </div>
 
                 <div class="rv-featured-wrap">
-                    <div class="rv-featured-title"><i class="fa-solid fa-crown" style="color:#BE185D"></i>Top Reviews</div>
+                    <div class="rv-featured-title"><i class="fa-solid fa-crown" style="color:#BE185D"></i>Featured Reviews</div>
                     <div class="rv-featured" id="featuredReviews"></div>
                 </div>
 
                 <div class="rv-filter">
-                    <strong style="font-size:.83rem;color:var(--text-mid)">Të gjitha vlerësimet</strong>
-                    <select id="sortSelect">
-                        <option value="latest">Më të rejat</option>
-                        <option value="highest">Vlerësimi më i lartë</option>
-                    </select>
+                    <div class="rv-filter-title">Browse all reviews</div>
+                    <div class="rv-filter-tools">
+                        <input id="searchInput" type="text" placeholder="Search by service, style, or name..." />
+                        <select id="ratingFilter">
+                            <option value="all">All ratings</option>
+                            <option value="5">Only 5★</option>
+                            <option value="4plus">4★ and up</option>
+                            <option value="3plus">3★ and up</option>
+                        </select>
+                        <select id="sortSelect">
+                            <option value="latest">Latest</option>
+                            <option value="highest">Highest rating</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="rv-list" id="reviewsList"></div>
             </section>
 
             <aside class="rv-card rv-form" data-client-only>
-                <h3 style="font-family:'Cormorant Garamond',serif;color:var(--pink-deep);font-size:1.35rem;margin-bottom:.7rem">Lër një Review</h3>
-                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.8rem">Vetëm për takimet e përfunduara. Një review për takim.</p>
+                <h3>Write a review</h3>
+                <p class="rv-form-intro">Only completed appointments can be reviewed. One review per appointment.</p>
 
                 <div class="field">
-                    <label for="apptSelect">Takimi i përfunduar</label>
+                    <label for="apptSelect">Completed appointment</label>
                     <select id="apptSelect"></select>
                 </div>
 
                 <div class="field">
-                    <label>Vlerësimi</label>
+                    <label>Your rating</label>
                     <div class="rv-stars-pick" id="starPicker"></div>
+                    <div class="rv-rating-hint" id="ratingHint">Select your star rating.</div>
                 </div>
 
                 <div class="field">
-                    <label for="reviewComment">Komenti</label>
-                    <textarea id="reviewComment" placeholder="Si ishte eksperienca juaj në sallon?"></textarea>
+                    <label for="reviewComment">Comment</label>
+                    <textarea id="reviewComment" placeholder="How was your salon experience?"></textarea>
                 </div>
 
                 <div class="field">
-                    <label for="reviewImage">Foto rezultati (opsionale)</label>
+                    <label for="reviewImage">Result image (optional)</label>
                     <input type="file" id="reviewImage" accept="image/*">
                     <img id="imagePreview" class="rv-img-preview" alt="Preview">
                 </div>
 
                 <label style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-subtle);margin:.2rem 0 .6rem">
-                    <input type="checkbox" id="anonymousChk"> Publikoje si anonim (iniciale)
+                    <input type="checkbox" id="anonymousChk"> Publish as anonymous (initials only)
                 </label>
 
                 <div class="rv-form-actions">
-                    <button class="btn-secondary" style="flex:1" id="clearBtn">Pastro</button>
-                    <button class="btn-primary" style="flex:2" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> Dërgo Review</button>
+                    <button class="btn-secondary" style="flex:1" id="clearBtn">Clear</button>
+                    <button class="btn-primary" style="flex:2" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> Submit Review</button>
                 </div>
                 <div id="formHint" style="margin-top:.6rem;font-size:.74rem;color:var(--text-muted)"></div>
             </aside>
@@ -154,6 +240,8 @@ const isAdmin = GB.isAdmin();
 const state = {
     rating: 0,
     sort: 'latest',
+    ratingFilter: 'all',
+    searchQuery: '',
     imageData: '',
     selectedApptId: null,
     uploadingImage: false,
@@ -165,11 +253,11 @@ async function refreshReviewsData() {
 const stars = (n) => '★★★★★☆☆☆☆☆'.slice(5 - Number(n), 10 - Number(n));
 const fmtDate = (iso) => {
     if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('sq-AL', { day: '2-digit', month: 'short', year: 'numeric' });
+    return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
 function displayName(r) {
-    if (!r.isAnonymous) return r.userName || r.userEmail || 'Klient';
+    if (!r.isAnonymous) return r.userName || r.userEmail || 'Client';
     const source = (r.userName || r.userEmail || 'A');
     return source.split(' ').map(x => x[0]).join('').slice(0, 2).toUpperCase();
 }
@@ -182,15 +270,16 @@ function reviewCard(r, featured = false) {
                 <div class="rv-avatar">${displayName(r).slice(0, 2)}</div>
                 <div>
                     <div class="rv-name">${displayName(r)}</div>
-                    <div class="rv-meta">${fmtDate(r.dateOfAppointment)} · ${r.serviceName || 'Shërbim'}</div>
+                    <div class="rv-meta">${fmtDate(r.dateOfAppointment)} · ${r.serviceName || 'Service'}</div>
                 </div>
             </div>
             <div class="rv-stars">${stars(r.rating)}</div>
         </div>
-        <div class="rv-comment">${r.comment || 'Pa koment.'}</div>
+        <div class="rv-comment">${r.comment || 'No comment provided.'}</div>
         <div class="rv-tags">
             ${featured ? '<span class="rv-tag"><i class="fa-solid fa-crown"></i> Featured</span>' : ''}
-            ${r.designName ? `<span class="rv-tag">Stili: ${r.designName}</span>` : ''}
+            <span class="rv-tag verified"><i class="fa-solid fa-circle-check"></i> Verified appointment</span>
+            ${r.designName ? `<span class="rv-tag">Style: ${r.designName}</span>` : ''}
             <span class="rv-tag">${fmtDate(r.createdAt)}</span>
         </div>
         ${r.image ? `<img class="rv-img" src="${r.image}" alt="Review image">` : ''}
@@ -201,20 +290,47 @@ function renderStatsAndFeatured() {
     const all = GB.reviews.getAll();
     const avg = GB.reviews.average();
     const five = all.filter(r => Number(r.rating) === 5).length;
+    const recommended = all.length
+        ? Math.round((all.filter(r => Number(r.rating || 0) >= 4).length / all.length) * 100)
+        : 0;
     document.getElementById('avgValue').textContent = avg ? avg.toFixed(1) : '0.0';
     document.getElementById('totalReviews').textContent = all.length;
     document.getElementById('fiveStarCount').textContent = five;
     document.getElementById('avgStars').textContent = stars(Math.round(avg || 0));
+    document.getElementById('recommendedPct').textContent = `${recommended}%`;
 
     const featured = GB.reviews.featured(3).filter(r => Number(r.rating) >= 4);
     document.getElementById('featuredReviews').innerHTML = featured.length
         ? featured.map(r => reviewCard(r, true)).join('')
-        : '<div class="rv-empty">Ende nuk ka top reviews.</div>';
+        : '<div class="rv-empty">No featured reviews yet. <a href="booking.html" style="color:var(--pink);font-weight:700">Book an appointment</a> and be among the first to share feedback.</div>';
+}
+
+function passesRatingFilter(review) {
+    const val = Number(review.rating || 0);
+    if (state.ratingFilter === '5') return val === 5;
+    if (state.ratingFilter === '4plus') return val >= 4;
+    if (state.ratingFilter === '3plus') return val >= 3;
+    return true;
+}
+
+function passesSearchFilter(review) {
+    const q = String(state.searchQuery || '').trim().toLowerCase();
+    if (!q) return true;
+    const source = [
+        review.userName,
+        review.serviceName,
+        review.designName,
+        review.comment,
+    ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    return source.includes(q);
 }
 
 function renderReviews() {
     const all = GB.reviews.getAll();
-    let arr = [...all];
+    let arr = all.filter(r => passesRatingFilter(r) && passesSearchFilter(r));
     if (state.sort === 'highest') {
         arr.sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
     } else {
@@ -223,7 +339,7 @@ function renderReviews() {
     const list = document.getElementById('reviewsList');
     list.innerHTML = arr.length
         ? arr.map((r) => reviewCard(r)).join('')
-        : '<div class="rv-empty">Ende nuk ka reviews. Bëhu i pari që lë një feedback.</div>';
+        : '<div class="rv-empty">No matching reviews. Try another filter or <a href="booking.html" style="color:var(--pink);font-weight:700">book your next appointment</a>.</div>';
 }
 
 function eligibleAppointments() {
@@ -238,16 +354,16 @@ function renderAppointmentSelect() {
     const select = document.getElementById('apptSelect');
     const items = eligibleAppointments();
     if (!items.length) {
-        select.innerHTML = '<option value="">Nuk ka takime të kualifikuara për review</option>';
+        select.innerHTML = '<option value="">No eligible appointments to review</option>';
         select.disabled = true;
         document.getElementById('submitBtn').disabled = true;
-        document.getElementById('formHint').textContent = 'Bëni një takim të përfunduar për të lënë review.';
+        document.getElementById('formHint').textContent = 'Complete an appointment to unlock review submission.';
         return;
     }
     select.disabled = false;
     document.getElementById('submitBtn').disabled = false;
-    select.innerHTML = '<option value="">Zgjidh takimin...</option>' + items.map((a) => `
-        <option value="${a.id}">${a.serviceName || 'Shërbim'} · ${fmtDate(a.date)} · ${a.status}</option>
+    select.innerHTML = '<option value="">Select appointment...</option>' + items.map((a) => `
+        <option value="${a.id}">${a.serviceName || 'Service'} · ${fmtDate(a.date)} · ${a.status}</option>
     `).join('');
     if (state.selectedApptId && items.some(a => a.id === Number(state.selectedApptId))) {
         select.value = String(state.selectedApptId);
@@ -258,7 +374,7 @@ function renderAppointmentSelect() {
 function renderStarPicker() {
     const host = document.getElementById('starPicker');
     host.innerHTML = Array.from({ length: 5 }, (_, i) => i + 1).map((n) => `
-        <button class="rv-star-btn ${n <= state.rating ? 'active' : ''}" data-star="${n}" title="${n} yje">
+        <button class="rv-star-btn ${n <= state.rating ? 'active' : ''}" data-star="${n}" title="${n} stars">
             <i class="fa-solid fa-star"></i>
         </button>
     `).join('');
@@ -276,6 +392,7 @@ function resetForm() {
     preview.src = '';
     preview.style.display = 'none';
     renderStarPicker();
+    document.getElementById('ratingHint').textContent = 'Select your star rating.';
     renderAppointmentSelect();
 }
 
@@ -291,12 +408,21 @@ document.getElementById('sortSelect').addEventListener('change', (e) => {
     state.sort = e.target.value;
     renderReviews();
 });
+document.getElementById('ratingFilter').addEventListener('change', (e) => {
+    state.ratingFilter = e.target.value;
+    renderReviews();
+});
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    state.searchQuery = e.target.value;
+    renderReviews();
+});
 
 document.getElementById('starPicker').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-star]');
     if (!btn) return;
     state.rating = Number(btn.dataset.star);
     renderStarPicker();
+    document.getElementById('ratingHint').textContent = `${state.rating} star${state.rating === 1 ? '' : 's'} selected.`;
 });
 
 document.getElementById('reviewImage').addEventListener('change', (e) => {
@@ -310,12 +436,12 @@ document.getElementById('reviewImage').addEventListener('change', (e) => {
         return;
     }
     if (!file.type.startsWith('image/')) {
-        GB.toast('Ngarko vetëm imazh valid.', 'error');
+        GB.toast('Please upload a valid image file.', 'error');
         e.target.value = '';
         return;
     }
     if (file.size > 5 * 1024 * 1024) {
-        GB.toast('Imazhi duhet të jetë deri në 5MB.', 'error');
+        GB.toast('Image must be up to 5MB.', 'error');
         e.target.value = '';
         return;
     }
@@ -326,13 +452,13 @@ document.getElementById('reviewImage').addEventListener('change', (e) => {
             state.imageData = res?.file?.url || '';
             preview.src = state.imageData;
             preview.style.display = state.imageData ? 'block' : 'none';
-            GB.toast('Imazhi u ngarkua me sukses.', 'success');
+            GB.toast('Image uploaded successfully.', 'success');
         })
         .catch((err) => {
             state.imageData = '';
             preview.src = '';
             preview.style.display = 'none';
-            GB.toast(err.message || 'Imazhi nuk u ngarkua.', 'error');
+            GB.toast(err.message || 'Image upload failed.', 'error');
         })
         .finally(() => {
             state.uploadingImage = false;
@@ -343,9 +469,9 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     const apptId = Number(document.getElementById('apptSelect').value || 0);
     const comment = document.getElementById('reviewComment').value.trim();
     const isAnonymous = document.getElementById('anonymousChk').checked;
-    if (!apptId) { GB.toast('Zgjidhni një takim.', 'error'); return; }
-    if (!state.rating) { GB.toast('Vendosni vlerësimin me yje.', 'error'); return; }
-    if (state.uploadingImage) { GB.toast('Pritni derisa imazhi të ngarkohet.', 'error'); return; }
+    if (!apptId) { GB.toast('Please select an appointment.', 'error'); return; }
+    if (!state.rating) { GB.toast('Please choose a star rating.', 'error'); return; }
+    if (state.uploadingImage) { GB.toast('Please wait for image upload to finish.', 'error'); return; }
 
     const appt = GB.appointments.getById(apptId);
     try {
@@ -361,10 +487,10 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
         });
         await refreshReviewsData();
     } catch (err) {
-        GB.toast(err.message || 'Review nuk u ruajt.', 'error');
+        GB.toast(err.message || 'Review could not be saved.', 'error');
         return;
     }
-    GB.toast('Faleminderit! Review u publikua.', 'success');
+    GB.toast('Thank you! Your review was published.', 'success');
     resetForm();
     renderStatsAndFeatured();
     renderReviews();
