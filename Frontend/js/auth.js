@@ -735,6 +735,9 @@ window.GB = {
             : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Book Appointment');
         const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Home');
         const appointmentsLink = '';
+        const myBookingsLink = this.isAdmin()
+            ? ''
+            : li('my-bookings', 'my-bookings.html', 'fa-solid fa-clipboard-list', 'My Bookings');
         const servicesLink = '';
         const paymentLink = '';
         const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Gallery');
@@ -755,6 +758,7 @@ window.GB = {
             ${adminLinks}
             ${bookingLink}
             ${dashboardLink}
+            ${myBookingsLink}
             ${appointmentsLink}
             ${servicesLink}
             ${galleryLink}
