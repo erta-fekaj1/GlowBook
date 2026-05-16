@@ -7,15 +7,91 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        .contact-layout { display:grid; grid-template-columns:1fr 1.05fr; gap:1rem; align-items:start; }
-        .contact-map { border:1px solid var(--pink-border); border-radius:14px; background:linear-gradient(135deg,#fff,#FFF7FB); padding:1rem; min-height:160px; display:grid; place-items:center; color:var(--text-muted); font-size:.82rem; text-align:center; }
+        .contact-hero-shell {
+            border: 1px solid var(--pink-border);
+            border-radius: 20px;
+            background: linear-gradient(135deg, #fff 0%, #FFF7FB 100%);
+            box-shadow: var(--shadow);
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .contact-hero-grid { display:grid; grid-template-columns:1.2fr .9fr; gap:1rem; align-items:center; }
+        .contact-hero-title {
+            font-family:'Cormorant Garamond',serif;
+            font-size:clamp(1.6rem,3vw,2.1rem);
+            color:var(--pink-deep);
+            line-height:1.1;
+            margin-top:.55rem;
+        }
+        .contact-hero-sub { margin-top:.45rem; color:var(--text-subtle); font-size:.84rem; max-width:62ch; }
+        .contact-trust { margin-top:.7rem; display:flex; flex-wrap:wrap; gap:.42rem; }
+        .contact-trust-badge {
+            border:1px solid var(--pink-border);
+            border-radius:999px;
+            background:#fff;
+            color:var(--pink-deep);
+            font-size:.68rem;
+            font-weight:700;
+            padding:.31rem .6rem;
+            letter-spacing:.2px;
+        }
+        .contact-kpis { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.58rem; }
+        .contact-kpi { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.7rem; }
+        .contact-kpi b { display:block; font-size:1.12rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
+        .contact-kpi span { display:block; font-size:.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.45px; font-weight:700; }
+        .contact-quick-actions { margin-top:.8rem; display:flex; gap:.5rem; flex-wrap:wrap; }
+        .contact-quick-btn {
+            display:inline-flex;
+            align-items:center;
+            gap:7px;
+            border-radius:10px;
+            border:1px solid var(--pink-border);
+            background:#fff;
+            color:var(--pink-deep);
+            font-size:.78rem;
+            font-weight:700;
+            padding:.55rem .75rem;
+            transition:var(--ease);
+        }
+        .contact-quick-btn:hover { border-color:var(--pink); background:var(--pink-light); transform:translateY(-1px); }
+
+        .contact-layout { display:grid; grid-template-columns:1.05fr .95fr; gap:1rem; align-items:start; }
         .contact-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
         .contact-form-actions { display:flex; gap:.6rem; margin-top:.35rem; }
         .contact-note { font-size:.75rem; color:var(--text-muted); margin-top:.45rem; }
+        .contact-map {
+            border:1px solid var(--pink-border);
+            border-radius:14px;
+            background:linear-gradient(135deg,#fff,#FFF7FB);
+            padding:1rem;
+            min-height:165px;
+            display:grid;
+            place-items:center;
+            color:var(--text-muted);
+            font-size:.82rem;
+            text-align:center;
+        }
+        .contact-side-stack { display:grid; gap:.8rem; }
+        .contact-help-card {
+            border:1px solid var(--pink-border);
+            border-radius:14px;
+            background:#fff;
+            padding:.9rem;
+        }
+        .contact-help-card h3 {
+            font-family:'Cormorant Garamond',serif;
+            font-size:1.16rem;
+            color:var(--pink-deep);
+            margin-bottom:.4rem;
+        }
+        .contact-help-card ul { margin-left:1rem; color:var(--text-subtle); font-size:.8rem; display:grid; gap:.28rem; }
+
         @media (max-width: 980px) {
+            .contact-hero-grid { grid-template-columns:1fr; }
             .contact-layout { grid-template-columns:1fr; }
         }
         @media (max-width: 640px) {
+            .contact-kpis { grid-template-columns:1fr 1fr; }
             .contact-form-grid { grid-template-columns:1fr; }
             .contact-form-actions { flex-direction:column; }
         }
@@ -24,7 +100,11 @@
 <body>
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
     <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -36,21 +116,31 @@
         <div class="topbar">
             <div>
                 <h1>Contact</h1>
-                <p>Na shkruaj për pyetje, kërkesa speciale apo ndihmë gjatë rezervimit.</p>
+                <p>Reach out for support, booking help, or premium partnership requests.</p>
             </div>
             <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>
         </div>
 
-        <section class="hero-shell" style="margin-bottom:1rem">
-            <div class="hero-grid">
+        <section class="contact-hero-shell">
+            <div class="contact-hero-grid">
                 <div>
                     <span class="hero-tag"><i class="fa-solid fa-headset"></i> Fast Support</span>
-                    <h2 class="hero-title">Ne jemi këtu për të të ndihmuar.</h2>
-                    <p class="hero-subtitle">Për rezervime grupore, pyetje rreth shërbimeve, ose ndryshime në takime, dërgo një mesazh dhe ekipi ynë të kthen përgjigje sa më shpejt.</p>
+                    <h2 class="contact-hero-title">Let's talk beauty support.</h2>
+                    <p class="contact-hero-sub">Whether you need a quick booking change, group reservation details, or service guidance, our team is ready to help you fast.</p>
+                    <div class="contact-trust">
+                        <span class="contact-trust-badge"><i class="fa-solid fa-clock"></i> Reply within 24h</span>
+                        <span class="contact-trust-badge"><i class="fa-solid fa-calendar-check"></i> Booking assistance</span>
+                        <span class="contact-trust-badge"><i class="fa-solid fa-heart"></i> Premium client care</span>
+                    </div>
+                    <div class="contact-quick-actions">
+                        <a href="tel:+38344123456" class="contact-quick-btn"><i class="fa-solid fa-phone"></i> Call now</a>
+                        <a href="mailto:hello@glowbook.com" class="contact-quick-btn"><i class="fa-solid fa-envelope"></i> Send email</a>
+                        <a href="booking.html" class="contact-quick-btn"><i class="fa-solid fa-calendar-plus"></i> Book now</a>
+                    </div>
                 </div>
                 <div class="contact-grid">
                     <div class="contact-item">
-                        <strong>Telefoni</strong>
+                        <strong>Phone</strong>
                         <a href="tel:+38344123456">+383 44 123 456</a>
                     </div>
                     <div class="contact-item">
@@ -58,12 +148,12 @@
                         <a href="mailto:hello@glowbook.com">hello@glowbook.com</a>
                     </div>
                     <div class="contact-item">
-                        <strong>Adresa</strong>
-                        <span>Prishtinë, Kosovë</span>
+                        <strong>Address</strong>
+                        <span>Prishtina, Kosovo</span>
                     </div>
                     <div class="contact-item">
-                        <strong>Orari</strong>
-                        <span>Hën - Sht · 09:00 - 18:00</span>
+                        <strong>Hours</strong>
+                        <span>Mon - Sat · 09:00 - 18:00</span>
                     </div>
                 </div>
             </div>
@@ -72,12 +162,12 @@
         <div class="contact-layout">
             <section class="card">
                 <div class="card-title">
-                    <span><i class="fa-regular fa-paper-plane" style="margin-right:7px;color:var(--pink)"></i>Dërgo mesazh</span>
+                    <span><i class="fa-regular fa-paper-plane" style="margin-right:7px;color:var(--pink)"></i>Send a message</span>
                 </div>
                 <form class="form-shell" id="contactForm">
                     <div class="contact-form-grid">
                         <div class="field">
-                            <label for="cName">Emri</label>
+                            <label for="cName">Full name</label>
                             <input id="cName" type="text" placeholder="Ana Krasniqi" required>
                         </div>
                         <div class="field">
@@ -85,52 +175,63 @@
                             <input id="cEmail" type="email" placeholder="ana@example.com" required>
                         </div>
                         <div class="field">
-                            <label for="cPhone">Telefoni</label>
+                            <label for="cPhone">Phone</label>
                             <input id="cPhone" type="text" placeholder="044 123 456">
                         </div>
                         <div class="field">
-                            <label for="cSubject">Subjekti</label>
+                            <label for="cSubject">Subject</label>
                             <select id="cSubject">
-                                <option value="Pyetje e përgjithshme">Pyetje e përgjithshme</option>
-                                <option value="Rezervim grupor">Rezervim grupor</option>
-                                <option value="Ndryshim i takimit">Ndryshim i takimit</option>
-                                <option value="Partneritet / Bashkëpunim">Partneritet / Bashkëpunim</option>
+                                <option value="General inquiry">General inquiry</option>
+                                <option value="Group booking">Group booking</option>
+                                <option value="Appointment change">Appointment change</option>
+                                <option value="Partnership request">Partnership request</option>
                             </select>
                         </div>
                     </div>
                     <div class="field">
-                        <label for="cMessage">Mesazhi</label>
-                        <textarea id="cMessage" placeholder="Shkruaj detajet e kërkesës tënde..." required></textarea>
+                        <label for="cMessage">Message</label>
+                        <textarea id="cMessage" placeholder="Write your request details..." required></textarea>
                     </div>
                     <div class="contact-form-actions">
-                        <button class="btn-secondary" type="reset" style="flex:1">Pastro</button>
-                        <button class="btn-primary" type="submit" style="flex:2"><i class="fa-solid fa-paper-plane"></i> Dërgo</button>
+                        <button class="btn-secondary" type="reset" style="flex:1">Clear</button>
+                        <button class="btn-primary" type="submit" style="flex:2"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
                     </div>
-                    <div class="contact-note">Mesazhi ruhet në sistemin lokal për demo dhe ndjekje nga paneli.</div>
+                    <div class="contact-note">Your message is stored in the local demo inbox for admin follow-up.</div>
                 </form>
             </section>
 
-            <aside class="card">
+            <aside class="contact-side-stack">
+                <section class="card">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-location-dot" style="margin-right:7px;color:var(--pink)"></i>Info shtesë</span>
+                    <span><i class="fa-solid fa-location-dot" style="margin-right:7px;color:var(--pink)"></i>Visit us</span>
                 </div>
                 <div class="contact-map">
                     <div>
                         <i class="fa-regular fa-map" style="font-size:1.4rem;color:var(--pink);margin-bottom:.35rem"></i><br>
                         GlowBook Studio<br>
-                        Prishtinë, Kosovë
+                        Prishtina, Kosovo
                     </div>
                 </div>
                 <div class="feature-grid" style="margin-top:.75rem">
                     <a href="booking.html" class="feature-card">
-                        <h3>Rezervo direkt</h3>
-                        <p>Flow i shpejtë me disponueshmëri në kohë reale dhe pagesë të integruar.</p>
+                        <h3>Book instantly</h3>
+                        <p>Fast booking flow with live availability and integrated payment.</p>
                     </a>
                     <a href="offers.html" class="feature-card">
                         <h3>Special Offers</h3>
-                        <p>Shiko ofertat që po konvertojnë më shumë dhe rezervo menjëherë.</p>
+                        <p>Explore the best current deals and redeem them directly from booking.</p>
                     </a>
                 </div>
+                </section>
+
+                <section class="contact-help-card">
+                    <h3>Support commitment</h3>
+                    <ul>
+                        <li>Priority response for active booking issues</li>
+                        <li>Guidance for selecting services and styles</li>
+                        <li>Fast reschedule and update assistance</li>
+                    </ul>
+                </section>
             </aside>
         </div>
     </main>
@@ -181,18 +282,18 @@ form.addEventListener('submit', (e) => {
     const message = messageInput.value.trim();
 
     if (!name || !email || !message) {
-        GB.toast('Plotëso emrin, email-in dhe mesazhin.', 'error');
+        GB.toast('Please fill in name, email, and message.', 'error');
         return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        GB.toast('Email-i nuk është valid.', 'error');
+        GB.toast('Email address is not valid.', 'error');
         return;
     }
 
     saveMessage({ userId: me?.id || null, name, email, phone, subject, message });
-    GB.toast('Mesazhi u dërgua me sukses. Faleminderit!', 'success');
+    GB.toast('Message sent successfully. Thank you!', 'success');
     messageInput.value = '';
-    subjectInput.value = 'Pyetje e përgjithshme';
+    subjectInput.value = 'General inquiry';
 });
 </script>
 </body>
