@@ -10,6 +10,7 @@ It includes:
 - centralized booking flow (service + design + date + time + payment)
 - admin control center (appointments, users, services, gallery, reviews, settings)
 - reviews and loyalty logic
+- scheduled appointment reminders (email/SMS-ready with dedupe)
 - role-based access (admin/client)
 - MongoDB persistence (no longer localStorage-only)
 
@@ -80,6 +81,9 @@ MONGO_URI=mongodb://127.0.0.1:27017/glowbook
 JWT_SECRET=change-this-secret
 JWT_EXPIRES_IN=7d
 CORS_ORIGIN=*
+REMINDER_ENABLED=false
+REMINDER_INTERVAL_MINUTES=30
+REMINDER_LOOKAHEAD_HOURS=24
 ```
 
 ### 3) Install backend dependencies
@@ -110,6 +114,12 @@ When running, open:
 
 `http://localhost:3000`
 
+### 5) Run backend tests
+
+```bash
+npm --prefix backend test
+```
+
 ## Default Admin Seed
 
 Backend seed creates:
@@ -128,7 +138,11 @@ Backend seed creates:
 - `GET/POST/PUT/DELETE /api/appointments`
 - `GET/POST/DELETE /api/reviews`
 - `GET/POST /api/payments`
+- `POST /api/payments/checkout-session`
+- `POST /api/payments/webhook`
 - `GET/PUT /api/settings/admin` (admin)
+- `POST /api/uploads/review-image`
+- `GET /api/analytics/overview` (admin)
 - `GET /api/data/sync` (frontend sync payload)
 
 ## Notes

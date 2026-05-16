@@ -147,9 +147,17 @@ async function updateAppointment(req, res) {
     }
 
     if (typeof req.body.notes === 'string') appointment.notes = req.body.notes.trim();
+    const slotChanged = previousDate !== day || previousTime !== slot;
     appointment.date = day;
     appointment.time = slot;
     appointment.startAt = new Date(`${day}T${slot}:00`);
+    if (slotChanged) {
+        // If the appointment is moved, allow reminder scheduler to notify again.
+        appointment.reminderSentAt = null;
+    }
+    if (previousStatus === 'Cancelled' && appointment.status !== 'Cancelled') {
+        appointment.reminderSentAt = null;
+    }
 
     await appointment.save();
     await maybeAwardLoyalty(appointment, previousStatus);

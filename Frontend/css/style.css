@@ -1140,6 +1140,42 @@ tbody tr {
     margin-bottom: 1.5rem;
 }
 
+.next-appointment-card {
+    background: linear-gradient(135deg, #fff 0%, #FFF7FB 100%);
+}
+.next-appointment-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.next-appointment-eyebrow {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.next-appointment-title {
+    margin-top: .4rem;
+    font-size: 1.32rem;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--pink-deep);
+    line-height: 1.15;
+}
+.next-appointment-meta {
+    margin-top: .45rem;
+    font-size: .84rem;
+    color: var(--text-subtle);
+}
+.next-appointment-side {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
 .appt-item { 
     display: flex; 
     align-items: center; 
@@ -2274,6 +2310,7 @@ tbody tr {
     .gallery-stats        { grid-template-columns: repeat(2,1fr); }
     .hero-grid            { grid-template-columns: 1fr; }
     .contact-grid         { grid-template-columns: 1fr; }
+    .next-appointment-side { width: 100%; justify-content: space-between; }
 }
 
 @media (max-width: 768px) {

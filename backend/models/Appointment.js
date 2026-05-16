@@ -29,6 +29,7 @@ const appointmentSchema = new mongoose.Schema(
         selectedDesignCategory: { type: String, default: null },
 
         loyaltyAwarded: { type: Boolean, default: false },
+        reminderSentAt: { type: Date, default: null },
     },
     { timestamps: true }
 );
