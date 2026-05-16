@@ -111,34 +111,6 @@
                 </div>
             </section>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-            <div class="stat-card pink">
-                <div class="stat-icon">👥</div>
-                <div class="stat-label" id="lblUsers">Clients</div>
-                <div class="stat-value" id="stUsers">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card purple">
-                <div class="stat-icon">📅</div>
-                <div class="stat-label">Appointments</div>
-                <div class="stat-value" id="stAppts">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card teal">
-                <div class="stat-icon">💆</div>
-                <div class="stat-label">Services</div>
-                <div class="stat-value" id="stSvcs">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card amber" data-admin>
-                <div class="stat-icon">⏳</div>
-                <div class="stat-label">Pending</div>
-                <div class="stat-value" id="stPending">–</div>
-                <div class="stat-sub">appointments</div>
-            </div>
-            </div>
-
             <div class="grid-2">
             <div class="card">
                 <div class="card-title">
@@ -193,19 +165,9 @@ function load() {
     const allUsers  = GB.users.getAll();
     const services  = GB.services.getAll();
     const reviews   = GB.reviews.getAll();
-
-    /* Stats */
-    document.getElementById('stAppts').textContent  = myAppts.length;
-    document.getElementById('stSvcs').textContent   = services.length;
-    document.getElementById('stPending').textContent= myAppts.filter(a=>a.status==='Pending').length;
-    if (admin) {
-        document.getElementById('stUsers').textContent = allUsers.length;
-        document.getElementById('lblUsers').textContent = 'Clients';
-    } else {
+    if (!admin) {
         const doneCount = myAppts.filter(a=>a.status==='Done').length;
         const upcoming = myAppts.filter(a => ['Pending', 'Confirmed'].includes(a.status)).length;
-        document.getElementById('stUsers').textContent = doneCount;
-        document.getElementById('lblUsers').textContent = 'Completed';
         const avgReview = reviews.length
             ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
             : '0.0';
