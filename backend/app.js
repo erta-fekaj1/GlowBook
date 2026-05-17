@@ -37,6 +37,10 @@ function createApp() {
     app.use(cookieParser());
     app.use(morgan('dev'));
     app.use('/uploads', express.static(env.uploadsDir));
+    // Some local setups store gallery assets under Frontend/pages/images.
+    // Keep /images working in both structures to avoid broken gallery previews.
+    app.use('/images', express.static(path.join(env.frontendDir, 'images')));
+    app.use('/images', express.static(path.join(env.frontendDir, 'pages', 'images')));
 
     app.get('/api/health', (req, res) => {
         res.json({ ok: true, service: 'glowbook-api', env: env.nodeEnv });
