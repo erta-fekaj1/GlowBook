@@ -908,7 +908,11 @@ async function completeBooking() {
             `${bookedLabel} · ${formatLongDate(state.date)} at ${state.time} · Total ${fmtMoney(totals.total)}`;
         document.getElementById('successModal').classList.add('open');
     } catch (err) {
-        GB.toast(err.message || 'An error occurred while processing the booking.', 'error');
+        const rawMsg = String(err?.message || '');
+        const friendly = /failed to fetch|networkerror|load failed/i.test(rawMsg)
+            ? 'Cannot reach server. Start backend on port 3000 and try again.'
+            : (rawMsg || 'An error occurred while processing the booking.');
+        GB.toast(friendly, 'error');
     } finally {
         state.submitting = false;
     }

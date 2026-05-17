@@ -34,17 +34,28 @@ const _w = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const _nextId = arr => arr.length ? Math.max(...arr.map(x => x.id ?? 0)) + 1 : 1;
 const _now    = () => new Date().toISOString();
 const _WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
-const _API_BASE = (() => {
-    if (typeof window === 'undefined') return '/api';
+const _LOCAL_API_BASE = 'http://localhost:3000/api';
+const _API_BASE_CANDIDATES = (() => {
+    if (typeof window === 'undefined') return ['/api'];
+    const out = [];
+    const push = (value) => {
+        const v = String(value || '').trim().replace(/\/+$/, '');
+        if (v && !out.includes(v)) out.push(v);
+    };
     const override = String(localStorage.getItem('gb_api_base') || '').trim();
-    if (override) return override.replace(/\/+$/, '');
     const host = window.location.hostname;
     const isLocal = host === 'localhost' || host === '127.0.0.1';
+    const isFile = window.location.protocol === 'file:';
+    if (override) push(override);
+    if (isFile) push(_LOCAL_API_BASE);
     if (isLocal && window.location.port && window.location.port !== '3000') {
-        return `${window.location.protocol}//${host}:3000/api`;
+        push(`${window.location.protocol}//${host}:3000/api`);
     }
-    return '/api';
+    push('/api');
+    if (isLocal) push(_LOCAL_API_BASE);
+    return out.length ? out : ['/api'];
 })();
+let _API_BASE = _API_BASE_CANDIDATES[0];
 
 function _slotKey(value) {
     const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
@@ -200,24 +211,39 @@ window.GB = {
         if (token) finalHeaders.Authorization = `Bearer ${token}`;
         const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
         if (body !== undefined && !isFormData) finalHeaders['Content-Type'] = 'application/json';
+        const allCandidates = [_API_BASE, ..._API_BASE_CANDIDATES].filter((v, idx, arr) => v && arr.indexOf(v) === idx);
+        let lastNetworkError = null;
 
-        const res = await fetch(`${_API_BASE}${path}`, {
-            method,
-            headers: finalHeaders,
-            credentials: 'include',
-            body: body === undefined ? undefined : (isFormData ? body : JSON.stringify(body)),
-        });
-
-        let payload = null;
-        try { payload = await res.json(); } catch { payload = null; }
-        if (!res.ok || !payload?.ok) {
-            if (res.status === 401) {
-                [_K.TOKEN, _K.ME, _K.ROLE].forEach((k) => localStorage.removeItem(k));
+        for (let i = 0; i < allCandidates.length; i++) {
+            const base = allCandidates[i];
+            let res;
+            try {
+                res = await fetch(`${base}${path}`, {
+                    method,
+                    headers: finalHeaders,
+                    credentials: 'include',
+                    body: body === undefined ? undefined : (isFormData ? body : JSON.stringify(body)),
+                });
+            } catch (err) {
+                lastNetworkError = err;
+                const maybeNetwork = /failed to fetch|networkerror|load failed/i.test(String(err?.message || ''));
+                if (maybeNetwork && i < allCandidates.length - 1) continue;
+                throw err;
             }
-            const msg = payload?.error || `Request failed (${res.status})`;
-            throw new Error(msg);
+
+            let payload = null;
+            try { payload = await res.json(); } catch { payload = null; }
+            if (!res.ok || !payload?.ok) {
+                if (res.status === 401) {
+                    [_K.TOKEN, _K.ME, _K.ROLE].forEach((k) => localStorage.removeItem(k));
+                }
+                const msg = payload?.error || `Request failed (${res.status})`;
+                throw new Error(msg);
+            }
+            _API_BASE = base;
+            return payload;
         }
-        return payload;
+        throw lastNetworkError || new Error('Request failed.');
     },
     async syncFromServer() {
         if (!this.isLoggedIn()) return { ok: false, error: 'Not logged in.' };
