@@ -83,11 +83,14 @@
         .cb-section-title { font-size:.86rem; color:var(--text-mid); font-weight:700; margin-bottom:.7rem; display:flex; align-items:center; gap:6px; }
 
         .cb-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:.7rem; }
-        .cb-service { border:1px solid var(--pink-border); background:#fff; border-radius:12px; padding:.85rem; text-align:left; transition:var(--ease); }
+        .cb-service { border:1px solid var(--pink-border); background:#fff; border-radius:12px; padding:0; text-align:left; transition:var(--ease); overflow:hidden; }
         .cb-service:hover { border-color:var(--pink); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
         .cb-service.active { border-color:var(--pink); background:linear-gradient(135deg,var(--pink-light),#fff); box-shadow:var(--shadow); }
+        .cb-service-img { width:100%; height:102px; object-fit:cover; display:block; background:linear-gradient(135deg,var(--pink-light),var(--purple-light)); }
+        .cb-service-body { padding:.6rem .65rem .68rem; }
         .cb-service-name { font-size:.88rem; font-weight:700; color:var(--text-dark); }
         .cb-service-meta { display:flex; justify-content:space-between; margin-top:.45rem; font-size:.76rem; color:var(--text-subtle); }
+        .cb-service-sub { font-size:.68rem; color:var(--text-muted); margin-top:.35rem; text-transform:uppercase; letter-spacing:.35px; font-weight:700; }
         .cb-price { color:var(--pink-deep); font-weight:700; }
 
         .cb-design-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.65rem; }
@@ -256,7 +259,7 @@
                 <!-- STEP 1 -->
                 <div class="cb-step-panel active" id="step1">
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-solid fa-spa" style="color:var(--pink)"></i>Choose Service</div>
+                        <div class="cb-section-title"><i class="fa-solid fa-spa" style="color:var(--pink)"></i>Choose Service from Gallery</div>
                         <div class="cb-grid" id="servicesGrid"></div>
                     </div>
 
@@ -417,7 +420,7 @@ const state = {
     lastAppointmentId: null,
 };
 let services = GB.services.getAll();
-const designs = GB.designs.getAll();
+let designs = GB.designs.getAll();
 const fmtMoney = (n) => `€${Number(n || 0).toFixed(2)}`;
 const toISODate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const formatLongDate = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
@@ -478,13 +481,17 @@ function updateSummaryCta() {
 function updateSummaryUI() {
     const totals = calculateTotals();
     const hasDesign = !!state.design;
+    const summaryServiceLabel = hasDesign && state.service
+        ? `${state.design.name} (${state.service.name})`
+        : (state.design?.name || state.service?.name || '–');
+    const duration = Number(state.design?.duration || state.service?.duration || 0);
     document.getElementById('sumDesignRow').style.display = hasDesign ? 'flex' : 'none';
     document.getElementById('sumDesign').textContent = hasDesign ? state.design.name : '–';
 
-    document.getElementById('sumService').textContent = state.service?.name || '–';
+    document.getElementById('sumService').textContent = summaryServiceLabel;
     document.getElementById('sumDate').textContent = state.date ? formatLongDate(state.date) : '–';
     document.getElementById('sumTime').textContent = state.time || '–';
-    document.getElementById('sumDuration').textContent = state.service ? `${state.service.duration || 60} min` : '–';
+    document.getElementById('sumDuration').textContent = duration ? `${duration} min` : '–';
     document.getElementById('sumSubtotal').textContent = fmtMoney(totals.subtotal);
     document.getElementById('sumVat').textContent = fmtMoney(totals.vat);
     document.getElementById('sumTotal').textContent = fmtMoney(totals.total);
@@ -495,22 +502,29 @@ function updateSummaryUI() {
 
 function renderServices() {
     const host = document.getElementById('servicesGrid');
-    if (!services.length) {
-        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">No services are available right now.</p>';
+    if (!designs.length) {
+        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">No gallery services are available right now.</p>';
         return;
     }
-    host.innerHTML = services.map((s) => `
-        <button type="button" class="cb-service ${state.service?.id === s.id ? 'active' : ''}" data-service-id="${s.id}">
-            <div class="cb-service-name">${s.name}</div>
-            <div class="cb-service-meta">
-                <span><i class="fa-regular fa-clock"></i> ${s.duration || 60} min</span>
-                <span class="cb-price">€${s.price}</span>
+    const sorted = [...designs].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    const visible = sorted.slice(0, 12);
+    host.innerHTML = visible.map((d) => `
+        <button type="button" class="cb-service ${state.design?.id === d.id ? 'active' : ''}" data-gallery-design-id="${d.id}">
+            <img src="${d.image || ''}" alt="${d.name}" class="cb-service-img" loading="lazy" onerror="this.style.opacity='.45'">
+            <div class="cb-service-body">
+                <div class="cb-service-name">${d.name}</div>
+                <div class="cb-service-meta">
+                    <span><i class="fa-regular fa-clock"></i> ${d.duration || 60} min</span>
+                    <span class="cb-price">€${d.price}</span>
+                </div>
+                <div class="cb-service-sub">${d.category || 'Gallery style'}</div>
             </div>
         </button>
     `).join('');
 }
 
 function inferCategoryFromService() {
+    if (state.design?.category) return state.design.category;
     const name = String(state.service?.name || '').toLowerCase();
     if (name.includes('french')) return 'French';
     if (name.includes('gel')) return 'Gel';
@@ -532,6 +546,19 @@ function suggestServiceByCategory(category = '', suggestedId = null) {
     if (cat.includes('ombre')) return pick(['ombre']);
     if (cat.includes('3d')) return pick(['akryl', 'acryl', 'nail art']);
     return pick(['nail art', 'gel', 'manikyr']) || null;
+}
+
+function applyGallerySelection(design) {
+    if (!design) return;
+    state.design = design;
+    const suggested = suggestServiceByCategory(design.category);
+    if (suggested) {
+        state.service = suggested;
+        return;
+    }
+    if (!state.service && services.length) {
+        state.service = services[0];
+    }
 }
 
 function renderDesigns() {
@@ -577,6 +604,7 @@ function hydrateGalleryPrefill() {
     };
     const suggested = suggestServiceByCategory(prefill.designCategory, prefill.suggestedServiceId);
     if (suggested) state.service = suggested;
+    if (!state.service && services.length) state.service = services[0];
     localStorage.removeItem(BOOKING_PREFILL_KEY);
     renderServices();
     renderDesigns();
@@ -742,6 +770,7 @@ async function syncBookingData() {
     const sync = await GB.syncFromServer();
     if (sync?.ok) {
         services = GB.services.getAll();
+        designs = GB.designs.getAll();
     }
 }
 
@@ -819,8 +848,11 @@ async function completeBooking() {
         renderSlots();
         updateSummaryUI();
 
+        const bookedLabel = state.design && state.service
+            ? `${state.design.name} (${state.service.name})`
+            : (state.design?.name || state.service?.name || 'Service');
         document.getElementById('successText').textContent =
-            `${state.service.name} · ${formatLongDate(state.date)} at ${state.time} · Total ${fmtMoney(totals.total)}`;
+            `${bookedLabel} · ${formatLongDate(state.date)} at ${state.time} · Total ${fmtMoney(totals.total)}`;
         document.getElementById('successModal').classList.add('open');
     } catch (err) {
         GB.toast(err.message || 'An error occurred while processing the booking.', 'error');
@@ -835,12 +867,12 @@ document.getElementById('leaveReviewBtn').addEventListener('click', () => {
 });
 
 document.getElementById('servicesGrid').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-service-id]');
+    const btn = e.target.closest('[data-gallery-design-id]');
     if (!btn) return;
-    const id = Number(btn.dataset.serviceId);
-    const found = services.find((s) => s.id === id);
+    const id = Number(btn.dataset.galleryDesignId);
+    const found = designs.find((d) => d.id === id);
     if (!found) return;
-    state.service = found;
+    applyGallerySelection(found);
     renderServices();
     renderDesigns();
     updateSummaryUI();
@@ -852,8 +884,13 @@ document.getElementById('designGrid').addEventListener('click', (e) => {
     const id = Number(btn.dataset.designId);
     const found = designs.find((d) => d.id === id);
     if (!found) return;
-    state.design = state.design?.id === found.id ? null : found;
+    if (state.design?.id === found.id) {
+        state.design = null;
+    } else {
+        applyGallerySelection(found);
+    }
     renderDesigns();
+    renderServices();
     updateSummaryUI();
 });
 
