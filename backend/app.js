@@ -41,6 +41,9 @@ function createApp() {
     // Keep /images working in both structures to avoid broken gallery previews.
     app.use('/images', express.static(path.join(env.frontendDir, 'images')));
     app.use('/images', express.static(path.join(env.frontendDir, 'pages', 'images')));
+    // Backward-compatible aliases for image paths like /Frontend/images/...
+    app.use('/Frontend', express.static(env.frontendDir));
+    app.use('/frontend', express.static(env.frontendDir));
 
     app.get('/api/health', (req, res) => {
         res.json({ ok: true, service: 'glowbook-api', env: env.nodeEnv });
