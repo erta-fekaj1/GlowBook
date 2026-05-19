@@ -98,9 +98,9 @@ function _normalizeDesignImage(rawImage = '', category = '') {
 
     const docsMatch = image.match(/docs\/images\/gallery\/([^/]+)\/([^/?#]+)/i);
     if (docsMatch) {
-        const folder = String(docsMatch[1] || '').toLowerCase();
+        const folder = String(docsMatch[1] || '');
         const file = String(docsMatch[2] || '').replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1');
-        return `../images/gallery/${folder}/${file}`;
+        return `/Docs/Images/Gallery/${folder}/${file}`;
     }
 
     const galleryMatch = image.match(/gallery\/([^/]+)\/([^/?#]+)/i);

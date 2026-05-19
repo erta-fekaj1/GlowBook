@@ -41,6 +41,8 @@ function createApp() {
     // Keep /images working in both structures to avoid broken gallery previews.
     app.use('/images', express.static(path.join(env.frontendDir, 'images')));
     app.use('/images', express.static(path.join(env.frontendDir, 'pages', 'images')));
+    app.use('/Docs', express.static(path.join(env.frontendDir, '..', 'Docs')));
+    app.use('/docs', express.static(path.join(env.frontendDir, '..', 'Docs')));
     // Backward-compatible aliases for image paths like /Frontend/images/...
     app.use('/Frontend', express.static(env.frontendDir));
     app.use('/frontend', express.static(env.frontendDir));
