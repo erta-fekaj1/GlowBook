@@ -46,6 +46,15 @@ function createApp() {
         path.join(env.frontendDir, 'Docs'),
         path.join(env.frontendDir, 'pages', 'Docs'),
     ];
+    // Compatibility layer: old gallery URLs use /Docs/Images/Gallery/<Category>/<File>.
+    // Rewrite those requests to the real assets under Frontend/images/gallery.
+    const galleryAssetsRoot = path.join(env.frontendDir, 'images', 'gallery');
+    const docsGalleryAlias = (req, res, next) => {
+        req.url = String(req.url || '').toLowerCase();
+        next();
+    };
+    app.use('/Docs/Images/Gallery', docsGalleryAlias, express.static(galleryAssetsRoot));
+    app.use('/docs/images/gallery', docsGalleryAlias, express.static(galleryAssetsRoot));
     docsStaticRoots.forEach((root) => {
         app.use('/Docs', express.static(root));
         app.use('/docs', express.static(root));
