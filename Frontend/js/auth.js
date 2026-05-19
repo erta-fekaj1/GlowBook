@@ -253,6 +253,7 @@ window.GB = {
             if (p.me) _w(_K.ME, p.me);
             if (Array.isArray(p.users)) _w(_K.USERS, p.users);
             if (Array.isArray(p.services)) _w(_K.SVCS, p.services);
+            if (Array.isArray(p.designs) && p.designs.length) _w(_K.DESIGNS, p.designs);
             if (Array.isArray(p.appointments)) _w(_K.APPTS, p.appointments);
             if (Array.isArray(p.reviews)) _w(_K.REVIEWS, p.reviews);
             if (Array.isArray(p.payments)) _w(_K.PAYMENTS, p.payments);
@@ -325,6 +326,10 @@ window.GB = {
         settings: {
             async getAdmin() { return window.GB._request('/settings/admin'); },
             async updateAdmin(data) { return window.GB._request('/settings/admin', { method: 'PUT', body: data }); },
+            async getGalleryDesigns() { return window.GB._request('/settings/gallery-designs'); },
+            async updateGalleryDesigns(designs) {
+                return window.GB._request('/settings/gallery-designs', { method: 'PUT', body: { designs } });
+            },
         },
         analytics: {
             async overview() { return window.GB._request('/analytics/overview'); },

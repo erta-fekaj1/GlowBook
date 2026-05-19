@@ -5,8 +5,9 @@ const settingController = require('../controllers/settingController');
 
 const router = express.Router();
 
-router.use(requireAuth, requireRole('admin'));
-router.get('/admin', asyncHandler(settingController.getAdminSettings));
-router.put('/admin', asyncHandler(settingController.upsertAdminSettings));
+router.get('/gallery-designs', requireAuth, asyncHandler(settingController.getGalleryDesigns));
+router.put('/gallery-designs', requireAuth, asyncHandler(settingController.upsertGalleryDesigns));
+router.get('/admin', requireAuth, requireRole('admin'), asyncHandler(settingController.getAdminSettings));
+router.put('/admin', requireAuth, requireRole('admin'), asyncHandler(settingController.upsertAdminSettings));
 
 module.exports = router;

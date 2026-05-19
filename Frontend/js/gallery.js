@@ -640,6 +640,10 @@ document.addEventListener('keydown', e => {
    ================================================================ */
 (function init() {
     GB.init({ page: 'gallery' });
+    window.addEventListener('gb:data-synced', () => {
+        buildPills();
+        render();
+    });
     const sort = document.getElementById('sortSelect');
     if (sort) sort.value = state.sort;
     buildPills();
