@@ -69,6 +69,55 @@ function _isActiveAppointment(a) {
     return (a?.status || '').toLowerCase() !== 'cancelled';
 }
 
+function _designCategoryFolder(category = '') {
+    const c = String(category || '').trim().toLowerCase();
+    if (!c) return '';
+    if (c.includes('chrome') || c.includes('mirror')) return 'chrome';
+    if (c.includes('animal')) return 'animal';
+    if (c.includes('abstract')) return 'abstract';
+    if (c.includes('swirl')) return 'swirls';
+    if (c.includes('3d')) return '3d';
+    if (c.includes('foil')) return 'foil';
+    if (c.includes('season')) return 'seasonal';
+    if (c.includes('floral')) return 'floral';
+    if (c.includes('french')) return 'french';
+    if (c.includes('gel')) return 'gel';
+    if (c.includes('ombre')) return 'ombre';
+    return c.replace(/[^a-z0-9]+/g, '');
+}
+
+function _normalizeDesignImage(rawImage = '', category = '') {
+    let image = String(rawImage || '').trim();
+    if (!image) return '';
+    image = image.replace(/\\/g, '/');
+    image = image.replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1');
+    if (/^https?:\/\//i.test(image) || /^data:image\//i.test(image)) return image;
+    if (/^\.\.\/images\//i.test(image)) return image;
+    if (/^\/images\//i.test(image)) return `..${image}`;
+    if (/^images\//i.test(image)) return `../${image}`;
+
+    const docsMatch = image.match(/docs\/images\/gallery\/([^/]+)\/([^/?#]+)/i);
+    if (docsMatch) {
+        const folder = String(docsMatch[1] || '').toLowerCase();
+        const file = String(docsMatch[2] || '').replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1');
+        return `../images/gallery/${folder}/${file}`;
+    }
+
+    const galleryMatch = image.match(/gallery\/([^/]+)\/([^/?#]+)/i);
+    if (galleryMatch) {
+        const folder = String(galleryMatch[1] || '').toLowerCase();
+        const file = String(galleryMatch[2] || '').replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1');
+        return `../images/gallery/${folder}/${file}`;
+    }
+
+    const fileName = image.split('/').pop() || '';
+    if (/\.(jpg|jpeg|png|webp|gif)$/i.test(fileName)) {
+        const folder = _designCategoryFolder(category);
+        if (folder) return `../images/gallery/${folder}/${fileName}`;
+    }
+    return image;
+}
+
 /* ── Password obfuscation (not cryptographic) ──────────────── */
 function _hash(pw) {
     let h = 5381;
@@ -253,7 +302,9 @@ window.GB = {
             if (p.me) _w(_K.ME, p.me);
             if (Array.isArray(p.users)) _w(_K.USERS, p.users);
             if (Array.isArray(p.services)) _w(_K.SVCS, p.services);
-            if (Array.isArray(p.designs) && p.designs.length) _w(_K.DESIGNS, p.designs);
+            if (Array.isArray(p.designs) && p.designs.length) {
+                _w(_K.DESIGNS, p.designs.map((d) => ({ ...d, image: _normalizeDesignImage(d.image, d.category) })));
+            }
             if (Array.isArray(p.appointments)) _w(_K.APPTS, p.appointments);
             if (Array.isArray(p.reviews)) _w(_K.REVIEWS, p.reviews);
             if (Array.isArray(p.payments)) _w(_K.PAYMENTS, p.payments);
@@ -565,13 +616,30 @@ window.GB = {
 
     /* ── Designs store ───────────────────────────────────────── */
     designs: {
-        getAll ()    { return _r(_K.DESIGNS) ?? []; },
+        getAll () {
+            const all = _r(_K.DESIGNS) ?? [];
+            if (!Array.isArray(all)) return [];
+            let changed = false;
+            const normalized = all.map((d) => {
+                const nextImage = _normalizeDesignImage(d?.image, d?.category);
+                if (nextImage !== (d?.image || '')) changed = true;
+                return { ...d, image: nextImage };
+            });
+            if (changed) _w(_K.DESIGNS, normalized);
+            return normalized;
+        },
         save   (arr) { _w(_K.DESIGNS, arr); },
         count  ()    { return this.getAll().length; },
 
         add(design) {
             const all = this.getAll();
-            const d   = { ...design, id:_nextId(all), likes:0, liked:false };
+            const d   = {
+                ...design,
+                image: _normalizeDesignImage(design?.image, design?.category),
+                id:_nextId(all),
+                likes:0,
+                liked:false
+            };
             _w(_K.DESIGNS, [...all, d]);
             return d;
         },
@@ -579,7 +647,9 @@ window.GB = {
             const all = this.getAll();
             const idx = all.findIndex(d => d.id === id);
             if (idx < 0) return null;
-            all[idx] = { ...all[idx], ...fields };
+            const next = { ...all[idx], ...fields };
+            next.image = _normalizeDesignImage(next.image, next.category);
+            all[idx] = next;
             _w(_K.DESIGNS, all);
             return all[idx];
         },
