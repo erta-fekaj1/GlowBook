@@ -12,22 +12,38 @@ const DEFAULT_SERVICES = [
     { name: 'Nail Art', price: 25, duration: 60, desc: 'Custom hand-drawn design.' },
 ];
 
-async function ensureAdminUser() {
-    const adminEmail = 'admin@glowbook.com';
-    const exists = await User.findOne({ email: adminEmail });
-    if (exists) return;
-    const id = await getNextId(User);
-    const password = await bcrypt.hash('admin123', 10);
-    await User.create({
-        id,
-        name: 'Admin GlowBook',
-        email: adminEmail,
-        phone: '044000000',
-        password,
-        role: 'admin',
-        loyaltyPoints: 0,
-        badges: [],
-    });
+async function ensureAdminUsers() {
+    const admins = [
+        {
+            name: 'Admin GlowBook',
+            email: 'admin@glowbook.com',
+            phone: '044000000',
+            password: 'admin123',
+        },
+        {
+            name: 'Admin',
+            email: 'admin@gmail.com',
+            phone: '044000001',
+            password: 'admin123',
+        },
+    ];
+
+    for (const admin of admins) {
+        const exists = await User.findOne({ email: admin.email.toLowerCase() });
+        if (exists) continue;
+        const id = await getNextId(User);
+        const password = await bcrypt.hash(admin.password, 10);
+        await User.create({
+            id,
+            name: admin.name,
+            email: admin.email.toLowerCase(),
+            phone: admin.phone,
+            password,
+            role: 'admin',
+            loyaltyPoints: 0,
+            badges: [],
+        });
+    }
 }
 
 async function ensureServices() {
@@ -56,7 +72,7 @@ async function ensureSettings() {
 }
 
 async function runSeed() {
-    await ensureAdminUser();
+    await ensureAdminUsers();
     await ensureServices();
     await ensureSettings();
 }

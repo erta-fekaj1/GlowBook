@@ -34,6 +34,11 @@
         .ad-inline-kpi { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.68rem .58rem; }
         .ad-inline-kpi b { display:block; font-family:'Cormorant Garamond',serif; font-size:1.18rem; color:var(--pink-deep); }
         .ad-inline-kpi span { font-size:.67rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; font-weight:700; }
+        .ad-analytics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.65rem; margin-top:.7rem; }
+        .ad-analytics-card { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.68rem .58rem; }
+        .ad-analytics-card b { display:block; font-family:'Cormorant Garamond',serif; font-size:1.15rem; color:var(--pink-deep); }
+        .ad-analytics-card span { font-size:.67rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; font-weight:700; }
+        .ad-analytics-trend { margin-top:.55rem; font-size:.74rem; color:var(--text-subtle); }
         .ad-notice { margin-bottom:.9rem; border:1px solid var(--pink-border); background:linear-gradient(135deg,#fff,#FFF7FB); border-radius:12px; padding:.7rem .8rem; font-size:.78rem; color:var(--text-subtle); }
         .ad-modal-overlay { display:none; position:fixed; inset:0; background:rgba(44,21,29,.42); z-index:2100; padding:1rem; align-items:center; justify-content:center; }
         .ad-modal-overlay.open { display:flex; }
@@ -41,8 +46,8 @@
         .ad-modal-title { font-family:'Cormorant Garamond',serif; font-size:1.35rem; color:var(--pink-deep); margin-bottom:.8rem; }
         .ad-modal-actions { display:flex; gap:.55rem; margin-top:.8rem; }
         @media (max-width:1100px) { .ad-inline-kpis { grid-template-columns:repeat(3,1fr); } }
-        @media (max-width:900px) { .ad-sub-grid, .ad-settings-grid { grid-template-columns:1fr; } }
-        @media (max-width:620px) { .ad-inline-kpis { grid-template-columns:repeat(2,1fr); } .ad-toolbar input,.ad-toolbar select{min-width:unset; width:100%;} }
+        @media (max-width:900px) { .ad-sub-grid, .ad-settings-grid, .ad-analytics-grid { grid-template-columns:1fr 1fr; } }
+        @media (max-width:620px) { .ad-inline-kpis, .ad-analytics-grid { grid-template-columns:repeat(2,1fr); } .ad-toolbar input,.ad-toolbar select{min-width:unset; width:100%;} }
     </style>
 </head>
 <body>
@@ -80,6 +85,25 @@
             <div class="ad-inline-kpi"><b id="kpiServices">0</b><span>Shërbime</span></div>
             <div class="ad-inline-kpi"><b id="kpiPayments">0</b><span>Pagesa</span></div>
             <div class="ad-inline-kpi"><b id="kpiReviews">0</b><span>Reviews</span></div>
+        </div>
+
+        <div class="card" style="margin-bottom:1rem">
+            <div class="card-title">
+                <span><i class="fa-solid fa-chart-line" style="color:var(--pink);margin-right:7px"></i>Business Analytics</span>
+            </div>
+            <div class="ad-analytics-grid">
+                <div class="ad-analytics-card"><b id="aRevenueTotal">€0.00</b><span>Total Revenue</span></div>
+                <div class="ad-analytics-card"><b id="aRevenueMonth">€0.00</b><span>Revenue This Month</span></div>
+                <div class="ad-analytics-card"><b id="aCompletionRate">0%</b><span>Completion Rate</span></div>
+                <div class="ad-analytics-card"><b id="aAvgRating">0.0</b><span>Average Rating</span></div>
+            </div>
+            <div class="ad-analytics-trend" id="aTrendText">Booking trend (7 days): —</div>
+            <div class="table-container" style="box-shadow:none;border:1px solid var(--pink-light);margin-top:.6rem">
+                <table class="ad-soft-table">
+                    <thead><tr><th>Top Service</th><th>Bookings</th><th>Revenue</th></tr></thead>
+                    <tbody id="aTopServices"></tbody>
+                </table>
+            </div>
         </div>
 
         <div class="ad-tabs">
@@ -321,6 +345,86 @@ function badgeForStatus(status='') {
     const key = v.toLowerCase();
     const map = { pending:'badge-pending', confirmed:'badge-confirmed', done:'badge-done', cancelled:'badge-cancelled' };
     return map[key] || 'badge-confirmed';
+}
+function fmtMoney(v) {
+    return `€${Number(v || 0).toFixed(2)}`;
+}
+
+function localAnalyticsFallback() {
+    const appts = GB.appointments.getAll();
+    const pays = readPayments().filter(p => ['paid', 'paguar', 'succeeded', 'completed'].includes(String(p.status || '').toLowerCase()));
+    const reviews = GB.reviews.getAll();
+    const totalRevenue = pays.reduce((s, p) => s + Number(p.amount || 0), 0);
+    const now = new Date();
+    const monthlyRevenue = pays
+        .filter(p => {
+            const d = new Date(p.createdAt || Date.now());
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        })
+        .reduce((s, p) => s + Number(p.amount || 0), 0);
+    const done = appts.filter(a => String(a.status || '').toLowerCase() === 'done').length;
+    const completionRate = appts.length ? (done / appts.length) * 100 : 0;
+    const avgRating = reviews.length ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length) : 0;
+
+    const svcMap = new Map();
+    appts.forEach((a) => {
+        const key = String(a.serviceName || 'Unknown');
+        if (!svcMap.has(key)) svcMap.set(key, { serviceName: key, bookings: 0, revenue: 0 });
+        svcMap.get(key).bookings += 1;
+    });
+    pays.forEach((p) => {
+        const key = String(p.serviceName || 'Unknown');
+        if (!svcMap.has(key)) svcMap.set(key, { serviceName: key, bookings: 0, revenue: 0 });
+        svcMap.get(key).revenue += Number(p.amount || 0);
+    });
+    const topServices = [...svcMap.values()].sort((a, b) => b.bookings - a.bookings || b.revenue - a.revenue).slice(0, 5);
+
+    const trend = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const day = d.toISOString().slice(0, 10);
+        const bookings = appts.filter(a => String(a.date || '').slice(0, 10) === day).length;
+        trend.push({ day, bookings });
+    }
+
+    return { totalRevenue, monthlyRevenue, completionRate, avgRating, topServices, bookingTrend7d: trend };
+}
+
+function renderAnalytics(analytics) {
+    const a = analytics || {};
+    document.getElementById('aRevenueTotal').textContent = fmtMoney(a.totalRevenue || 0);
+    document.getElementById('aRevenueMonth').textContent = fmtMoney(a.monthlyRevenue || 0);
+    document.getElementById('aCompletionRate').textContent = `${Number(a.completionRate || 0).toFixed(1)}%`;
+    document.getElementById('aAvgRating').textContent = Number(a.avgRating || 0).toFixed(1);
+
+    const trend = Array.isArray(a.bookingTrend7d) ? a.bookingTrend7d : [];
+    document.getElementById('aTrendText').textContent = trend.length
+        ? `Booking trend (7 days): ${trend.map(t => `${String(t.day).slice(5)}=${t.bookings}`).join(' · ')}`
+        : 'Booking trend (7 days): —';
+
+    const top = Array.isArray(a.topServices) ? a.topServices : [];
+    const tbody = document.getElementById('aTopServices');
+    if (!top.length) {
+        tbody.innerHTML = '<tr><td colspan="3" class="ad-empty">No analytics data yet.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = top.map(row => `
+        <tr>
+            <td>${row.serviceName || '—'}</td>
+            <td>${Number(row.bookings || 0)}</td>
+            <td>${fmtMoney(row.revenue || 0)}</td>
+        </tr>
+    `).join('');
+}
+
+async function loadAnalytics() {
+    try {
+        const res = await GB.api.analytics.overview();
+        renderAnalytics(res.analytics || {});
+    } catch (_) {
+        renderAnalytics(localAnalyticsFallback());
+    }
 }
 
 function updateKpis() {
@@ -772,6 +876,7 @@ async function handleSettingsSubmit(e) {
 
 async function refreshAll(sync = true) {
     if (sync) await GB.syncFromServer();
+    await loadAnalytics();
     updateKpis();
     renderAppointmentsTable();
     renderUsersMini();

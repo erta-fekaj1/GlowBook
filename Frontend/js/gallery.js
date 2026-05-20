@@ -32,8 +32,10 @@ const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c]));
 const state = {
     filter       : 'Të gjitha',
     view         : 'grid',          /* grid | list | category */
+    sort         : 'popular',
     editingId    : null,
     detailId     : null,
+    maxDesignId  : 0,
 };
 const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 
@@ -91,7 +93,7 @@ function buildPills() {
 /* ── Filter + search logic ────────────────────────────────────── */
 function getFiltered() {
     const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
-    return GB.designs.getAll().filter(d => {
+    const rows = GB.designs.getAll().filter(d => {
         const matchCat  = state.filter === 'Të gjitha' || d.category === state.filter;
         const matchSearch = !q ||
             d.name.toLowerCase().includes(q) ||
@@ -100,6 +102,19 @@ function getFiltered() {
             (d.tags || []).some(t => t.toLowerCase().includes(q));
         return matchCat && matchSearch;
     });
+    const sorted = [...rows];
+    if (state.sort === 'latest') {
+        sorted.sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+    } else if (state.sort === 'price-asc') {
+        sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+    } else if (state.sort === 'price-desc') {
+        sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+    } else if (state.sort === 'name-asc') {
+        sorted.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+    } else {
+        sorted.sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0));
+    }
+    return sorted;
 }
 
 function setFilter(key) {
@@ -115,6 +130,12 @@ function applyFilters() {
     render();
 }
 window.applyFilters = applyFilters;
+
+function setSort(value) {
+    state.sort = value || 'popular';
+    render();
+}
+window.setSort = setSort;
 
 function clearSearch() {
     const inp = document.getElementById('searchInput');
@@ -147,9 +168,16 @@ function updateStats(all) {
     const rc = document.getElementById('resultsCount');
     if (rc) {
         rc.textContent = shown.length === all.length
-            ? `${all.length} dizajne`
-            : `${shown.length} nga ${all.length} dizajne`;
+            ? `${all.length} designs`
+            : `${shown.length} of ${all.length} designs`;
     }
+    const trendingCount = all.filter(d => Number(d.likes || 0) >= 8).length;
+    const heroDesign = document.getElementById('heroDesignCount');
+    const heroLikes = document.getElementById('heroLikesCount');
+    const heroTrending = document.getElementById('heroTrendingCount');
+    if (heroDesign) heroDesign.textContent = String(all.length);
+    if (heroLikes) heroLikes.textContent = String(all.reduce((s, d) => s + Number(d.likes || 0), 0));
+    if (heroTrending) heroTrending.textContent = String(trendingCount);
 }
 
 /* ================================================================
@@ -159,6 +187,7 @@ function updateStats(all) {
 function buildGridCard(d) {
     const cat  = getCat(d.category);
     const comp = complexityClass(d.complexity);
+    const flag = getCardFlag(d);
     const adminBar = isAdmin() ? `
         <div class="gl-card-admin-bar" data-admin>
             <button class="gl-admin-btn gl-admin-edit"   onclick="event.stopPropagation();openEditModal(${d.id})">
@@ -181,10 +210,10 @@ function buildGridCard(d) {
             </div>
             <div class="gl-card-overlay">
                 <button class="gl-overlay-btn" onclick="event.stopPropagation();openDetailModal(${d.id})">
-                    <i class="fa-solid fa-eye"></i> Shiko
+                    <i class="fa-solid fa-eye"></i> View
                 </button>
                 <button class="gl-overlay-btn gl-overlay-book" onclick="event.stopPropagation();bookFromCard(${d.id})">
-                    <i class="fa-solid fa-calendar-check"></i> Rezervo
+                    <i class="fa-solid fa-calendar-check"></i> Book This Design
                 </button>
             </div>
             <button class="gl-like-btn ${d.liked ? 'liked' : ''}"
@@ -196,6 +225,7 @@ function buildGridCard(d) {
             <span class="gl-card-cat-badge" style="background:${cat.accent}">
                 ${d.category}
             </span>
+            ${flag ? `<span class="gl-card-flag ${flag.kind}">${flag.label}</span>` : ''}
             ${adminBar}
         </div>
         <div class="gl-card-body">
@@ -209,10 +239,16 @@ function buildGridCard(d) {
                 <span class="gl-card-dur"><i class="fa-regular fa-clock"></i> ${d.duration} min</span>
             </div>
             <button class="gl-card-book-inline" onclick="event.stopPropagation();bookFromCard(${d.id})">
-                <i class="fa-solid fa-calendar-check"></i> Rezervo këtë stil
+                <i class="fa-solid fa-calendar-check"></i> Book This Design
             </button>
         </div>
     </div>`;
+}
+
+function getCardFlag(design) {
+    if (Number(design.likes || 0) >= 10) return { kind: 'trending', label: 'Trending' };
+    if (Number(design.id || 0) >= Math.max(1, state.maxDesignId - 3)) return { kind: 'new', label: 'New' };
+    return null;
 }
 
 function buildListRow(d) {
@@ -250,7 +286,7 @@ function buildListRow(d) {
         <td style="color:var(--text-subtle)">${d.duration} min</td>
         <td>
             <button class="btn-sm btn-edit" style="background:var(--pink-light);color:var(--pink-deep)" onclick="event.stopPropagation();bookFromCard(${d.id})">
-                <i class="fa-solid fa-calendar-check"></i> Rezervo
+                <i class="fa-solid fa-calendar-check"></i> Book
             </button>
         </td>
         <td>
@@ -270,6 +306,7 @@ function buildListRow(d) {
 function render() {
     const all      = GB.designs.getAll();
     const filtered = getFiltered();
+    state.maxDesignId = all.reduce((max, d) => Math.max(max, Number(d.id || 0)), 0);
     updateStats(all);
 
     const container = document.getElementById('galleryContainer');
@@ -279,10 +316,10 @@ function render() {
         container.innerHTML = `
             <div class="gl-empty">
                 <div class="gl-empty-icon"><i class="fa-solid fa-image"></i></div>
-                <h3>Nuk u gjetën dizajne</h3>
-                <p>Provoni një filtrim tjetër ose pastroni kërkimin.</p>
+                <h3>No designs found</h3>
+                <p>Try another filter or clear search to explore all available styles.</p>
                 <button class="btn-secondary" onclick="setFilter('Të gjitha');clearSearch()">
-                    <i class="fa-solid fa-rotate-left"></i> Shiko të gjitha
+                    <i class="fa-solid fa-rotate-left"></i> Show all designs
                 </button>
             </div>`;
         return;
@@ -301,13 +338,13 @@ function render() {
             <div class="table-container">
                 <table>
                     <thead><tr>
-                        <th>Dizajni</th>
-                        <th>Kategoria</th>
-                        <th>Vështirësia</th>
-                        <th>Çmimi</th>
-                        <th>Kohëzgjatja</th>
-                        <th>Rezervo</th>
-                        <th>Pëlqimet</th>
+                        <th>Design</th>
+                        <th>Category</th>
+                        <th>Complexity</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                        <th>Book</th>
+                        <th>Likes</th>
                         ${adminHeader}
                     </tr></thead>
                     <tbody>${filtered.map(buildListRow).join('')}</tbody>
@@ -336,11 +373,11 @@ function render() {
                         </div>
                         <div class="gl-cat-info">
                             <h2 class="gl-cat-title">${c.label}</h2>
-                            <span class="gl-cat-count">${designs.length} dizajne</span>
+                            <span class="gl-cat-count">${designs.length} designs</span>
                         </div>
                         <button class="btn-secondary gl-cat-see-all"
                             onclick="setFilter('${c.key}');setView('grid')">
-                            Shiko të gjitha <i class="fa-solid fa-arrow-right"></i>
+                            View all <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                     <div class="gl-grid gl-cat-grid">
@@ -350,7 +387,7 @@ function render() {
             }).join('');
 
         container.innerHTML = sections ||
-            `<div class="gl-empty"><p>Nuk ka dizajne për këtë kërkesë.</p></div>`;
+            `<div class="gl-empty"><p>No designs available for this selection.</p></div>`;
         return;
     }
 }
@@ -422,7 +459,7 @@ function openDetailModal(id) {
     document.getElementById('detailCat').style.background= cat.color;
     document.getElementById('detailName').textContent    = d.name;
     document.getElementById('detailPrice').textContent   = `€${d.price}`;
-    document.getElementById('detailDur').textContent     = `${d.duration} minuta`;
+    document.getElementById('detailDur').textContent     = `${d.duration} min`;
     document.getElementById('detailDesc').textContent    = d.desc || '';
 
     /* Tags */
@@ -565,10 +602,10 @@ function saveDesign() {
 
     if (state.editingId) {
         GB.designs.update(state.editingId, { name, image, category:cat, complexity:comp, price, duration:dur, desc, tags });
-        GB.toast(`"${name}" u përditësua!`, 'success');
+        GB.toast(`"${name}" was updated.`, 'success');
     } else {
         GB.designs.add({ name, image, category:cat, complexity:comp, price, duration:dur, desc, tags });
-        GB.toast(`"${name}" u shtua!`, 'success');
+        GB.toast(`"${name}" was added.`, 'success');
     }
     closeAddModal();
     render();
@@ -580,7 +617,7 @@ function deleteDesign(id) {
     if (!d) return;
     if (!confirm(`A jeni të sigurt që dëshironi të fshini "${d.name}"?`)) return;
     GB.designs.delete(id);
-    GB.toast('Dizajni u fshi!', 'success');
+    GB.toast('Design deleted.', 'success');
     render();
 }
 window.deleteDesign = deleteDesign;
@@ -603,6 +640,12 @@ document.addEventListener('keydown', e => {
    ================================================================ */
 (function init() {
     GB.init({ page: 'gallery' });
+    window.addEventListener('gb:data-synced', () => {
+        buildPills();
+        render();
+    });
+    const sort = document.getElementById('sortSelect');
+    if (sort) sort.value = state.sort;
     buildPills();
     render();
     /* Hide search clear button initially */

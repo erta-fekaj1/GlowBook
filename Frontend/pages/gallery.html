@@ -13,7 +13,11 @@
 <!-- Mobile nav -->
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
     <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -27,12 +31,34 @@
         <div class="topbar">
             <div>
                 <h1>Nail Art Gallery</h1>
-                <p>Zbulo dizajnet më të bukura · <span id="totalCount">0</span> dizajne</p>
+                <p>Discover signature styles · <span id="totalCount">0</span> designs</p>
             </div>
             <button class="btn-primary gl-add-btn" data-admin onclick="openAddModal()">
-                <i class="fa-solid fa-plus"></i> Shto Dizajn
+                <i class="fa-solid fa-plus"></i> Add Design
             </button>
         </div>
+
+        <section class="gl-hero-shell">
+            <div class="gl-hero-grid">
+                <div>
+                    <span class="gl-hero-tag"><i class="fa-solid fa-sparkles"></i> Premium Nail Inspiration</span>
+                    <h2 class="gl-hero-title">Choose your style, then book it in seconds.</h2>
+                    <p class="gl-hero-subtitle">Browse trending designs, compare complexity and pricing, then reserve your favorite style directly from the gallery.</p>
+                    <div class="gl-hero-actions">
+                        <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-check"></i> Book Appointment</a>
+                        <button class="btn-secondary" type="button" onclick="setFilter('Të gjitha');setView('grid')">
+                            <i class="fa-solid fa-image"></i> Explore all styles
+                        </button>
+                    </div>
+                </div>
+                <div class="gl-hero-kpis">
+                    <div class="gl-hero-kpi"><b id="heroDesignCount">0</b><span>Total Styles</span></div>
+                    <div class="gl-hero-kpi"><b id="heroLikesCount">0</b><span>Total Likes</span></div>
+                    <div class="gl-hero-kpi"><b id="heroTrendingCount">0</b><span>Trending</span></div>
+                    <div class="gl-hero-kpi"><b>24/7</b><span>Instant Booking</span></div>
+                </div>
+            </div>
+        </section>
 
         <!-- ── Stats row ── -->
         <div class="gl-stats-row">
@@ -40,35 +66,35 @@
                 <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FFF7FB,#FCE7F3)">💅</div>
                 <div class="gl-stat-info">
                     <span class="gl-stat-val" id="stTotal">0</span>
-                    <span class="gl-stat-lbl">Dizajne Gjithsej</span>
+                    <span class="gl-stat-lbl">All Designs</span>
                 </div>
             </div>
             <div class="gl-stat">
                 <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FCE7F3,#FBCFE8)">✅</div>
                 <div class="gl-stat-info">
                     <span class="gl-stat-val" id="stEasy">0</span>
-                    <span class="gl-stat-lbl">Të Lehta</span>
+                    <span class="gl-stat-lbl">Easy</span>
                 </div>
             </div>
             <div class="gl-stat">
                 <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FCE7F3,#FBCFE8)">⚡</div>
                 <div class="gl-stat-info">
                     <span class="gl-stat-val" id="stMed">0</span>
-                    <span class="gl-stat-lbl">Mesatare</span>
+                    <span class="gl-stat-lbl">Medium</span>
                 </div>
             </div>
             <div class="gl-stat">
                 <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FCE7F3,#FBCFE8)">🎨</div>
                 <div class="gl-stat-info">
                     <span class="gl-stat-val" id="stHard">0</span>
-                    <span class="gl-stat-lbl">Të Vështira</span>
+                    <span class="gl-stat-lbl">Hard</span>
                 </div>
             </div>
             <div class="gl-stat">
                 <div class="gl-stat-icon" style="background:linear-gradient(135deg,#FCE7F3,#F9A8D4)">❤️</div>
                 <div class="gl-stat-info">
                     <span class="gl-stat-val" id="stLikes">0</span>
-                    <span class="gl-stat-lbl">Të Pëlqyera</span>
+                    <span class="gl-stat-lbl">Liked</span>
                 </div>
             </div>
         </div>
@@ -77,10 +103,22 @@
         <div class="gl-filter-bar">
             <div class="gl-search-wrap">
                 <i class="fa-solid fa-magnifying-glass gl-search-icon"></i>
-                <input class="gl-search" type="text" id="searchInput" placeholder="Kërko dizajn, kategori..." oninput="applyFilters()">
-                <button class="gl-search-clear" id="searchClear" onclick="clearSearch()" title="Pastro kërkimin">
+                <input class="gl-search" type="text" id="searchInput" placeholder="Search design or category..." oninput="applyFilters()">
+                <button class="gl-search-clear" id="searchClear" onclick="clearSearch()" title="Clear search">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
+            </div>
+            <div class="gl-tools-row">
+                <div class="gl-sort-wrap">
+                    <label for="sortSelect">Sort by</label>
+                    <select id="sortSelect" class="gl-sort-select" onchange="setSort(this.value)">
+                        <option value="popular">Most Loved</option>
+                        <option value="latest">Latest Added</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="name-asc">Name: A to Z</option>
+                    </select>
+                </div>
             </div>
             <div class="gl-pills" id="pillsContainer">
                 <!-- built by JS -->
@@ -89,7 +127,7 @@
 
         <!-- ── View toggle ── -->
         <div class="gl-view-bar">
-            <span class="gl-results-count" id="resultsCount">Duke ngarkuar...</span>
+            <span class="gl-results-count" id="resultsCount">Loading...</span>
             <div class="gl-view-btns">
                 <button class="gl-view-btn active" id="btnGrid"  onclick="setView('grid')"  title="Pamja Grid">
                     <i class="fa-solid fa-grip"></i>
@@ -154,10 +192,10 @@
 
             <div class="gl-detail-actions">
                 <button class="btn-secondary" onclick="closeDetailModal()">
-                    <i class="fa-solid fa-xmark"></i> Mbyll
+                    <i class="fa-solid fa-xmark"></i> Close
                 </button>
                 <button class="btn-primary" onclick="bookDesign()">
-                    <i class="fa-solid fa-calendar-check"></i> Rezervo këtë Stil
+                    <i class="fa-solid fa-calendar-check"></i> Book This Design
                 </button>
             </div>
         </div>

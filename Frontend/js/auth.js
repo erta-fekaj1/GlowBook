@@ -34,7 +34,28 @@ const _w = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 const _nextId = arr => arr.length ? Math.max(...arr.map(x => x.id ?? 0)) + 1 : 1;
 const _now    = () => new Date().toISOString();
 const _WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
-const _API_BASE = '/api';
+const _LOCAL_API_BASE = 'http://localhost:3000/api';
+const _API_BASE_CANDIDATES = (() => {
+    if (typeof window === 'undefined') return ['/api'];
+    const out = [];
+    const push = (value) => {
+        const v = String(value || '').trim().replace(/\/+$/, '');
+        if (v && !out.includes(v)) out.push(v);
+    };
+    const override = String(localStorage.getItem('gb_api_base') || '').trim();
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1';
+    const isFile = window.location.protocol === 'file:';
+    if (override) push(override);
+    if (isFile) push(_LOCAL_API_BASE);
+    if (isLocal && window.location.port && window.location.port !== '3000') {
+        push(`${window.location.protocol}//${host}:3000/api`);
+    }
+    push('/api');
+    if (isLocal) push(_LOCAL_API_BASE);
+    return out.length ? out : ['/api'];
+})();
+let _API_BASE = _API_BASE_CANDIDATES[0];
 
 function _slotKey(value) {
     const m = String(value || '').match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/);
@@ -46,6 +67,81 @@ function _dayKey(value) {
 }
 function _isActiveAppointment(a) {
     return (a?.status || '').toLowerCase() !== 'cancelled';
+}
+
+function _designCategoryFolder(category = '') {
+    const c = String(category || '').trim().toLowerCase();
+    if (!c) return '';
+    if (c.includes('chrome') || c.includes('mirror')) return 'chrome';
+    if (c.includes('animal')) return 'animal';
+    if (c.includes('abstract')) return 'abstract';
+    if (c.includes('swirl')) return 'swirls';
+    if (c.includes('3d')) return '3d';
+    if (c.includes('foil')) return 'foil';
+    if (c.includes('season')) return 'seasonal';
+    if (c.includes('floral')) return 'floral';
+    if (c.includes('french')) return 'french';
+    if (c.includes('gel')) return 'gel';
+    if (c.includes('ombre')) return 'ombre';
+    return c.replace(/[^a-z0-9]+/g, '');
+}
+
+function _defaultDesignImageById(id = 0) {
+    const n = Number(id || 0);
+    if (n >= 1 && n <= 3)   return `../images/gallery/french/french${n}.jpg`;
+    if (n >= 4 && n <= 7)   return `../images/gallery/gel/gel${n - 3}.jpg`;
+    if (n >= 8 && n <= 10)  return `../images/gallery/ombre/ombre${n - 7}.jpg`;
+    if (n >= 11 && n <= 13) return `../images/gallery/floral/floral${n - 10}.jpg`;
+    if (n >= 14 && n <= 16) return `../images/gallery/glitter/glitter${n - 13}.jpg`;
+    if (n >= 17 && n <= 20) return `../images/gallery/chrome/chrome${n - 16}.jpg`;
+    if (n >= 21 && n <= 24) return `../images/gallery/animal/animal${n - 20}.jpg`;
+    if (n >= 25 && n <= 28) return `../images/gallery/abstract/abstract${n - 24}.jpg`;
+    if (n >= 29 && n <= 31) return `../images/gallery/swirls/swirls${n - 28}.jpg`;
+    if (n >= 32 && n <= 35) return `../images/gallery/3d/3d${n - 31}.jpg`;
+    if (n >= 36 && n <= 39) return `../images/gallery/foil/foil${n - 35}.jpg`;
+    if (n >= 40 && n <= 45) return `../images/gallery/seasonal/seasonal${n - 39}.jpg`;
+    return '';
+}
+
+function _isSuspiciousDesignImagePath(image = '') {
+    const v = String(image || '').toLowerCase();
+    return /docs\/images\/gallery|picsum\.photos|unsplash|placehold|random|\/docs\/images\/gallery/.test(v);
+}
+
+function _normalizeDesignImage(rawImage = '', category = '', designId = 0) {
+    let image = String(rawImage || '').trim();
+    const fallbackById = _defaultDesignImageById(designId);
+    if (!image) return fallbackById || '';
+    image = image.replace(/\\/g, '/');
+    image = image.replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1');
+    if (_isSuspiciousDesignImagePath(image) && fallbackById) return fallbackById;
+    if (/^https?:\/\//i.test(image) || /^data:image\//i.test(image)) return image;
+    if (/^\.\.\/images\//i.test(image)) return image;
+    if (/^\/images\//i.test(image)) return `..${image}`;
+    if (/^images\//i.test(image)) return `../${image}`;
+
+    const docsMatch = image.match(/docs\/images\/gallery\/([^/]+)\/([^/?#]+)/i);
+    if (docsMatch) {
+        const folder = String(docsMatch[1] || '').toLowerCase();
+        const file = String(docsMatch[2] || '')
+            .replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1')
+            .toLowerCase();
+        return `../images/gallery/${folder}/${file}`;
+    }
+
+    const galleryMatch = image.match(/gallery\/([^/]+)\/([^/?#]+)/i);
+    if (galleryMatch) {
+        const folder = String(galleryMatch[1] || '').toLowerCase();
+        const file = String(galleryMatch[2] || '').replace(/(\.(?:jpg|jpeg|png|webp|gif))\1+$/i, '$1');
+        return `../images/gallery/${folder}/${file}`;
+    }
+
+    const fileName = image.split('/').pop() || '';
+    if (/\.(jpg|jpeg|png|webp|gif)$/i.test(fileName)) {
+        const folder = _designCategoryFolder(category);
+        if (folder) return `../images/gallery/${folder}/${fileName}`;
+    }
+    return fallbackById || image;
 }
 
 /* ── Password obfuscation (not cryptographic) ──────────────── */
@@ -188,25 +284,41 @@ window.GB = {
         const token = this.getToken();
         const finalHeaders = { ...headers };
         if (token) finalHeaders.Authorization = `Bearer ${token}`;
-        if (body !== undefined) finalHeaders['Content-Type'] = 'application/json';
+        const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+        if (body !== undefined && !isFormData) finalHeaders['Content-Type'] = 'application/json';
+        const allCandidates = [_API_BASE, ..._API_BASE_CANDIDATES].filter((v, idx, arr) => v && arr.indexOf(v) === idx);
+        let lastNetworkError = null;
 
-        const res = await fetch(`${_API_BASE}${path}`, {
-            method,
-            headers: finalHeaders,
-            credentials: 'include',
-            body: body !== undefined ? JSON.stringify(body) : undefined,
-        });
-
-        let payload = null;
-        try { payload = await res.json(); } catch { payload = null; }
-        if (!res.ok || !payload?.ok) {
-            if (res.status === 401) {
-                [_K.TOKEN, _K.ME, _K.ROLE].forEach((k) => localStorage.removeItem(k));
+        for (let i = 0; i < allCandidates.length; i++) {
+            const base = allCandidates[i];
+            let res;
+            try {
+                res = await fetch(`${base}${path}`, {
+                    method,
+                    headers: finalHeaders,
+                    credentials: 'include',
+                    body: body === undefined ? undefined : (isFormData ? body : JSON.stringify(body)),
+                });
+            } catch (err) {
+                lastNetworkError = err;
+                const maybeNetwork = /failed to fetch|networkerror|load failed/i.test(String(err?.message || ''));
+                if (maybeNetwork && i < allCandidates.length - 1) continue;
+                throw err;
             }
-            const msg = payload?.error || `Request failed (${res.status})`;
-            throw new Error(msg);
+
+            let payload = null;
+            try { payload = await res.json(); } catch { payload = null; }
+            if (!res.ok || !payload?.ok) {
+                if (res.status === 401) {
+                    [_K.TOKEN, _K.ME, _K.ROLE].forEach((k) => localStorage.removeItem(k));
+                }
+                const msg = payload?.error || `Request failed (${res.status})`;
+                throw new Error(msg);
+            }
+            _API_BASE = base;
+            return payload;
         }
-        return payload;
+        throw lastNetworkError || new Error('Request failed.');
     },
     async syncFromServer() {
         if (!this.isLoggedIn()) return { ok: false, error: 'Not logged in.' };
@@ -216,6 +328,9 @@ window.GB = {
             if (p.me) _w(_K.ME, p.me);
             if (Array.isArray(p.users)) _w(_K.USERS, p.users);
             if (Array.isArray(p.services)) _w(_K.SVCS, p.services);
+            if (Array.isArray(p.designs) && p.designs.length) {
+                _w(_K.DESIGNS, p.designs.map((d) => ({ ...d, image: _normalizeDesignImage(d.image, d.category, d.id) })));
+            }
             if (Array.isArray(p.appointments)) _w(_K.APPTS, p.appointments);
             if (Array.isArray(p.reviews)) _w(_K.REVIEWS, p.reviews);
             if (Array.isArray(p.payments)) _w(_K.PAYMENTS, p.payments);
@@ -283,10 +398,25 @@ window.GB = {
         payments: {
             async list() { return window.GB._request('/payments'); },
             async create(data) { return window.GB._request('/payments', { method: 'POST', body: data }); },
+            async checkout(data) { return window.GB._request('/payments/checkout-session', { method: 'POST', body: data }); },
         },
         settings: {
             async getAdmin() { return window.GB._request('/settings/admin'); },
             async updateAdmin(data) { return window.GB._request('/settings/admin', { method: 'PUT', body: data }); },
+            async getGalleryDesigns() { return window.GB._request('/settings/gallery-designs'); },
+            async updateGalleryDesigns(designs) {
+                return window.GB._request('/settings/gallery-designs', { method: 'PUT', body: { designs } });
+            },
+        },
+        analytics: {
+            async overview() { return window.GB._request('/analytics/overview'); },
+        },
+        uploads: {
+            async uploadReviewImage(file) {
+                const form = new FormData();
+                form.append('image', file);
+                return window.GB._request('/uploads/review-image', { method: 'POST', body: form });
+            },
         },
     },
 
@@ -512,13 +642,31 @@ window.GB = {
 
     /* ── Designs store ───────────────────────────────────────── */
     designs: {
-        getAll ()    { return _r(_K.DESIGNS) ?? []; },
+        getAll () {
+            const all = _r(_K.DESIGNS) ?? [];
+            if (!Array.isArray(all)) return [];
+            let changed = false;
+            const normalized = all.map((d) => {
+                const nextImage = _normalizeDesignImage(d?.image, d?.category, d?.id);
+                if (nextImage !== (d?.image || '')) changed = true;
+                return { ...d, image: nextImage };
+            });
+            if (changed) _w(_K.DESIGNS, normalized);
+            return normalized;
+        },
         save   (arr) { _w(_K.DESIGNS, arr); },
         count  ()    { return this.getAll().length; },
 
         add(design) {
             const all = this.getAll();
-            const d   = { ...design, id:_nextId(all), likes:0, liked:false };
+            const nextId = _nextId(all);
+            const d   = {
+                ...design,
+                image: _normalizeDesignImage(design?.image, design?.category, nextId),
+                id: nextId,
+                likes:0,
+                liked:false
+            };
             _w(_K.DESIGNS, [...all, d]);
             return d;
         },
@@ -526,7 +674,9 @@ window.GB = {
             const all = this.getAll();
             const idx = all.findIndex(d => d.id === id);
             if (idx < 0) return null;
-            all[idx] = { ...all[idx], ...fields };
+            const next = { ...all[idx], ...fields };
+            next.image = _normalizeDesignImage(next.image, next.category, next.id);
+            all[idx] = next;
             _w(_K.DESIGNS, all);
             return all[idx];
         },
@@ -713,6 +863,9 @@ window.GB = {
             : li('booking', 'booking.html', 'fa-solid fa-calendar-plus', 'Book Appointment');
         const dashboardLink = li('dashboard', 'dashboard.html', 'fa-solid fa-house', 'Home');
         const appointmentsLink = '';
+        const myBookingsLink = this.isAdmin()
+            ? ''
+            : li('my-bookings', 'my-bookings.html', 'fa-solid fa-clipboard-list', 'My Bookings');
         const servicesLink = '';
         const paymentLink = '';
         const galleryLink = li('gallery', 'gallery.html', 'fa-regular fa-images', 'Gallery');
@@ -733,6 +886,7 @@ window.GB = {
             ${adminLinks}
             ${bookingLink}
             ${dashboardLink}
+            ${myBookingsLink}
             ${appointmentsLink}
             ${servicesLink}
             ${galleryLink}

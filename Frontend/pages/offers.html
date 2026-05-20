@@ -8,7 +8,78 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         .of-layout { display:grid; gap:1rem; }
-        .of-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:.85rem; }
+        .of-hero-shell {
+            border:1px solid var(--pink-border);
+            border-radius:20px;
+            background:linear-gradient(135deg,#fff 0%,#FFF7FB 100%);
+            box-shadow:var(--shadow);
+            padding:1.2rem;
+        }
+        .of-hero-grid { display:grid; grid-template-columns:1.2fr .9fr; gap:1rem; align-items:center; }
+        .of-hero-title {
+            font-family:'Cormorant Garamond',serif;
+            font-size:clamp(1.65rem,3vw,2.15rem);
+            line-height:1.08;
+            color:var(--pink-deep);
+            margin-top:.6rem;
+        }
+        .of-hero-sub { font-size:.85rem; color:var(--text-subtle); margin-top:.45rem; max-width:64ch; }
+        .of-kpis { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.6rem; }
+        .of-kpi { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.72rem; }
+        .of-kpi b { display:block; color:var(--pink-deep); font-size:1.15rem; font-family:'Cormorant Garamond',serif; }
+        .of-kpi span { display:block; font-size:.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; font-weight:700; }
+
+        .of-filter-bar {
+            border:1px solid var(--pink-border);
+            border-radius:14px;
+            background:#fff;
+            box-shadow:var(--shadow);
+            padding:.75rem;
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:.65rem;
+            flex-wrap:wrap;
+            position:sticky;
+            top:.82rem;
+            z-index:5;
+        }
+        .of-filter-title {
+            font-size:.72rem;
+            color:var(--text-muted);
+            text-transform:uppercase;
+            letter-spacing:.5px;
+            font-weight:700;
+        }
+        .of-pill-row { display:flex; gap:.4rem; flex-wrap:wrap; }
+        .of-pill {
+            border:1.5px solid var(--pink-border);
+            background:#fff;
+            color:var(--text-mid);
+            border-radius:999px;
+            font-size:.72rem;
+            padding:.38rem .65rem;
+            font-weight:700;
+            transition:var(--ease);
+        }
+        .of-pill:hover { border-color:var(--pink); color:var(--pink-deep); background:var(--pink-light); }
+        .of-pill.active {
+            border-color:var(--pink);
+            color:#fff;
+            background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+            box-shadow:var(--shadow-sm);
+        }
+        .of-sort {
+            border:1.5px solid var(--pink-border);
+            border-radius:10px;
+            padding:.45rem .58rem;
+            font-size:.8rem;
+            font-weight:700;
+            color:var(--text-mid);
+            background:#fff;
+        }
+
+        .of-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:.9rem; }
         .of-card {
             border:1px solid var(--pink-border);
             border-radius:16px;
@@ -19,36 +90,34 @@
             position:relative;
             overflow:hidden;
         }
-        .of-card:hover {
-            transform:translateY(-4px);
-            box-shadow:var(--shadow-lg);
-            border-color:var(--pink);
-        }
+        .of-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:var(--pink); }
+        .of-badge-row { display:flex; gap:.36rem; flex-wrap:wrap; margin-bottom:.6rem; }
         .of-badge {
             display:inline-flex;
             align-items:center;
             gap:6px;
-            font-size:.66rem;
+            font-size:.64rem;
             font-weight:700;
-            letter-spacing:.45px;
+            letter-spacing:.44px;
             text-transform:uppercase;
             border-radius:999px;
-            padding:.24rem .56rem;
+            padding:.23rem .52rem;
             border:1px solid var(--pink-border);
             background:#fff;
             color:var(--pink-deep);
-            margin-bottom:.65rem;
         }
-        .of-title {
-            font-family:'Cormorant Garamond',serif;
-            font-size:1.36rem;
-            color:var(--pink-deep);
-            margin-bottom:.2rem;
-            line-height:1.15;
-        }
-        .of-discount { font-size:1.05rem; font-weight:800; color:var(--pink-deep); margin-bottom:.45rem; }
-        .of-text { font-size:.82rem; color:var(--text-subtle); line-height:1.62; margin-bottom:.75rem; }
-        .of-meta { display:flex; justify-content:space-between; gap:.5rem; align-items:center; font-size:.74rem; color:var(--text-muted); margin-bottom:.75rem; }
+        .of-badge.hot { background:#BE185D; color:#fff; border-color:#BE185D; }
+        .of-badge.popular { background:#F472B6; color:#fff; border-color:#F472B6; }
+        .of-title { font-family:'Cormorant Garamond',serif; font-size:1.32rem; color:var(--pink-deep); margin-bottom:.22rem; line-height:1.14; }
+        .of-pricing { margin-bottom:.5rem; }
+        .of-price-old { font-size:.77rem; color:var(--text-muted); text-decoration:line-through; }
+        .of-price-new { font-size:1.28rem; font-weight:800; color:var(--pink-deep); }
+        .of-save { font-size:.72rem; color:var(--pink-deep); font-weight:700; }
+        .of-text { font-size:.82rem; color:var(--text-subtle); line-height:1.62; margin-bottom:.7rem; }
+        .of-urgency { font-size:.73rem; color:var(--text-muted); display:flex; justify-content:space-between; gap:.5rem; margin-bottom:.45rem; }
+        .of-progress { height:8px; border-radius:999px; background:#FCE7F3; overflow:hidden; margin-bottom:.7rem; }
+        .of-progress > span { display:block; height:100%; background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-radius:inherit; }
+        .of-meta { display:flex; justify-content:space-between; gap:.5rem; align-items:center; font-size:.73rem; color:var(--text-muted); margin-bottom:.72rem; }
         .of-book-btn {
             width:100%;
             display:inline-flex;
@@ -65,17 +134,27 @@
             transition:var(--ease);
         }
         .of-book-btn:hover { transform:translateY(-1px); box-shadow:var(--shadow-sm); }
-        .of-kpis { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; }
-        .of-kpi { border:1px solid var(--pink-border); border-radius:12px; background:#fff; padding:.75rem; }
-        .of-kpi b { display:block; color:var(--pink-deep); font-size:1.15rem; font-family:'Cormorant Garamond',serif; }
-        .of-kpi span { display:block; font-size:.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; font-weight:700; }
-        @media (max-width:700px){ .of-kpis{ grid-template-columns:1fr; } }
+
+        .of-help { border:1px solid var(--pink-border); border-radius:14px; background:#fff; padding:1rem; }
+        .of-help h3 { font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-size:1.2rem; margin-bottom:.5rem; }
+        .of-help ol { margin-left:1.1rem; color:var(--text-subtle); font-size:.82rem; display:grid; gap:.35rem; }
+
+        @media (max-width:860px){ .of-hero-grid{ grid-template-columns:1fr; } }
+        @media (max-width:700px){
+            .of-kpis{ grid-template-columns:1fr 1fr; }
+            .of-filter-bar{ position:static; }
+            .of-sort{ width:100%; }
+        }
     </style>
 </head>
 <body>
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
     <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -87,68 +166,59 @@
         <div class="topbar">
             <div>
                 <h1>Special Offers</h1>
-                <p>Oferta të kuruara për konvertim të shpejtë dhe rezervim direkt.</p>
+                <p>Curated deals designed for fast conversions and direct booking.</p>
             </div>
             <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-plus"></i> Book Appointment</a>
         </div>
 
         <div class="of-layout">
-            <section class="hero-shell">
-                <div class="hero-grid">
+            <section class="of-hero-shell">
+                <div class="of-hero-grid">
                     <div>
                         <span class="hero-tag"><i class="fa-solid fa-bolt"></i> Limited Promotions</span>
-                        <h2 class="hero-title">Zgjidh ofertën dhe rezervo menjëherë.</h2>
-                        <p class="hero-subtitle">Çdo kartë oferte është e ndërtuar për veprim të shpejtë — shiko vlerën, afatin dhe kliko “Book Now” për të hyrë direkt në flow-n e rezervimit.</p>
+                        <h2 class="of-hero-title">Limited luxury offers, ready to claim.</h2>
+                        <p class="of-hero-sub">Pick your ideal promo, review your savings, and jump straight into booking with one click.</p>
+                        <div class="hero-actions" style="margin-top:.8rem">
+                            <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-check"></i> Book with offer</a>
+                        </div>
                     </div>
                     <div class="of-kpis">
-                        <div class="of-kpi"><b>4</b><span>Oferta Aktive</span></div>
-                        <div class="of-kpi"><b>48h</b><span>Oferta Flash</span></div>
-                        <div class="of-kpi"><b>-20%</b><span>Max Discount</span></div>
+                        <div class="of-kpi"><b id="kpiActiveOffers">0</b><span>Active Offers</span></div>
+                        <div class="of-kpi"><b id="kpiMaxDiscount">0%</b><span>Max Discount</span></div>
+                        <div class="of-kpi"><b id="kpiLimitedOffers">0</b><span>Limited Time</span></div>
+                        <div class="of-kpi"><b>24/7</b><span>Instant Booking</span></div>
                     </div>
                 </div>
             </section>
 
             <section class="card">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-tags" style="margin-right:7px;color:var(--pink)"></i>Oferta për klientët</span>
+                    <span><i class="fa-solid fa-tags" style="margin-right:7px;color:var(--pink)"></i>Offers for clients</span>
                 </div>
-                <div class="of-grid">
-                    <article class="of-card">
-                        <span class="of-badge"><i class="fa-solid fa-clock"></i> Limited Time</span>
-                        <h3 class="of-title">First Booking Discount</h3>
-                        <div class="of-discount">-10% për klientët e rinj</div>
-                        <p class="of-text">Perfekte për rezervimin e parë në GlowBook. Aktivizohet automatikisht te konsultimi fillestar në booking flow.</p>
-                        <div class="of-meta"><span>Vlen vetëm 1 herë</span><span>Afat: 7 ditë</span></div>
-                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
-                    </article>
 
-                    <article class="of-card">
-                        <span class="of-badge"><i class="fa-solid fa-crown"></i> Most Popular</span>
-                        <h3 class="of-title">Nails + Design Bundle</h3>
-                        <div class="of-discount">Paketa €49 (kursen €11)</div>
-                        <p class="of-text">Kombinim i manikyr-it me nail design premium në një paketë të vetme për rezultat të plotë dhe elegant.</p>
-                        <div class="of-meta"><span>Bundle Deal</span><span>Best Seller</span></div>
-                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
-                    </article>
-
-                    <article class="of-card">
-                        <span class="of-badge"><i class="fa-solid fa-fire"></i> Happy Hour</span>
-                        <h3 class="of-title">Weekend Glow Hours</h3>
-                        <div class="of-discount">-15% çdo të shtunë 10:00–13:00</div>
-                        <p class="of-text">Oferta fundjave për slot-et e mëngjesit. Ideale për klientët që duan çmim më të mirë në oraret premium.</p>
-                        <div class="of-meta"><span>Only Weekend</span><span>Slots të limituara</span></div>
-                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
-                    </article>
-
-                    <article class="of-card">
-                        <span class="of-badge"><i class="fa-solid fa-gem"></i> VIP Loyalty</span>
-                        <h3 class="of-title">Loyalty VIP Offer</h3>
-                        <div class="of-discount">-20% pas 5 rezervimeve</div>
-                        <p class="of-text">Shpërblim për klientët besnikë me zbritje ekstra dhe prioritet në rezervime të reja.</p>
-                        <div class="of-meta"><span>Client Retention</span><span>VIP Tier</span></div>
-                        <a class="of-book-btn" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book Now</a>
-                    </article>
+                <div class="of-filter-bar">
+                    <div>
+                        <div class="of-filter-title">Filter offers</div>
+                        <div class="of-pill-row" id="offerPills"></div>
+                    </div>
+                    <select id="offerSort" class="of-sort">
+                        <option value="best">Best value</option>
+                        <option value="discount">Highest discount</option>
+                        <option value="ending">Ending soon</option>
+                        <option value="spots">Fewest spots left</option>
+                    </select>
                 </div>
+                <div class="of-grid" id="offersGrid"></div>
+            </section>
+
+            <section class="of-help">
+                <h3>How to redeem an offer</h3>
+                <ol>
+                    <li>Select an offer card and click <b>Claim Offer</b>.</li>
+                    <li>You will be redirected directly to the booking flow.</li>
+                    <li>Complete your reservation details and confirm payment.</li>
+                    <li>Your eligible discount is applied according to the offer terms.</li>
+                </ol>
             </section>
         </div>
     </main>
@@ -159,6 +229,160 @@
 <script>
 'use strict';
 GB.init({ page:'offers' });
+
+const offers = [
+    {
+        id: 1,
+        title: 'First Booking Glow',
+        category: 'first-time',
+        badges: ['Limited Time', 'New'],
+        oldPrice: 35,
+        newPrice: 31.5,
+        description: 'Perfect for your first GlowBook appointment with an instant welcome discount.',
+        terms: 'One-time use per new client',
+        endsInDays: 7,
+        spotsLeft: 18,
+        claimedPct: 42
+    },
+    {
+        id: 2,
+        title: 'Nails + Design Bundle',
+        category: 'bundle',
+        badges: ['Most Popular'],
+        oldPrice: 60,
+        newPrice: 49,
+        description: 'Complete package combining premium manicure and custom style design.',
+        terms: 'Bundle deal',
+        endsInDays: 12,
+        spotsLeft: 9,
+        claimedPct: 76
+    },
+    {
+        id: 3,
+        title: 'Weekend Glow Hours',
+        category: 'flash',
+        badges: ['Flash', 'Limited Time'],
+        oldPrice: 40,
+        newPrice: 34,
+        description: 'Special weekend morning slots for clients who want premium value.',
+        terms: 'Saturday 10:00 - 13:00',
+        endsInDays: 2,
+        spotsLeft: 6,
+        claimedPct: 83
+    },
+    {
+        id: 4,
+        title: 'VIP Loyalty Reward',
+        category: 'vip',
+        badges: ['VIP', 'Best Value'],
+        oldPrice: 50,
+        newPrice: 40,
+        description: 'Exclusive loyalty reward offer with priority slot access and premium support.',
+        terms: 'After 5 completed bookings',
+        endsInDays: 20,
+        spotsLeft: 14,
+        claimedPct: 58
+    }
+];
+
+const offersState = {
+    filter: 'all',
+    sort: 'best',
+};
+
+const offerCategories = [
+    { key: 'all', label: 'All' },
+    { key: 'first-time', label: 'First-time' },
+    { key: 'bundle', label: 'Bundle' },
+    { key: 'flash', label: 'Flash' },
+    { key: 'vip', label: 'VIP' },
+];
+
+function discountPct(offer) {
+    return Math.round(((offer.oldPrice - offer.newPrice) / offer.oldPrice) * 100);
+}
+
+function getOffers() {
+    let rows = offers.filter(o => offersState.filter === 'all' || o.category === offersState.filter);
+    rows = [...rows];
+    if (offersState.sort === 'discount') {
+        rows.sort((a, b) => discountPct(b) - discountPct(a));
+    } else if (offersState.sort === 'ending') {
+        rows.sort((a, b) => a.endsInDays - b.endsInDays);
+    } else if (offersState.sort === 'spots') {
+        rows.sort((a, b) => a.spotsLeft - b.spotsLeft);
+    } else {
+        rows.sort((a, b) => (discountPct(b) + b.claimedPct) - (discountPct(a) + a.claimedPct));
+    }
+    return rows;
+}
+
+function renderPills() {
+    const host = document.getElementById('offerPills');
+    host.innerHTML = offerCategories.map(cat => `
+        <button class="of-pill ${offersState.filter === cat.key ? 'active' : ''}" data-filter="${cat.key}">
+            ${cat.label}
+        </button>
+    `).join('');
+}
+
+function offerCard(offer) {
+    const save = offer.oldPrice - offer.newPrice;
+    const pct = discountPct(offer);
+    const urgency = offer.endsInDays <= 2 ? 'Ends very soon' : `Ends in ${offer.endsInDays} days`;
+    return `
+    <article class="of-card">
+        <div class="of-badge-row">
+            ${offer.badges.map(b => `<span class="of-badge ${b.includes('Limited') || b.includes('Flash') ? 'hot' : b.includes('Popular') ? 'popular' : ''}">${b}</span>`).join('')}
+        </div>
+        <h3 class="of-title">${offer.title}</h3>
+        <div class="of-pricing">
+            <div class="of-price-old">From €${offer.oldPrice.toFixed(2)}</div>
+            <div class="of-price-new">€${offer.newPrice.toFixed(2)}</div>
+            <div class="of-save">Save €${save.toFixed(2)} (${pct}%)</div>
+        </div>
+        <p class="of-text">${offer.description}</p>
+        <div class="of-urgency">
+            <span>${urgency}</span>
+            <span>${offer.spotsLeft} spots left</span>
+        </div>
+        <div class="of-progress"><span style="width:${Math.min(100, offer.claimedPct)}%"></span></div>
+        <div class="of-meta"><span>${offer.terms}</span><span>${offer.claimedPct}% claimed</span></div>
+        <a class="of-book-btn" href="booking.html?offer=${offer.id}">
+            <i class="fa-solid fa-ticket"></i> Claim Offer
+        </a>
+    </article>`;
+}
+
+function updateKpis() {
+    const maxDiscount = Math.max(...offers.map(discountPct));
+    const limitedCount = offers.filter(o => o.endsInDays <= 7).length;
+    document.getElementById('kpiActiveOffers').textContent = String(offers.length);
+    document.getElementById('kpiMaxDiscount').textContent = `-${maxDiscount}%`;
+    document.getElementById('kpiLimitedOffers').textContent = String(limitedCount);
+}
+
+function renderOffers() {
+    const rows = getOffers();
+    const host = document.getElementById('offersGrid');
+    host.innerHTML = rows.map(offerCard).join('');
+}
+
+document.getElementById('offerPills').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-filter]');
+    if (!btn) return;
+    offersState.filter = btn.dataset.filter;
+    renderPills();
+    renderOffers();
+});
+document.getElementById('offerSort').addEventListener('change', (e) => {
+    offersState.sort = e.target.value;
+    renderOffers();
+});
+
+updateKpis();
+renderPills();
+renderOffers();
 </script>
 </body>
 </html>

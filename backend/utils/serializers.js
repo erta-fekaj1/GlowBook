@@ -84,8 +84,12 @@ function serializePayment(payment) {
         serviceName: payment.serviceName,
         selectedDesignName: payment.selectedDesignName ?? null,
         amount: Number(payment.amount || 0),
+        currency: String(payment.currency || 'eur'),
         method: payment.method,
         status: payment.status,
+        provider: payment.provider || 'manual',
+        stripeSessionId: payment.stripeSessionId ?? null,
+        stripePaymentIntentId: payment.stripePaymentIntentId ?? null,
         createdAt: payment.createdAt,
         updatedAt: payment.updatedAt,
     };

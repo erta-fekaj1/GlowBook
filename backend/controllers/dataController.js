@@ -18,13 +18,14 @@ async function syncPayload(req, res) {
     const appointmentQuery = isAdmin ? {} : { userId: req.user.id };
     const paymentQuery = isAdmin ? {} : { userId: req.user.id };
 
-    const [users, services, appointments, reviews, payments, settings] = await Promise.all([
+    const [users, services, appointments, reviews, payments, settings, galleryDesigns] = await Promise.all([
         User.find(userQuery).sort({ createdAt: -1 }),
         Service.find(isAdmin ? {} : { isActive: true }).sort({ name: 1 }),
         Appointment.find(appointmentQuery).sort({ startAt: -1 }),
         Review.find({}).sort({ createdAt: -1 }),
         Payment.find(paymentQuery).sort({ createdAt: -1 }),
         isAdmin ? Setting.findOne({ key: 'admin_settings' }).lean() : null,
+        Setting.findOne({ key: 'gallery_designs' }).lean(),
     ]);
 
     return res.json({
@@ -37,6 +38,7 @@ async function syncPayload(req, res) {
             reviews: reviews.map(serializeReview),
             payments: payments.map(serializePayment),
             settings: settings?.value || {},
+            designs: Array.isArray(galleryDesigns?.value) ? galleryDesigns.value : [],
         },
     });
 }

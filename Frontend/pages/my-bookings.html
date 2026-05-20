@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowBook - My Bookings</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .mb-shell { display:grid; gap:1rem; }
+        .mb-hero {
+            border:1px solid var(--pink-border);
+            border-radius:18px;
+            background:linear-gradient(135deg,#fff,#FFF7FB);
+            box-shadow:var(--shadow);
+            padding:1rem;
+        }
+        .mb-hero-head h2 {
+            font-family:'Cormorant Garamond',serif;
+            color:var(--pink-deep);
+            font-size:1.7rem;
+            line-height:1.06;
+        }
+        .mb-hero-head p {
+            margin-top:.35rem;
+            font-size:.84rem;
+            color:var(--text-subtle);
+        }
+        .mb-kpis {
+            margin-top:.9rem;
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:.65rem;
+        }
+        .mb-kpi {
+            border:1px solid var(--pink-border);
+            border-radius:12px;
+            background:#fff;
+            padding:.7rem;
+        }
+        .mb-kpi b {
+            display:block;
+            font-size:1.24rem;
+            color:var(--pink-deep);
+            font-family:'Cormorant Garamond',serif;
+            line-height:1;
+        }
+        .mb-kpi span {
+            font-size:.68rem;
+            color:var(--text-muted);
+            text-transform:uppercase;
+            letter-spacing:.43px;
+            font-weight:700;
+        }
+        .mb-toolbar {
+            border:1px solid var(--pink-border);
+            border-radius:14px;
+            background:#fff;
+            padding:.75rem;
+            display:flex;
+            justify-content:space-between;
+            gap:.8rem;
+            flex-wrap:wrap;
+        }
+        .mb-tabs { display:flex; gap:.45rem; flex-wrap:wrap; }
+        .mb-tab {
+            border:1px solid var(--pink-border);
+            background:#fff;
+            color:var(--text-mid);
+            border-radius:999px;
+            padding:.4rem .72rem;
+            font-size:.77rem;
+            font-weight:700;
+        }
+        .mb-tab.active {
+            border-color:var(--pink);
+            background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+            color:#fff;
+            box-shadow:var(--shadow-sm);
+        }
+        .mb-tools { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+        .mb-tools input,
+        .mb-tools select {
+            border:1.5px solid var(--pink-border);
+            border-radius:10px;
+            padding:.5rem .62rem;
+            font-size:.81rem;
+            color:var(--text-mid);
+            background:#fff;
+        }
+        .mb-tools input { min-width:220px; }
+
+        .mb-list { display:grid; gap:.75rem; }
+        .mb-card {
+            border:1px solid var(--pink-border);
+            border-radius:14px;
+            background:#fff;
+            box-shadow:var(--shadow-sm);
+            padding:.95rem;
+        }
+        .mb-head {
+            display:flex;
+            justify-content:space-between;
+            gap:.7rem;
+            align-items:flex-start;
+            flex-wrap:wrap;
+        }
+        .mb-title { font-size:1rem; font-weight:800; color:var(--text-dark); line-height:1.25; }
+        .mb-sub {
+            margin-top:.2rem;
+            color:var(--text-muted);
+            font-size:.76rem;
+            display:flex;
+            flex-wrap:wrap;
+            gap:.4rem;
+        }
+        .mb-dot::before {
+            content:'';
+            width:4px;
+            height:4px;
+            border-radius:50%;
+            display:inline-block;
+            margin-right:.4rem;
+            background:var(--pink-border);
+            vertical-align:middle;
+        }
+        .mb-row {
+            margin-top:.65rem;
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:.55rem;
+        }
+        .mb-meta {
+            border:1px solid var(--pink-light);
+            border-radius:10px;
+            background:#fff;
+            padding:.5rem .55rem;
+        }
+        .mb-meta span {
+            display:block;
+            font-size:.66rem;
+            color:var(--text-muted);
+            text-transform:uppercase;
+            letter-spacing:.38px;
+            font-weight:700;
+            margin-bottom:.16rem;
+        }
+        .mb-meta b { font-size:.82rem; color:var(--text-subtle); }
+        .mb-notes {
+            margin-top:.55rem;
+            font-size:.79rem;
+            color:var(--text-subtle);
+            background:#FFF8FC;
+            border:1px dashed var(--pink-border);
+            border-radius:10px;
+            padding:.45rem .55rem;
+        }
+        .mb-actions {
+            margin-top:.72rem;
+            display:flex;
+            gap:.45rem;
+            flex-wrap:wrap;
+        }
+        .mb-btn {
+            border:1px solid var(--pink-border);
+            border-radius:10px;
+            background:#fff;
+            color:var(--text-mid);
+            font-size:.75rem;
+            font-weight:700;
+            padding:.42rem .62rem;
+            line-height:1;
+        }
+        .mb-btn:hover { border-color:var(--pink); color:var(--pink-deep); box-shadow:var(--shadow-sm); }
+        .mb-btn.primary { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
+        .mb-btn.danger { color:#9D174D; border-color:#FBCFE8; background:#FFF1F6; }
+        .mb-empty {
+            text-align:center;
+            border:1px dashed var(--pink-border);
+            border-radius:14px;
+            background:#fff;
+            color:var(--text-muted);
+            font-size:.84rem;
+            padding:1.25rem .9rem;
+        }
+        .mb-empty a { color:var(--pink); font-weight:700; }
+
+        .mb-modal {
+            position:fixed;
+            inset:0;
+            background:rgba(39,12,28,.45);
+            z-index:2200;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:1rem;
+        }
+        .mb-modal.open { display:flex; }
+        .mb-modal-card {
+            width:min(94vw,440px);
+            border:1px solid var(--pink-border);
+            border-radius:16px;
+            background:#fff;
+            box-shadow:var(--shadow-xl);
+            padding:1rem;
+        }
+        .mb-modal-card h3 {
+            font-family:'Cormorant Garamond',serif;
+            color:var(--pink-deep);
+            font-size:1.35rem;
+            margin-bottom:.25rem;
+        }
+        .mb-modal-card p { font-size:.78rem; color:var(--text-muted); margin-bottom:.7rem; }
+        .mb-field { margin-bottom:.68rem; }
+        .mb-field label {
+            display:block;
+            font-size:.69rem;
+            color:var(--text-muted);
+            text-transform:uppercase;
+            letter-spacing:.4px;
+            font-weight:700;
+            margin-bottom:.28rem;
+        }
+        .mb-field input,
+        .mb-field select {
+            width:100%;
+            border:1.5px solid var(--pink-border);
+            border-radius:10px;
+            background:#fff;
+            color:var(--text-mid);
+            font-size:.82rem;
+            padding:.55rem .62rem;
+            font-family:inherit;
+        }
+        .mb-modal-actions {
+            margin-top:.8rem;
+            display:flex;
+            gap:.55rem;
+        }
+        .mb-modal-actions .mb-btn { flex:1; justify-content:center; display:inline-flex; align-items:center; }
+
+        @media (max-width: 980px) {
+            .mb-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        }
+        @media (max-width: 760px) {
+            .mb-row { grid-template-columns:1fr; }
+            .mb-tools { width:100%; }
+            .mb-tools input, .mb-tools select { width:100%; min-width:0; }
+        }
+    </style>
+</head>
+<body>
+<div class="mobile-nav">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
+    <div style="width:40px"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout-wrap">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>My Bookings</h1>
+                <p>Track upcoming appointments, manage plans, and leave reviews after your visits.</p>
+            </div>
+        </div>
+
+        <section class="mb-shell">
+            <div class="mb-hero">
+                <div class="mb-hero-head">
+                    <h2>Your appointment timeline</h2>
+                    <p>Everything in one place: upcoming slots, booking history, and quick actions.</p>
+                </div>
+                <div class="mb-kpis">
+                    <div class="mb-kpi"><b id="kpiTotal">0</b><span>Total Bookings</span></div>
+                    <div class="mb-kpi"><b id="kpiUpcoming">0</b><span>Upcoming</span></div>
+                    <div class="mb-kpi"><b id="kpiDone">0</b><span>Completed</span></div>
+                    <div class="mb-kpi"><b id="kpiCancelled">0</b><span>Cancelled</span></div>
+                </div>
+            </div>
+
+            <div class="mb-toolbar">
+                <div class="mb-tabs" id="viewTabs">
+                    <button class="mb-tab active" data-view="upcoming">Upcoming</button>
+                    <button class="mb-tab" data-view="history">History</button>
+                    <button class="mb-tab" data-view="all">All</button>
+                </div>
+                <div class="mb-tools">
+                    <input type="text" id="searchInput" placeholder="Search by service, style, or status...">
+                    <select id="statusFilter">
+                        <option value="all">All statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="done">Done</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-list" id="bookingList"></div>
+        </section>
+    </main>
+</div>
+
+<div class="mb-modal" id="rescheduleModal">
+    <div class="mb-modal-card">
+        <h3>Reschedule booking</h3>
+        <p>Select a new date and time. We will keep your service and notes unchanged.</p>
+        <div class="mb-field">
+            <label for="rescheduleDate">New date</label>
+            <input type="date" id="rescheduleDate">
+        </div>
+        <div class="mb-field">
+            <label for="rescheduleTime">New time</label>
+            <select id="rescheduleTime"></select>
+        </div>
+        <div class="mb-modal-actions">
+            <button class="mb-btn" id="closeRescheduleBtn">Close</button>
+            <button class="mb-btn primary" id="saveRescheduleBtn"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="gb-toast" id="toast"></div>
+<script src="../js/auth.js"></script>
+<script>
+'use strict';
+GB.init({ page: 'my-bookings' });
+
+if (!GB.isLoggedIn()) window.location.replace('index.html');
+if (GB.isAdmin()) window.location.replace('admin.html#appointments');
+
+const me = GB.getMe();
+const WORK_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+const state = {
+    view: 'upcoming',
+    status: 'all',
+    search: '',
+    rescheduleId: null,
+};
+
+function normalizeStatus(status) {
+    return String(status || '').trim().toLowerCase();
+}
+
+function statusBadgeClass(status) {
+    const normalized = normalizeStatus(status);
+    if (normalized === 'confirmed') return 'badge-confirmed';
+    if (normalized === 'done') return 'badge-done';
+    if (normalized === 'cancelled') return 'badge-cancelled';
+    return 'badge-pending';
+}
+
+function toDateTime(appointment) {
+    const datePart = String(appointment.dateOnly || appointment.date || '').slice(0, 10);
+    const timePart = String(appointment.time || '').slice(0, 5);
+    if (datePart && timePart) {
+        const parsed = new Date(`${datePart}T${timePart}:00`);
+        if (!Number.isNaN(parsed.getTime())) return parsed;
+    }
+    const fallback = new Date(appointment.date || '');
+    return Number.isNaN(fallback.getTime()) ? new Date(0) : fallback;
+}
+
+function formatDateTime(appointment) {
+    const dt = toDateTime(appointment);
+    if (Number.isNaN(dt.getTime())) return '—';
+    return dt.toLocaleString('en-GB', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
+function isUpcoming(appointment) {
+    const status = normalizeStatus(appointment.status);
+    if (status === 'cancelled' || status === 'done') return false;
+    return toDateTime(appointment).getTime() >= Date.now();
+}
+
+function hasReview(appointmentId) {
+    return GB.reviews.hasReviewedAppointment(me.email, appointmentId);
+}
+
+function canLeaveReview(appointment) {
+    const status = normalizeStatus(appointment.status);
+    return ['done', 'confirmed'].includes(status) && !hasReview(appointment.id);
+}
+
+function canManage(appointment) {
+    const status = normalizeStatus(appointment.status);
+    return isUpcoming(appointment) && ['pending', 'confirmed'].includes(status);
+}
+
+function getAppointments() {
+    return GB.appointments.getByUser(me.email)
+        .map((a) => ({ ...a, __dt: toDateTime(a) }))
+        .sort((a, b) => b.__dt.getTime() - a.__dt.getTime());
+}
+
+function updateKpis(items) {
+    const total = items.length;
+    const upcoming = items.filter(isUpcoming).length;
+    const done = items.filter((a) => normalizeStatus(a.status) === 'done').length;
+    const cancelled = items.filter((a) => normalizeStatus(a.status) === 'cancelled').length;
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiUpcoming').textContent = upcoming;
+    document.getElementById('kpiDone').textContent = done;
+    document.getElementById('kpiCancelled').textContent = cancelled;
+}
+
+function passesView(appointment) {
+    if (state.view === 'upcoming') return isUpcoming(appointment);
+    if (state.view === 'history') return !isUpcoming(appointment);
+    return true;
+}
+
+function passesStatus(appointment) {
+    if (state.status === 'all') return true;
+    return normalizeStatus(appointment.status) === state.status;
+}
+
+function passesSearch(appointment) {
+    const q = String(state.search || '').trim().toLowerCase();
+    if (!q) return true;
+    const source = [
+        appointment.serviceName,
+        appointment.status,
+        appointment.selectedDesignName,
+        appointment.notes,
+    ].join(' ').toLowerCase();
+    return source.includes(q);
+}
+
+function bookingCard(appointment) {
+    const notes = String(appointment.notes || '').trim();
+    const design = appointment.selectedDesignName
+        ? `<div class="mb-meta"><span>Design</span><b>${appointment.selectedDesignName}</b></div>`
+        : '<div class="mb-meta"><span>Design</span><b>Not selected</b></div>';
+    const manageActions = canManage(appointment)
+        ? `
+            <button class="mb-btn" data-action="reschedule" data-id="${appointment.id}">
+                <i class="fa-solid fa-calendar-days"></i> Reschedule
+            </button>
+            <button class="mb-btn danger" data-action="cancel" data-id="${appointment.id}">
+                <i class="fa-regular fa-circle-xmark"></i> Cancel
+            </button>
+        `
+        : '';
+    const reviewAction = canLeaveReview(appointment)
+        ? `<a class="mb-btn primary" href="reviews.html?appointmentId=${appointment.id}">
+                <i class="fa-solid fa-star"></i> Leave review
+           </a>`
+        : '';
+
+    return `
+        <article class="mb-card">
+            <div class="mb-head">
+                <div>
+                    <div class="mb-title">${appointment.serviceName || 'Service'}</div>
+                    <div class="mb-sub">
+                        <span>${formatDateTime(appointment)}</span>
+                        <span class="mb-dot">${appointment.time || '—'}</span>
+                    </div>
+                </div>
+                <span class="badge ${statusBadgeClass(appointment.status)}">${appointment.status || 'Pending'}</span>
+            </div>
+            <div class="mb-row">
+                <div class="mb-meta"><span>Date</span><b>${String(appointment.dateOnly || appointment.date || '').slice(0, 10) || '—'}</b></div>
+                <div class="mb-meta"><span>Time</span><b>${appointment.time || '—'}</b></div>
+                ${design}
+            </div>
+            ${notes ? `<div class="mb-notes"><strong>Notes:</strong> ${notes}</div>` : ''}
+            <div class="mb-actions">
+                <a class="mb-btn" href="booking.html"><i class="fa-solid fa-plus"></i> Book again</a>
+                ${manageActions}
+                ${reviewAction}
+            </div>
+        </article>
+    `;
+}
+
+function renderList() {
+    const all = getAppointments();
+    updateKpis(all);
+    const filtered = all.filter((a) => passesView(a) && passesStatus(a) && passesSearch(a));
+    const host = document.getElementById('bookingList');
+    host.innerHTML = filtered.length
+        ? filtered.map(bookingCard).join('')
+        : `
+            <div class="mb-empty">
+                No bookings match your current filters.
+                <br><a href="booking.html">Book your next appointment</a>
+            </div>
+        `;
+}
+
+function fillTimeSelect() {
+    document.getElementById('rescheduleTime').innerHTML = WORK_SLOTS.map((slot) => `<option value="${slot}">${slot}</option>`).join('');
+}
+
+function openRescheduleModal(appointment) {
+    state.rescheduleId = Number(appointment.id);
+    document.getElementById('rescheduleDate').value = String(appointment.dateOnly || appointment.date || '').slice(0, 10);
+    document.getElementById('rescheduleDate').min = new Date().toISOString().slice(0, 10);
+    document.getElementById('rescheduleTime').value = String(appointment.time || '09:00').slice(0, 5);
+    document.getElementById('rescheduleModal').classList.add('open');
+}
+
+function closeRescheduleModal() {
+    state.rescheduleId = null;
+    document.getElementById('rescheduleModal').classList.remove('open');
+}
+
+async function syncAndRender() {
+    await GB.syncFromServer();
+    renderList();
+}
+
+document.getElementById('viewTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-view]');
+    if (!btn) return;
+    state.view = btn.dataset.view;
+    document.querySelectorAll('.mb-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.view === state.view));
+    renderList();
+});
+
+document.getElementById('statusFilter').addEventListener('change', (e) => {
+    state.status = e.target.value;
+    renderList();
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    state.search = e.target.value;
+    renderList();
+});
+
+document.getElementById('bookingList').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = Number(btn.dataset.id || 0);
+    const appointment = GB.appointments.getById(id);
+    if (!appointment) {
+        GB.toast('Booking not found.', 'error');
+        return;
+    }
+
+    const action = btn.dataset.action;
+    if (action === 'cancel') {
+        if (!window.confirm('Cancel this booking? This action can be reversed only by creating a new booking.')) return;
+        try {
+            await GB.api.appointments.update(id, { status: 'Cancelled' });
+            GB.toast('Booking cancelled.', 'success');
+            await syncAndRender();
+        } catch (err) {
+            GB.toast(err.message || 'Could not cancel this booking.', 'error');
+        }
+        return;
+    }
+
+    if (action === 'reschedule') {
+        fillTimeSelect();
+        openRescheduleModal(appointment);
+    }
+});
+
+document.getElementById('closeRescheduleBtn').addEventListener('click', closeRescheduleModal);
+document.getElementById('rescheduleModal').addEventListener('click', (e) => {
+    if (e.target.id === 'rescheduleModal') closeRescheduleModal();
+});
+
+document.getElementById('saveRescheduleBtn').addEventListener('click', async () => {
+    const id = Number(state.rescheduleId || 0);
+    const date = document.getElementById('rescheduleDate').value;
+    const time = document.getElementById('rescheduleTime').value;
+    if (!id || !date || !time) {
+        GB.toast('Please pick both date and time.', 'error');
+        return;
+    }
+    try {
+        await GB.api.appointments.update(id, { date, time });
+        closeRescheduleModal();
+        GB.toast('Booking rescheduled successfully.', 'success');
+        await syncAndRender();
+    } catch (err) {
+        GB.toast(err.message || 'Could not reschedule this booking.', 'error');
+    }
+});
+
+window.addEventListener('gb:data-synced', renderList);
+
+syncAndRender();
+</script>
+</body>
+</html>

@@ -10,7 +10,11 @@
 <body>
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
     <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -22,7 +26,7 @@
         <div class="topbar">
             <div>
                 <h1>Home</h1>
-                <p id="topbarSub">Mirë se vini!</p>
+                <p id="topbarSub">Welcome back!</p>
             </div>
             <a href="booking.html" class="btn-primary" data-client-only>
                 <i class="fa-solid fa-calendar-plus"></i> Book Appointment
@@ -57,21 +61,39 @@
                 <div class="hero-grid">
                     <div>
                         <span class="hero-tag"><i class="fa-solid fa-sparkles"></i> Premium Booking Experience</span>
-                        <h2 class="hero-title">Rezervo trajtimin tënd në pak hapa, me stil dhe siguri.</h2>
+                        <h2 class="hero-title">Luxury nails, booked in minutes.</h2>
                         <p class="hero-subtitle">
-                            GlowBook është platforma jote për menaxhim modern të rezervimeve: përzgjedh shërbimin, stilin nga galeria, orarin e lirë në kohë reale dhe paguan menjëherë.
+                            Pick your service, choose a nail style, select a live available slot, and confirm your booking in one smooth flow.
                         </p>
                         <div class="hero-actions">
                             <a href="booking.html" class="btn-primary"><i class="fa-solid fa-calendar-check"></i> Book Appointment</a>
-                            <a href="gallery.html" class="btn-secondary"><i class="fa-regular fa-images"></i> Shiko Galerinë</a>
+                            <a href="gallery.html" class="btn-secondary"><i class="fa-regular fa-images"></i> View Gallery</a>
                             <a href="reviews.html" class="btn-secondary"><i class="fa-solid fa-star"></i> Read Reviews</a>
                         </div>
                     </div>
                     <div class="hero-kpi-grid">
-                        <div class="hero-kpi"><b id="dashReviewAvg">0.0</b><span>Mesatarja e Reviews</span></div>
-                        <div class="hero-kpi"><b id="dashDoneCount">0</b><span>Takime të Kryera</span></div>
-                        <div class="hero-kpi"><b id="dashUpcoming">0</b><span>Takime në Vazhdim</span></div>
-                        <div class="hero-kpi"><b>24/7</b><span>Rezervim Online</span></div>
+                        <div class="hero-kpi"><b id="dashReviewAvg">0.0</b><span>Average Rating</span></div>
+                        <div class="hero-kpi"><b id="dashDoneCount">0</b><span>Completed Appointments</span></div>
+                        <div class="hero-kpi"><b id="dashUpcoming">0</b><span>Upcoming Appointments</span></div>
+                        <div class="hero-kpi"><b>24/7</b><span>Instant Online Booking</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card next-appointment-card" data-client-only>
+                <div class="next-appointment-grid">
+                    <div>
+                        <div class="next-appointment-eyebrow">Your schedule</div>
+                        <h3 class="next-appointment-title" id="nextAppointmentService">No upcoming appointment yet</h3>
+                        <p class="next-appointment-meta" id="nextAppointmentMeta">
+                            Choose your favorite service and lock in your ideal time in seconds.
+                        </p>
+                    </div>
+                    <div class="next-appointment-side">
+                        <span class="badge badge-pending" id="nextAppointmentStatus">Not booked</span>
+                        <a id="nextAppointmentAction" href="booking.html" class="btn-primary">
+                            <i class="fa-solid fa-calendar-plus"></i> Book now
+                        </a>
                     </div>
                 </div>
             </section>
@@ -79,24 +101,20 @@
 
             <section class="card" data-client-only>
                 <div class="card-title">
-                    <span><i class="fa-solid fa-compass" style="margin-right:8px;color:var(--pink)"></i>Eksploro platformën</span>
+                    <span><i class="fa-solid fa-compass" style="margin-right:8px;color:var(--pink)"></i>Quick Access</span>
                 </div>
                 <div class="feature-grid">
                     <a class="feature-card" href="gallery.html">
                         <h3>Gallery & Styles</h3>
-                        <p>Zgjidh dizajnin që të pëlqen dhe kalo direkt në rezervim.</p>
+                        <p>Find your favorite look and jump straight into booking.</p>
                     </a>
                     <a class="feature-card" href="reviews.html">
                         <h3>Client Reviews</h3>
-                        <p>Shiko vlerësime reale dhe inspirim nga klientët tanë.</p>
+                        <p>Read real client feedback and discover top-rated services.</p>
                     </a>
                     <a class="feature-card" href="offers.html">
                         <h3>Special Offers</h3>
-                        <p>Zbulo ofertat aktive dhe kalo direkt në rezervim me një klikim.</p>
-                    </a>
-                    <a class="feature-card" href="contact.html">
-                        <h3>Contact</h3>
-                        <p>Na kontakto për pyetje, bashkëpunime apo kërkesa speciale.</p>
+                        <p>Unlock limited-time deals and book with one quick click.</p>
                     </a>
                 </div>
             </section>
@@ -112,54 +130,26 @@
                 </div>
             </section>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-            <div class="stat-card pink">
-                <div class="stat-icon">👥</div>
-                <div class="stat-label" id="lblUsers">Klientë</div>
-                <div class="stat-value" id="stUsers">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card purple">
-                <div class="stat-icon">📅</div>
-                <div class="stat-label">Appointments</div>
-                <div class="stat-value" id="stAppts">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card teal">
-                <div class="stat-icon">💆</div>
-                <div class="stat-label">Shërbime</div>
-                <div class="stat-value" id="stSvcs">–</div>
-                <div class="stat-sub">total</div>
-            </div>
-            <div class="stat-card amber">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-label">Në pritje</div>
-                <div class="stat-value" id="stPending">–</div>
-                <div class="stat-sub">takime</div>
-            </div>
-            </div>
-
             <div class="grid-2">
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:var(--pink)"></i>Recent Appointments</span>
-                    <a href="admin.html#appointments" id="recentApptLink">Shiko të gjitha →</a>
+                    <a href="admin.html#appointments" id="recentApptLink">View all →</a>
                 </div>
-                <div id="apptList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
+                <div id="apptList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Loading...</span></div>
             </div>
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-sparkles" style="margin-right:8px;color:var(--pink)"></i>Services</span>
-                    <a href="admin.html#services" id="servicesLink">Shiko të gjitha →</a>
+                    <a href="admin.html#services" id="servicesLink">View all →</a>
                 </div>
-                <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Duke ngarkuar...</span></div>
+                <div id="svcList" style="min-height:200px"><span style="color:var(--text-muted);font-size:.85rem">Loading...</span></div>
             </div>
             </div>
 
             <!-- Admin-only bar chart -->
             <div class="card" data-admin style="animation:slideUp .5s ease-out .25s both">
-                <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Klientët sipas rolit</div>
+                <div class="card-title"><i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--pink)"></i>Users by Role</div>
                 <div class="bar-wrap" id="roleChart"></div>
             </div>
         </div>
@@ -178,15 +168,15 @@ if (!admin) {
     const apptLink = document.getElementById('recentApptLink');
     const svcLink = document.getElementById('servicesLink');
     if (apptLink) { apptLink.href = 'booking.html'; apptLink.textContent = 'Book Appointment →'; }
-    if (svcLink) { svcLink.href = 'booking.html'; svcLink.textContent = 'Zgjidh në booking →'; }
+    if (svcLink) { svcLink.href = 'booking.html'; svcLink.textContent = 'Choose in booking →'; }
 } else {
     const apptLink = document.getElementById('recentApptLink');
     const svcLink = document.getElementById('servicesLink');
-    if (apptLink) { apptLink.href = 'admin.html#appointments'; apptLink.textContent = 'Menaxho te Admin →'; }
-    if (svcLink) { svcLink.href = 'admin.html#services'; svcLink.textContent = 'Menaxho te Admin →'; }
+    if (apptLink) { apptLink.href = 'admin.html#appointments'; apptLink.textContent = 'Manage in Admin →'; }
+    if (svcLink) { svcLink.href = 'admin.html#services'; svcLink.textContent = 'Manage in Admin →'; }
 }
 
-document.getElementById('topbarSub').textContent = `Mirë se vini, ${me?.name||''}! Ja përmbledhja e aktivitetit.`;
+document.getElementById('topbarSub').textContent = `Welcome back, ${me?.name||''}! Here's your activity summary.`;
 
 function load() {
     const allAppts  = GB.appointments.getAll();
@@ -194,18 +184,9 @@ function load() {
     const allUsers  = GB.users.getAll();
     const services  = GB.services.getAll();
     const reviews   = GB.reviews.getAll();
-
-    /* Stats */
-    document.getElementById('stAppts').textContent  = myAppts.length;
-    document.getElementById('stSvcs').textContent   = services.length;
-    document.getElementById('stPending').textContent= myAppts.filter(a=>a.status==='Pending').length;
-    if (admin) {
-        document.getElementById('stUsers').textContent = allUsers.length;
-    } else {
+    if (!admin) {
         const doneCount = myAppts.filter(a=>a.status==='Done').length;
         const upcoming = myAppts.filter(a => ['Pending', 'Confirmed'].includes(a.status)).length;
-        document.getElementById('stUsers').textContent = doneCount;
-        document.getElementById('lblUsers').textContent = 'Kryer';
         const avgReview = reviews.length
             ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length).toFixed(1)
             : '0.0';
@@ -215,6 +196,31 @@ function load() {
         if (doneEl) doneEl.textContent = String(doneCount);
         const upcomingEl = document.getElementById('dashUpcoming');
         if (upcomingEl) upcomingEl.textContent = String(upcoming);
+
+        const nextAppt = myAppts
+            .filter(a => ['Pending', 'Confirmed'].includes(a.status) && new Date(a.date).getTime() > Date.now())
+            .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+        const nextServiceEl = document.getElementById('nextAppointmentService');
+        const nextMetaEl = document.getElementById('nextAppointmentMeta');
+        const nextStatusEl = document.getElementById('nextAppointmentStatus');
+        const nextActionEl = document.getElementById('nextAppointmentAction');
+        if (nextAppt && nextServiceEl && nextMetaEl && nextStatusEl && nextActionEl) {
+            const dateLabel = new Date(nextAppt.date).toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+            const timeLabel = String(nextAppt.time || '').slice(0,5);
+            nextServiceEl.textContent = nextAppt.serviceName || 'Upcoming appointment';
+            nextMetaEl.textContent = `${dateLabel} at ${timeLabel || '—'} • ${nextAppt.status}`;
+            nextStatusEl.textContent = nextAppt.status;
+            nextStatusEl.className = `badge ${nextAppt.status === 'Confirmed' ? 'badge-confirmed' : 'badge-pending'}`;
+            nextActionEl.href = 'booking.html';
+            nextActionEl.innerHTML = '<i class="fa-solid fa-pen"></i> Manage booking';
+        } else if (nextServiceEl && nextMetaEl && nextStatusEl && nextActionEl) {
+            nextServiceEl.textContent = 'No upcoming appointment yet';
+            nextMetaEl.textContent = 'Choose your favorite service and lock in your ideal time in seconds.';
+            nextStatusEl.textContent = 'Not booked';
+            nextStatusEl.className = 'badge badge-pending';
+            nextActionEl.href = 'booking.html';
+            nextActionEl.innerHTML = '<i class="fa-solid fa-calendar-plus"></i> Book now';
+        }
     }
 
     /* Recent appointments list */
@@ -223,7 +229,7 @@ function load() {
     if (!showAppts.length) {
         al.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.85rem">
             <div style="font-size:2rem;margin-bottom:.5rem">📅</div>
-            Nuk ka takime akoma. <a href="booking.html" style="color:var(--pink);font-weight:600">Prenota takim →</a></div>`;
+            No appointments yet. <a href="booking.html" style="color:var(--pink);font-weight:600">Book your first one →</a></div>`;
     } else {
         al.innerHTML = showAppts.map(a => {
             const bc  = a.status==='Pending'?'badge-pending':a.status==='Confirmed'?'badge-confirmed':'badge-done';
@@ -232,7 +238,7 @@ function load() {
                 <div class="appt-avatar">${ini}</div>
                 <div class="appt-info">
                     <div class="appt-name">${a.userName||a.userEmail}</div>
-                    <div class="appt-service">${a.serviceName||'–'} · ${new Date(a.date).toLocaleDateString('sq-AL')}</div>
+                    <div class="appt-service">${a.serviceName||'–'} · ${new Date(a.date).toLocaleDateString('en-GB')}</div>
                 </div>
                 <span class="badge ${bc}">${a.status}</span>
             </div>`;
@@ -249,7 +255,7 @@ function load() {
             </div>`
         ).join('');
     } else {
-        sl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.85rem"><div style="font-size:2rem;margin-bottom:.5rem">💆</div>Nuk ka shërbime akoma</div>';
+        sl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.85rem"><div style="font-size:2rem;margin-bottom:.5rem">💆</div>No services available yet</div>';
     }
 
     /* Bar chart — admin only */

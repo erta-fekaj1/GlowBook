@@ -10,10 +10,69 @@
         .cb-layout { display:grid; grid-template-columns:1.2fr .75fr; gap:1.2rem; align-items:start; }
         .cb-card { background:var(--white); border:1px solid var(--pink-border); border-radius:16px; box-shadow:var(--shadow); }
         .cb-main { padding:1.25rem; }
-        .cb-progress { display:flex; gap:.55rem; flex-wrap:wrap; margin-bottom:1rem; }
-        .cb-progress-pill { border:1px solid var(--pink-border); background:var(--pink-light); border-radius:999px; padding:.35rem .75rem; font-size:.74rem; color:var(--pink-deep); font-weight:600; }
-        .cb-progress-pill.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; border-color:var(--pink); }
-        .cb-progress-pill.done { background:#FCE7F3; color:#BE185D; border-color:#FBCFE8; }
+        .cb-hero-lite {
+            border: 1px solid var(--pink-border);
+            border-radius: 18px;
+            background: linear-gradient(135deg, #fff 0%, #FFF7FB 100%);
+            box-shadow: var(--shadow);
+            padding: 1rem 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .cb-hero-lite h2 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--pink-deep);
+            font-size: 1.55rem;
+            line-height: 1.1;
+        }
+        .cb-hero-lite p {
+            margin-top: .35rem;
+            color: var(--text-subtle);
+            font-size: .84rem;
+        }
+        .cb-trust {
+            margin-top: .65rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: .45rem;
+        }
+        .cb-trust-badge {
+            border: 1px solid var(--pink-border);
+            background: #fff;
+            border-radius: 999px;
+            padding: .32rem .62rem;
+            font-size: .68rem;
+            color: var(--pink-deep);
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+        .cb-progress {
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:.45rem;
+            margin-top: .7rem;
+        }
+        .cb-progress-pill {
+            border:1px solid var(--pink-border);
+            background:#fff;
+            border-radius:12px;
+            padding:.52rem .62rem;
+            font-size:.72rem;
+            color:var(--text-mid);
+            font-weight:700;
+            text-align:center;
+            transition:var(--ease);
+        }
+        .cb-progress-pill.active {
+            background:linear-gradient(135deg,#FAD3E6,#FCE7F3);
+            color:var(--pink-deep);
+            border-color:#F59BC9;
+            box-shadow:var(--shadow-sm);
+        }
+        .cb-progress-pill.done {
+            background:#FDF2F8;
+            color:#BE185D;
+            border-color:#FBCFE8;
+        }
 
         .cb-step-panel { display:none; animation:slideUp .28s ease; }
         .cb-step-panel.active { display:block; }
@@ -52,23 +111,24 @@
         .cb-day-name { font-size:.67rem; color:var(--text-muted); text-align:center; padding:.3rem 0; font-weight:700; }
         .cb-day-empty { aspect-ratio:1; }
         .cb-day { aspect-ratio:1; border:1px solid var(--pink-border); border-radius:10px; background:#fff; font-weight:700; color:var(--text-dark); transition:var(--ease); }
+        .cb-day:hover:not(:disabled) { border-color:var(--pink); transform:translateY(-1px); box-shadow:var(--shadow-sm); }
         .cb-day small { display:block; font-size:.54rem; color:var(--text-muted); font-weight:600; }
-        .cb-day.is-open { border-color:#F9A8D4; background:#FFF7FB; }
+        .cb-day.is-open { border-color:#F9A8D4; background:#FFFDFE; }
         .cb-day.is-limited { border-color:#F9A8D4; background:#FFF7FB; }
         .cb-day.is-full, .cb-day.is-past { background:#FCE7F3; color:#9CA3AF; border-color:#FBCFE8; cursor:not-allowed; }
-        .cb-day.selected { border-color:var(--pink); background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff; box-shadow:var(--shadow-sm); }
-        .cb-day.selected small { color:#FCE7F3; }
+        .cb-day.selected { border-color:var(--pink); background:linear-gradient(135deg,#F472B6,#DB2777); color:#fff; box-shadow:var(--shadow-sm); }
+        .cb-day.selected small { color:#FFE4F1; }
         .cb-quick-wrap { margin-top:.7rem; border-top:1px solid var(--pink-light); padding-top:.7rem; }
         .cb-quick-title { font-size:.7rem; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--text-muted); margin-bottom:.45rem; }
         .cb-quick-days { display:flex; gap:.45rem; overflow:auto; padding-bottom:.1rem; }
         .cb-quick-day { border:1px solid var(--pink-border); border-radius:999px; background:#fff; padding:.4rem .62rem; font-size:.72rem; white-space:nowrap; color:var(--text-mid); font-weight:700; }
         .cb-quick-day.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
 
-        .cb-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(86px,1fr)); gap:.5rem; margin-top:.7rem; }
-        .cb-slot { border:1px solid var(--pink-border); border-radius:10px; background:#fff; padding:.56rem .35rem; font-weight:700; color:var(--text-mid); transition:var(--ease); }
+        .cb-slots { display:grid; grid-template-columns:repeat(auto-fit,minmax(94px,1fr)); gap:.5rem; margin-top:.7rem; }
+        .cb-slot { border:1px solid var(--pink-border); border-radius:10px; background:#fff; padding:.58rem .35rem; font-weight:700; color:var(--text-mid); transition:var(--ease); letter-spacing:.3px; }
         .cb-slot:hover:not(:disabled) { border-color:var(--pink); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
-        .cb-slot.active { background:linear-gradient(135deg,var(--pink),var(--pink-deep)); border-color:var(--pink); color:#fff; }
-        .cb-slot:disabled { background:#FCE7F3; color:#9CA3AF; border-color:#FBCFE8; cursor:not-allowed; }
+        .cb-slot.active { background:linear-gradient(135deg,#F472B6,#DB2777); border-color:var(--pink); color:#fff; box-shadow:var(--shadow-sm); }
+        .cb-slot:disabled { background:#FCE7F3; color:#9CA3AF; border-color:#FBCFE8; cursor:not-allowed; text-decoration:line-through; }
         .cb-chip { margin-top:.7rem; display:inline-flex; gap:6px; align-items:center; padding:.46rem .76rem; border-radius:999px; font-size:.72rem; font-weight:700; }
         .cb-chip.open { background:#FCE7F3; color:#BE185D; }
         .cb-chip.full { background:#FCE7F3; color:#9D174D; }
@@ -96,33 +156,66 @@
         .cb-btn.primary:hover:not(:disabled) { transform:translateY(-1px); box-shadow:var(--shadow); }
         .cb-btn:disabled { opacity:.58; cursor:not-allowed; }
 
-        .cb-summary { position:sticky; top:1.3rem; padding:1.1rem; }
+        .cb-summary {
+            position:sticky;
+            top:1rem;
+            padding:1.1rem;
+            background:linear-gradient(135deg,#fff 0%,#FFF9FC 100%);
+            max-height:calc(100vh - 2rem);
+            overflow:auto;
+        }
         .cb-row { display:flex; justify-content:space-between; gap:.6rem; border-bottom:1px solid var(--pink-light); padding:.5rem 0; font-size:.83rem; }
         .cb-row span:first-child { color:var(--text-muted); }
         .cb-row:last-child { border-bottom:none; }
         .cb-total { display:flex; justify-content:space-between; align-items:flex-end; margin-top:.7rem; }
         .cb-total b { font-size:1.45rem; color:var(--pink-deep); font-family:'Cormorant Garamond',serif; }
         .cb-hint { margin-top:.55rem; min-height:18px; font-size:.74rem; color:var(--text-muted); }
+        .cb-summary-cta {
+            margin-top: .8rem;
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: .72rem .8rem;
+            font-size: .82rem;
+            font-weight: 700;
+            background: linear-gradient(135deg,var(--pink),var(--pink-deep));
+            color: #fff;
+            transition: var(--ease);
+        }
+        .cb-summary-cta:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+        .cb-summary-cta.secondary {
+            background: #fff;
+            color: var(--pink-deep);
+            border: 1px solid var(--pink-border);
+        }
         .cb-success-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.48); z-index:2100; align-items:center; justify-content:center; }
         .cb-success-modal.open { display:flex; }
         .cb-success-box { width:min(92vw,440px); background:#fff; border-radius:16px; padding:1.4rem; text-align:center; box-shadow:var(--shadow-xl); }
         .cb-success-box h3 { font-family:'Cormorant Garamond',serif; color:var(--pink-deep); font-size:1.45rem; }
         .cb-success-box p { font-size:.84rem; color:var(--text-subtle); margin:.45rem 0 .8rem; }
 
-        @media (max-width: 980px) { .cb-layout { grid-template-columns:1fr; } .cb-summary { position:static; } }
+        @media (max-width: 980px) {
+            .cb-layout { grid-template-columns:1fr; }
+            .cb-summary { position:static; max-height:none; }
+        }
         @media (max-width: 760px) {
             .cb-form-grid { grid-template-columns:1fr; }
             .cb-pay-methods { grid-template-columns:1fr; }
             .cb-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
             .cb-design-row { grid-template-columns:repeat(2,1fr); }
             .cb-actions { flex-direction:column; }
+            .cb-progress { grid-template-columns:1fr; }
         }
     </style>
 </head>
 <body>
 <div class="mobile-nav">
     <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-    <span class="mobile-nav-logo">💅 Glow Book</span>
+    <span class="mobile-nav-logo">
+        <img src="../images/brand-logo.svg" alt="GlowBook Logo" class="mobile-brand-img">
+        <span class="mobile-brand-text">GlowBook</span>
+        <span class="mobile-brand-badge">Premium</span>
+    </span>
     <div style="width:40px"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -134,38 +227,48 @@
         <div class="topbar">
             <div>
                 <h1>Book Appointment</h1>
-                <p>Një eksperiencë e vetme: shërbimi, stili, orari dhe pagesa.</p>
+                <p>Fast, elegant booking in one premium flow.</p>
             </div>
         </div>
+
+        <section class="cb-hero-lite" data-client-only>
+            <h2>Reserve your next glow-up in minutes.</h2>
+            <p>Choose a service, pick a style, lock an available time slot, and confirm instantly.</p>
+            <div class="cb-trust">
+                <span class="cb-trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure checkout</span>
+                <span class="cb-trust-badge"><i class="fa-solid fa-calendar-check"></i> Instant confirmation</span>
+                <span class="cb-trust-badge"><i class="fa-solid fa-clock-rotate-left"></i> Flexible reschedule</span>
+            </div>
+        </section>
 
         <div class="cb-layout">
             <section class="cb-card cb-main">
                 <div class="cb-headline">
-                    <h2>Book in a few steps</h2>
-                    <p>Zgjedh gjithçka në të njëjtën faqe pa kaluar në seksione të ndara.</p>
+                    <h2>Book in 3 simple steps</h2>
+                    <p>Everything stays on one page to keep your booking smooth and fast.</p>
                     <div class="cb-progress">
-                        <span class="cb-progress-pill active" id="pill1">1. Shërbimi & Stili</span>
-                        <span class="cb-progress-pill" id="pill2">2. Data & Ora</span>
-                        <span class="cb-progress-pill" id="pill3">3. Detajet & Pagesa</span>
+                        <span class="cb-progress-pill active" id="pill1">1. Service & Style</span>
+                        <span class="cb-progress-pill" id="pill2">2. Date & Time</span>
+                        <span class="cb-progress-pill" id="pill3">3. Details & Payment</span>
                     </div>
                 </div>
 
                 <!-- STEP 1 -->
                 <div class="cb-step-panel active" id="step1">
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-solid fa-spa" style="color:var(--pink)"></i>Zgjidh Shërbimin</div>
+                        <div class="cb-section-title"><i class="fa-solid fa-spa" style="color:var(--pink)"></i>Choose Service</div>
                         <div class="cb-grid" id="servicesGrid"></div>
                     </div>
 
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-solid fa-image" style="color:var(--pink)"></i>Zgjidh Stilin (Opsionale)</div>
+                        <div class="cb-section-title"><i class="fa-solid fa-image" style="color:var(--pink)"></i>Choose Style (Optional)</div>
                         <div class="cb-design-row" id="designGrid"></div>
                         <div class="cb-hint" id="designHint"></div>
                     </div>
 
                     <div class="cb-actions">
                         <button class="cb-btn primary" id="toStep2Btn">
-                            Vazhdo te data/orari <i class="fa-solid fa-arrow-right"></i>
+                            Continue to date & time <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
@@ -173,65 +276,65 @@
                 <!-- STEP 2 -->
                 <div class="cb-step-panel" id="step2">
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-solid fa-calendar-days" style="color:var(--pink)"></i>Zgjidh Datën</div>
+                        <div class="cb-section-title"><i class="fa-solid fa-calendar-days" style="color:var(--pink)"></i>Choose Date</div>
                         <div class="cb-calendar-head">
                             <div class="cb-nav">
                                 <button type="button" id="prevMonthBtn"><i class="fa-solid fa-chevron-left"></i></button>
-                                <button type="button" id="todayBtn">Sot</button>
+                                <button type="button" id="todayBtn">Today</button>
                                 <button type="button" id="nextMonthBtn"><i class="fa-solid fa-chevron-right"></i></button>
                             </div>
                             <div class="cb-month" id="monthLabel"></div>
                         </div>
                         <div class="cb-days" id="calendarGrid"></div>
                         <div class="cb-quick-wrap">
-                            <div class="cb-quick-title">Datat e para të lira</div>
+                            <div class="cb-quick-title">Next available days</div>
                             <div class="cb-quick-days" id="quickDays"></div>
                         </div>
                     </div>
 
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-regular fa-clock" style="color:var(--pink)"></i>Zgjidh Orën</div>
+                        <div class="cb-section-title"><i class="fa-regular fa-clock" style="color:var(--pink)"></i>Choose Time</div>
                         <div class="cb-slots" id="slotsGrid"></div>
                         <div class="cb-suggested" id="suggestedSlots"></div>
-                        <div id="availabilityChip" class="cb-chip open"><i class="fa-solid fa-circle-info"></i>Zgjidh datën për të parë oraret.</div>
+                        <div id="availabilityChip" class="cb-chip open"><i class="fa-solid fa-circle-info"></i>Select a date to view slots.</div>
                     </div>
 
                     <div class="cb-actions">
-                        <button class="cb-btn secondary" id="backTo1Btn"><i class="fa-solid fa-arrow-left"></i> Mbrapa</button>
-                        <button class="cb-btn primary" id="toStep3Btn">Vazhdo te pagesa <i class="fa-solid fa-arrow-right"></i></button>
+                        <button class="cb-btn secondary" id="backTo1Btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="cb-btn primary" id="toStep3Btn">Continue to payment <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
 
                 <!-- STEP 3 -->
                 <div class="cb-step-panel" id="step3">
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-solid fa-note-sticky" style="color:var(--pink)"></i>Detaje të prenotimit</div>
+                        <div class="cb-section-title"><i class="fa-solid fa-note-sticky" style="color:var(--pink)"></i>Booking details</div>
                         <div class="cb-field">
-                            <label for="bookingNotes">Shënime shtesë</label>
-                            <textarea id="bookingNotes" placeholder="Preferenca, komente, kërkesa..."></textarea>
+                            <label for="bookingNotes">Additional notes</label>
+                            <textarea id="bookingNotes" placeholder="Preferences, comments, special requests..."></textarea>
                         </div>
                     </div>
 
                     <div class="cb-section">
-                        <div class="cb-section-title"><i class="fa-solid fa-credit-card" style="color:var(--pink)"></i>Pagesa</div>
+                        <div class="cb-section-title"><i class="fa-solid fa-credit-card" style="color:var(--pink)"></i>Payment</div>
                         <div class="cb-pay-methods">
-                            <button class="cb-pay-btn active" data-method="card"><i class="fa-regular fa-credit-card"></i> Kartë</button>
+                            <button class="cb-pay-btn active" data-method="card"><i class="fa-regular fa-credit-card"></i> Card</button>
                             <button class="cb-pay-btn" data-method="paypal"><i class="fa-brands fa-paypal"></i> PayPal</button>
-                            <button class="cb-pay-btn" data-method="cash"><i class="fa-solid fa-money-bill-wave"></i> Cash në sallon</button>
+                            <button class="cb-pay-btn" data-method="cash"><i class="fa-solid fa-money-bill-wave"></i> Pay at salon</button>
                         </div>
 
                         <div id="cardFields">
                             <div class="cb-form-grid">
                                 <div class="cb-field">
-                                    <label for="payName">Emri i plotë</label>
+                                    <label for="payName">Full name</label>
                                     <input id="payName" type="text" placeholder="Ana Krasniqi">
                                 </div>
                                 <div class="cb-field">
-                                    <label for="payCard">Numri i kartës</label>
+                                    <label for="payCard">Card number</label>
                                     <input id="payCard" type="text" inputmode="numeric" placeholder="1234 5678 9012 3456">
                                 </div>
                                 <div class="cb-field">
-                                    <label for="payExp">Skadimi (MM/VV)</label>
+                                    <label for="payExp">Expiry (MM/YY)</label>
                                     <input id="payExp" type="text" inputmode="numeric" placeholder="12/28">
                                 </div>
                                 <div class="cb-field">
@@ -244,24 +347,25 @@
                     </div>
 
                     <div class="cb-actions">
-                        <button class="cb-btn secondary" id="backTo2Btn"><i class="fa-solid fa-arrow-left"></i> Mbrapa</button>
-                        <button class="cb-btn primary" id="completeBtn"><i class="fa-solid fa-lock"></i> Konfirmo & Paguaj</button>
+                        <button class="cb-btn secondary" id="backTo2Btn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="cb-btn primary" id="completeBtn"><i class="fa-solid fa-lock"></i> Confirm & Pay</button>
                     </div>
                 </div>
             </section>
 
             <aside class="cb-card cb-summary">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-receipt" style="margin-right:6px;color:var(--pink)"></i>Përmbledhje e plotë</span>
+                    <span><i class="fa-solid fa-receipt" style="margin-right:6px;color:var(--pink)"></i>Booking Summary</span>
                 </div>
-                <div class="cb-row"><span>Shërbimi</span><b id="sumService">–</b></div>
-                <div class="cb-row" id="sumDesignRow" style="display:none"><span>Stili</span><b id="sumDesign">–</b></div>
-                <div class="cb-row"><span>Data</span><b id="sumDate">–</b></div>
-                <div class="cb-row"><span>Ora</span><b id="sumTime">–</b></div>
-                <div class="cb-row"><span>Kohëzgjatja</span><b id="sumDuration">–</b></div>
-                <div class="cb-row"><span>Nëntotali</span><b id="sumSubtotal">€0.00</b></div>
-                <div class="cb-row"><span>TVSH (18%)</span><b id="sumVat">€0.00</b></div>
-                <div class="cb-total"><span>Totali</span><b id="sumTotal">€0.00</b></div>
+                <div class="cb-row"><span>Service</span><b id="sumService">–</b></div>
+                <div class="cb-row" id="sumDesignRow" style="display:none"><span>Style</span><b id="sumDesign">–</b></div>
+                <div class="cb-row"><span>Date</span><b id="sumDate">–</b></div>
+                <div class="cb-row"><span>Time</span><b id="sumTime">–</b></div>
+                <div class="cb-row"><span>Duration</span><b id="sumDuration">–</b></div>
+                <div class="cb-row"><span>Subtotal</span><b id="sumSubtotal">€0.00</b></div>
+                <div class="cb-row"><span>VAT (18%)</span><b id="sumVat">€0.00</b></div>
+                <div class="cb-total"><span>Total</span><b id="sumTotal">€0.00</b></div>
+                <button type="button" class="cb-summary-cta" id="summaryCtaBtn">Continue to payment</button>
                 <div class="cb-hint" id="summaryHint"></div>
             </aside>
         </div>
@@ -271,10 +375,10 @@
 <div class="cb-success-modal" id="successModal">
     <div class="cb-success-box">
         <div style="font-size:2.2rem">✅</div>
-        <h3>Prenotimi u konfirmua!</h3>
-        <p id="successText">Takimi dhe pagesa u procesuan me sukses.</p>
+        <h3>Booking confirmed!</h3>
+        <p id="successText">Your appointment and payment were processed successfully.</p>
         <div style="display:flex;gap:.55rem;margin-top:.65rem">
-            <button class="cb-btn secondary" style="flex:1" id="leaveReviewBtn">Lër Review</button>
+            <button class="cb-btn secondary" style="flex:1" id="leaveReviewBtn">Leave a Review</button>
             <button class="cb-btn primary" style="flex:1" onclick="window.location.href='dashboard.html'">Dashboard</button>
         </div>
     </div>
@@ -289,20 +393,35 @@ GB.init({ page: 'booking' });
 
 if (!GB.isLoggedIn()) window.location.replace('./index.html');
 if (GB.isAdmin()) {
-    GB.toast('Klientët rezervojnë këtu. Admin mund të menaxhojë takimet nga paneli.', 'info');
+    GB.toast('Clients book here. Admin can manage appointments from the panel.', 'info');
     window.location.replace('./admin.html#appointments');
 }
 
 const PAYMENTS_KEY = 'gb_payments';
 const BOOKING_PREFILL_KEY = 'gb_booking_prefill';
 const WORK_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
-const monthNames = ['Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nëntor', 'Dhjetor'];
-const dayNames = ['Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht', 'Die'];
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const me = GB.getMe();
+const SERVICE_CATEGORY_OPTIONS = [
+    { key: 'french', label: 'French', designCategories: ['French'] },
+    { key: 'gel', label: 'Gel', designCategories: ['Gel'] },
+    { key: 'ombre', label: 'Ombre', designCategories: ['Ombre'] },
+    { key: 'floral', label: 'Floral', designCategories: ['Floral'] },
+    { key: 'glitter', label: 'Glitter', designCategories: ['Glitter'] },
+    { key: 'chrome-mirror', label: 'Chrome / Mirror', designCategories: ['Chrome'] },
+    { key: 'animal-print', label: 'Animal Print', designCategories: ['Animal Print'] },
+    { key: 'abstract', label: 'Abstract', designCategories: ['Abstract'] },
+    { key: 'swirls', label: 'Swirls', designCategories: ['Swirls'] },
+    { key: '3d-nails', label: '3D Nails', designCategories: ['3D'] },
+    { key: 'foil-nails', label: 'Foil Nails', designCategories: ['Foil'] },
+    { key: 'seasonal', label: 'Seasonal', designCategories: ['Seasonal'] },
+];
 
 const state = {
     step: 1,
     service: null,
+    serviceCategory: null,
     design: null,
     date: null,
     time: null,
@@ -313,10 +432,10 @@ const state = {
     lastAppointmentId: null,
 };
 let services = GB.services.getAll();
-const designs = GB.designs.getAll();
+let designs = GB.designs.getAll();
 const fmtMoney = (n) => `€${Number(n || 0).toFixed(2)}`;
 const toISODate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const formatLongDate = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('sq-AL', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+const formatLongDate = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
 
 const luhn = (num) => {
     let sum = 0; let alt = false;
@@ -352,45 +471,71 @@ function showStep(step) {
         el.classList.toggle('active', idx + 1 === step);
     });
     updateProgress();
+    updateSummaryCta();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateSummaryCta() {
+    const btn = document.getElementById('summaryCtaBtn');
+    if (!btn) return;
+    if (state.step === 1) {
+        btn.classList.remove('secondary');
+        btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Continue to date & time';
+    } else if (state.step === 2) {
+        btn.classList.remove('secondary');
+        btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Continue to payment';
+    } else {
+        btn.classList.add('secondary');
+        btn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back to date & time';
+    }
 }
 
 function updateSummaryUI() {
     const totals = calculateTotals();
     const hasDesign = !!state.design;
+    const serviceLabel = state.serviceCategory || state.service?.name || '–';
+    const duration = Number(state.design?.duration || state.service?.duration || 0);
     document.getElementById('sumDesignRow').style.display = hasDesign ? 'flex' : 'none';
     document.getElementById('sumDesign').textContent = hasDesign ? state.design.name : '–';
 
-    document.getElementById('sumService').textContent = state.service?.name || '–';
+    document.getElementById('sumService').textContent = serviceLabel;
     document.getElementById('sumDate').textContent = state.date ? formatLongDate(state.date) : '–';
     document.getElementById('sumTime').textContent = state.time || '–';
-    document.getElementById('sumDuration').textContent = state.service ? `${state.service.duration || 60} min` : '–';
+    document.getElementById('sumDuration').textContent = duration ? `${duration} min` : '–';
     document.getElementById('sumSubtotal').textContent = fmtMoney(totals.subtotal);
     document.getElementById('sumVat').textContent = fmtMoney(totals.vat);
     document.getElementById('sumTotal').textContent = fmtMoney(totals.total);
     document.getElementById('summaryHint').textContent = state.paymentMethod === 'cash'
-        ? 'Cash në sallon: takimi konfirmohet tani, pagesa bëhet në vizitë.'
-        : 'Pagesa do të kryhet menjëherë online.';
+        ? 'Pay at salon: appointment is confirmed now, payment happens during your visit.'
+        : 'Online payment will be processed immediately.';
 }
 
 function renderServices() {
     const host = document.getElementById('servicesGrid');
-    if (!services.length) {
-        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">Nuk ka shërbime të disponueshme.</p>';
+    if (!SERVICE_CATEGORY_OPTIONS.length) {
+        host.innerHTML = '<p style="font-size:.85rem;color:var(--text-muted)">No services are available right now.</p>';
         return;
     }
-    host.innerHTML = services.map((s) => `
-        <button type="button" class="cb-service ${state.service?.id === s.id ? 'active' : ''}" data-service-id="${s.id}">
-            <div class="cb-service-name">${s.name}</div>
+    host.innerHTML = SERVICE_CATEGORY_OPTIONS.map((option) => {
+        const mappedService = resolveServiceForCategory(option.label);
+        const active = state.serviceCategory === option.label ? 'active' : '';
+        const duration = Number(mappedService?.duration || 60);
+        const price = Number(mappedService?.price || 0);
+        return `
+        <button type="button" class="cb-service ${active}" data-service-option="${option.key}">
+            <div class="cb-service-name">${option.label}</div>
             <div class="cb-service-meta">
-                <span><i class="fa-regular fa-clock"></i> ${s.duration || 60} min</span>
-                <span class="cb-price">€${s.price}</span>
+                <span><i class="fa-regular fa-clock"></i> ${duration} min</span>
+                <span class="cb-price">€${price.toFixed(2)}</span>
             </div>
         </button>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function inferCategoryFromService() {
+    if (state.serviceCategory) return state.serviceCategory;
+    if (state.design?.category) return state.design.category;
     const name = String(state.service?.name || '').toLowerCase();
     if (name.includes('french')) return 'French';
     if (name.includes('gel')) return 'Gel';
@@ -410,16 +555,67 @@ function suggestServiceByCategory(category = '', suggestedId = null) {
     if (cat.includes('french')) return pick(['french']);
     if (cat.includes('gel')) return pick(['gel']);
     if (cat.includes('ombre')) return pick(['ombre']);
+    if (cat.includes('floral')) return pick(['nail art', 'gel']);
+    if (cat.includes('glitter')) return pick(['nail art', 'gel']);
+    if (cat.includes('chrome') || cat.includes('mirror')) return pick(['nail art', 'gel']);
+    if (cat.includes('animal')) return pick(['nail art']);
+    if (cat.includes('abstract')) return pick(['nail art']);
+    if (cat.includes('swirl')) return pick(['nail art']);
     if (cat.includes('3d')) return pick(['akryl', 'acryl', 'nail art']);
+    if (cat.includes('foil')) return pick(['nail art', 'gel']);
+    if (cat.includes('seasonal')) return pick(['nail art', 'gel']);
     return pick(['nail art', 'gel', 'manikyr']) || null;
+}
+
+function resolveServiceForCategory(categoryLabel = '') {
+    const suggested = suggestServiceByCategory(categoryLabel);
+    if (suggested) {
+        return suggested;
+    }
+    return services[0] || null;
+}
+
+function applyServiceCategory(optionKey = '') {
+    const option = SERVICE_CATEGORY_OPTIONS.find((item) => item.key === optionKey);
+    if (!option) return;
+    state.serviceCategory = option.label;
+    state.service = resolveServiceForCategory(option.label);
+}
+
+function getPreferredDesignCategories() {
+    if (state.design?.category) return [state.design.category];
+    const byService = SERVICE_CATEGORY_OPTIONS.find((item) => item.label === state.serviceCategory);
+    if (byService?.designCategories?.length) return byService.designCategories;
+    const inferred = inferCategoryFromService();
+    if (!inferred) return [];
+    if (inferred === 'Chrome / Mirror') return ['Chrome'];
+    if (inferred === '3D Nails') return ['3D'];
+    if (inferred === 'Foil Nails') return ['Foil'];
+    return [inferred];
+}
+
+function applyDesignSelection(design) {
+    if (!design) return;
+    state.design = design;
+    if (!state.service) {
+        state.service = resolveServiceForCategory(design.category);
+    }
+    if (!state.serviceCategory) {
+        const matchingOption = SERVICE_CATEGORY_OPTIONS.find((item) =>
+            (item.designCategories || []).includes(design.category)
+        );
+        if (matchingOption) {
+            state.serviceCategory = matchingOption.label;
+        }
+    }
 }
 
 function renderDesigns() {
     const host = document.getElementById('designGrid');
-    const preferredCategory = inferCategoryFromService();
+    const preferredCategories = getPreferredDesignCategories();
     const sorted = [...designs].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-    const visible = preferredCategory
-        ? sorted.filter(d => d.category === preferredCategory).slice(0, 8)
+    const visible = preferredCategories.length
+        ? sorted.filter((d) => preferredCategories.includes(d.category)).slice(0, 8)
         : sorted.slice(0, 8);
 
     host.innerHTML = visible.map((d) => `
@@ -429,15 +625,15 @@ function renderDesigns() {
                 <div class="cb-design-name">${d.name}</div>
                 <div class="cb-design-meta">${d.category} · €${d.price}</div>
                 <div class="cb-design-actions">
-                    <span class="cb-mini-btn">${state.design?.id === d.id ? 'Zgjedhur' : 'Zgjidh'}</span>
-                    ${state.design?.id === d.id ? '<span class="cb-mini-btn clear">Ndrysho</span>' : ''}
+                    <span class="cb-mini-btn">${state.design?.id === d.id ? 'Selected' : 'Select'}</span>
+                    ${state.design?.id === d.id ? '<span class="cb-mini-btn clear">Change</span>' : ''}
                 </div>
             </div>
         </button>
     `).join('');
     document.getElementById('designHint').textContent = state.design
-        ? `"${state.design.name}" u shtua në përmbledhje.`
-        : 'Opsionale: zgjidh stil nga galeria për ta lidhur me rezervimin.';
+        ? `"${state.design.name}" has been added to your summary.`
+        : 'Optional: pick a style from the gallery to personalize your booking.';
 }
 
 function hydrateGalleryPrefill() {
@@ -457,11 +653,16 @@ function hydrateGalleryPrefill() {
     };
     const suggested = suggestServiceByCategory(prefill.designCategory, prefill.suggestedServiceId);
     if (suggested) state.service = suggested;
+    if (!state.service && services.length) state.service = services[0];
+    const matchingOption = SERVICE_CATEGORY_OPTIONS.find((item) =>
+        (item.designCategories || []).includes(state.design.category)
+    );
+    if (matchingOption) state.serviceCategory = matchingOption.label;
     localStorage.removeItem(BOOKING_PREFILL_KEY);
     renderServices();
     renderDesigns();
     updateSummaryUI();
-    GB.toast(`Stili "${state.design.name}" u importua nga galeria.`, 'success');
+    GB.toast(`Style "${state.design.name}" was imported from gallery.`, 'success');
 }
 
 function clearSelectedDesign() {
@@ -492,13 +693,13 @@ function renderQuickDays() {
     const host = document.getElementById('quickDays');
     const items = findNextAvailableDays();
     if (!items.length) {
-        host.innerHTML = '<span style="font-size:.75rem;color:var(--text-muted)">Nuk ka data të lira së shpejti.</span>';
+        host.innerHTML = '<span style="font-size:.75rem;color:var(--text-muted)">No available days soon.</span>';
         return;
     }
     host.innerHTML = items.map((it) => {
-        const label = it.day.toLocaleDateString('sq-AL', { day:'2-digit', month:'short' });
+        const label = it.day.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
         const active = state.date === it.iso ? 'active' : '';
-        return `<button type="button" class="cb-quick-day ${active}" data-quick-day="${it.iso}">${label} · ${it.freeCount} lirë</button>`;
+        return `<button type="button" class="cb-quick-day ${active}" data-quick-day="${it.iso}">${label} · ${it.freeCount} free</button>`;
     }).join('');
 }
 
@@ -528,7 +729,7 @@ function renderCalendar() {
         else classes.push('is-open');
         if (isSelected) classes.push('selected');
 
-        const statusText = isPast ? 'Mbyllur' : isFull ? 'Plotë' : availability.bookedCount ? `${availability.freeCount} lirë` : 'Lirë';
+        const statusText = isPast ? 'Closed' : isFull ? 'Full' : availability.bookedCount ? `${availability.freeCount} free` : 'Open';
         const disabled = isPast || isFull ? 'disabled' : '';
         cells.push(`<button type="button" class="${classes.join(' ')}" data-day="${dayISO}" ${disabled}>
             ${d}<small>${statusText}</small>
@@ -547,7 +748,7 @@ function renderSlots() {
         grid.innerHTML = '';
         suggested.innerHTML = '';
         chip.className = 'cb-chip open';
-        chip.innerHTML = '<i class="fa-solid fa-circle-info"></i>Zgjidh një datë për të parë oraret.';
+        chip.innerHTML = '<i class="fa-solid fa-circle-info"></i>Select a date to view available slots.';
         return;
     }
 
@@ -564,22 +765,22 @@ function renderSlots() {
 
     const suggestedSlots = WORK_SLOTS.filter(s => !availability.bookedSlots.includes(s)).slice(0, 3);
     suggested.innerHTML = suggestedSlots.length
-        ? `<span class="cb-suggested-label">Ora të rekomanduara:</span>${suggestedSlots.map(s => `<button type="button" data-time="${s}">${s}</button>`).join('')}`
+        ? `<span class="cb-suggested-label">Suggested slots:</span>${suggestedSlots.map(s => `<button type="button" data-time="${s}">${s}</button>`).join('')}`
         : '';
 
     chip.className = `cb-chip ${availability.isFull ? 'full' : 'open'}`;
     chip.innerHTML = availability.isFull
-        ? '<i class="fa-solid fa-ban"></i>Kjo ditë është e plotë.'
-        : `<i class="fa-solid fa-bolt"></i>${availability.freeCount} orare të lira, ${availability.bookedCount} të rezervuara.`;
+        ? '<i class="fa-solid fa-lock"></i>This day is fully booked.'
+        : `<i class="fa-solid fa-bolt"></i>${availability.freeCount} slots open, ${availability.bookedCount} booked.`;
 }
 
 function validateStep(step) {
     if (step === 1 && !state.service) {
-        GB.toast('Zgjidhni një shërbim për të vazhduar.', 'error');
+        GB.toast('Please choose a service to continue.', 'error');
         return false;
     }
     if (step === 2 && (!state.date || !state.time)) {
-        GB.toast('Zgjidhni datën dhe orën.', 'error');
+        GB.toast('Please choose both date and time.', 'error');
         return false;
     }
     return true;
@@ -591,17 +792,17 @@ function validatePayment() {
     const card = document.getElementById('payCard').value.replace(/\s/g, '');
     const exp = document.getElementById('payExp').value.trim();
     const cvv = document.getElementById('payCvv').value.trim();
-    if (!name || name.length < 3) { GB.toast('Shkruani emrin e plotë.', 'error'); return false; }
-    if (!/^\d{13,16}$/.test(card) || !luhn(card)) { GB.toast('Numri i kartës nuk është valid.', 'error'); return false; }
+    if (!name || name.length < 3) { GB.toast('Please enter your full name.', 'error'); return false; }
+    if (!/^\d{13,16}$/.test(card) || !luhn(card)) { GB.toast('Card number is not valid.', 'error'); return false; }
     const m = exp.match(/^(\d{2})\/(\d{2})$/);
-    if (!m) { GB.toast('Data e skadimit duhet MM/VV.', 'error'); return false; }
+    if (!m) { GB.toast('Expiry date must be in MM/YY format.', 'error'); return false; }
     const mm = Number(m[1]); const yy = 2000 + Number(m[2]);
-    if (mm < 1 || mm > 12) { GB.toast('Muaji i skadimit është invalid.', 'error'); return false; }
+    if (mm < 1 || mm > 12) { GB.toast('Expiry month is invalid.', 'error'); return false; }
     if (new Date(yy, mm - 1, 1) < new Date(new Date().getFullYear(), new Date().getMonth(), 1)) {
-        GB.toast('Karta duket e skaduar.', 'error');
+        GB.toast('This card appears expired.', 'error');
         return false;
     }
-    if (!/^\d{3,4}$/.test(cvv)) { GB.toast('CVV duhet të ketë 3 ose 4 shifra.', 'error'); return false; }
+    if (!/^\d{3,4}$/.test(cvv)) { GB.toast('CVV must contain 3 or 4 digits.', 'error'); return false; }
     return true;
 }
 
@@ -622,6 +823,7 @@ async function syncBookingData() {
     const sync = await GB.syncFromServer();
     if (sync?.ok) {
         services = GB.services.getAll();
+        designs = GB.designs.getAll();
     }
 }
 
@@ -631,14 +833,16 @@ async function completeBooking() {
     if (!validatePayment()) return;
 
     if (!state.service || !state.date || !state.time) {
-        GB.toast('Plotësoni të gjitha hapat e rezervimit.', 'error');
+        GB.toast('Please complete all booking steps.', 'error');
         return;
     }
 
     state.submitting = true;
     const totals = calculateTotals();
-    const status = state.paymentMethod === 'cash' ? 'Confirmed' : 'Done';
-    const methodLabel = state.paymentMethod === 'card' ? 'Kartë Krediti' : state.paymentMethod === 'paypal' ? 'PayPal' : 'Cash në Sallon';
+    const status = state.paymentMethod === 'cash'
+        ? 'Confirmed'
+        : (state.paymentMethod === 'card' ? 'Pending' : 'Done');
+    const methodLabel = state.paymentMethod === 'card' ? 'Credit Card' : state.paymentMethod === 'paypal' ? 'PayPal' : 'Pay at Salon';
 
     try {
         const apptRes = await GB.api.appointments.create({
@@ -654,6 +858,24 @@ async function completeBooking() {
         });
         state.lastAppointmentId = apptRes.appointment.id;
 
+        if (state.paymentMethod === 'card') {
+            try {
+                const checkout = await GB.api.payments.checkout({
+                    appointmentId: apptRes.appointment.id,
+                    amount: totals.total,
+                    currency: 'eur',
+                    successUrl: `${window.location.origin}/booking.html?payment=success&appointmentId=${apptRes.appointment.id}`,
+                    cancelUrl: `${window.location.origin}/booking.html?payment=cancelled&appointmentId=${apptRes.appointment.id}`
+                });
+                if (checkout?.checkoutUrl) {
+                    window.location.href = checkout.checkoutUrl;
+                    return;
+                }
+            } catch (_) {
+                // Stripe may be disabled in this environment; keep existing local/manual flow.
+            }
+        }
+
         const localPayment = addPaymentRecord({
             txId: '#GB-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000),
             userEmail: me.email,
@@ -664,7 +886,9 @@ async function completeBooking() {
             selectedDesignName: state.design?.name || null,
             amount: totals.total,
             method: methodLabel,
-            status: state.paymentMethod === 'cash' ? 'Në Sallon' : 'Paguar'
+            status: state.paymentMethod === 'cash'
+                ? 'Pay at Salon'
+                : (state.paymentMethod === 'card' ? 'Processing' : 'Paid')
         });
         try {
             await GB.api.payments.create(localPayment);
@@ -677,11 +901,18 @@ async function completeBooking() {
         renderSlots();
         updateSummaryUI();
 
+        const bookedLabel = state.design && state.service
+            ? `${state.design.name} (${state.service.name})`
+            : (state.design?.name || state.service?.name || 'Service');
         document.getElementById('successText').textContent =
-            `${state.service.name} · ${formatLongDate(state.date)} në ${state.time} · Totali ${fmtMoney(totals.total)}`;
+            `${bookedLabel} · ${formatLongDate(state.date)} at ${state.time} · Total ${fmtMoney(totals.total)}`;
         document.getElementById('successModal').classList.add('open');
     } catch (err) {
-        GB.toast(err.message || 'Ndodhi një gabim gjatë rezervimit.', 'error');
+        const rawMsg = String(err?.message || '');
+        const friendly = /failed to fetch|networkerror|load failed/i.test(rawMsg)
+            ? 'Cannot reach server. Start backend on port 3000 and try again.'
+            : (rawMsg || 'An error occurred while processing the booking.');
+        GB.toast(friendly, 'error');
     } finally {
         state.submitting = false;
     }
@@ -693,12 +924,9 @@ document.getElementById('leaveReviewBtn').addEventListener('click', () => {
 });
 
 document.getElementById('servicesGrid').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-service-id]');
+    const btn = e.target.closest('[data-service-option]');
     if (!btn) return;
-    const id = Number(btn.dataset.serviceId);
-    const found = services.find((s) => s.id === id);
-    if (!found) return;
-    state.service = found;
+    applyServiceCategory(btn.dataset.serviceOption);
     renderServices();
     renderDesigns();
     updateSummaryUI();
@@ -710,8 +938,13 @@ document.getElementById('designGrid').addEventListener('click', (e) => {
     const id = Number(btn.dataset.designId);
     const found = designs.find((d) => d.id === id);
     if (!found) return;
-    state.design = state.design?.id === found.id ? null : found;
+    if (state.design?.id === found.id) {
+        state.design = null;
+    } else {
+        applyDesignSelection(found);
+    }
     renderDesigns();
+    renderServices();
     updateSummaryUI();
 });
 
@@ -760,10 +993,10 @@ document.querySelectorAll('.cb-pay-btn').forEach(btn => {
         btn.classList.add('active');
         document.getElementById('cardFields').style.display = state.paymentMethod === 'card' ? 'block' : 'none';
         document.getElementById('paymentHint').textContent = state.paymentMethod === 'cash'
-            ? 'Takimi konfirmohet pa pagesë online.'
+            ? 'Appointment is confirmed without online payment.'
             : state.paymentMethod === 'paypal'
-                ? 'Do të procesohet si pagesë e menjëhershme PayPal.'
-                : 'Pagesë e sigurt me kartë.';
+                ? 'Payment will be processed instantly with PayPal.'
+                : 'Secure card payment.';
         updateSummaryUI();
     });
 });
@@ -773,6 +1006,17 @@ document.getElementById('backTo1Btn').addEventListener('click', () => showStep(1
 document.getElementById('toStep3Btn').addEventListener('click', () => { if (validateStep(2)) showStep(3); });
 document.getElementById('backTo2Btn').addEventListener('click', () => showStep(2));
 document.getElementById('completeBtn').addEventListener('click', completeBooking);
+document.getElementById('summaryCtaBtn').addEventListener('click', () => {
+    if (state.step === 1) {
+        if (validateStep(1)) showStep(2);
+        return;
+    }
+    if (state.step === 2) {
+        if (validateStep(2)) showStep(3);
+        return;
+    }
+    showStep(2);
+});
 
 document.getElementById('prevMonthBtn').addEventListener('click', () => { state.month.setMonth(state.month.getMonth() - 1); renderCalendar(); });
 document.getElementById('nextMonthBtn').addEventListener('click', () => { state.month.setMonth(state.month.getMonth() + 1); renderCalendar(); });
@@ -791,6 +1035,13 @@ window.addEventListener('storage', (e) => {
 
 async function bootstrapBooking() {
     await syncBookingData();
+    const params = new URLSearchParams(window.location.search);
+    const paymentState = params.get('payment');
+    if (paymentState === 'success') {
+        GB.toast('Online payment completed successfully.', 'success');
+    } else if (paymentState === 'cancelled') {
+        GB.toast('Online payment was cancelled. You can try again.', 'info');
+    }
     renderServices();
     hydrateGalleryPrefill();
     renderDesigns();
@@ -798,6 +1049,7 @@ async function bootstrapBooking() {
     renderSlots();
     updateSummaryUI();
     showStep(1);
+    updateSummaryCta();
 }
 
 bootstrapBooking();

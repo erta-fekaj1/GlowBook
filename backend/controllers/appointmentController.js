@@ -1,10 +1,19 @@
 const Appointment = require('../models/Appointment');
 const Service = require('../models/Service');
+const User = require('../models/User');
 const { awardPointsToUser } = require('../utils/loyalty');
 const { getNextId } = require('../utils/id');
 const { serializeAppointment } = require('../utils/serializers');
+const notificationService = require('../services/notificationService');
 
 const WORKDAY_SLOTS = Array.from({ length: 9 }, (_, i) => `${String(i + 9).padStart(2, '0')}:00`);
+
+function fireAndForget(promise) {
+    Promise.resolve(promise).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn('[notify:warn]', err?.message || err);
+    });
+}
 
 function normalizeDateTime({ date, time }) {
     if (date && time) {
@@ -97,6 +106,14 @@ async function createAppointment(req, res) {
     });
 
     await maybeAwardLoyalty(appointment, '');
+    fireAndForget(notificationService.sendAppointmentCreated({
+        appointment,
+        user: {
+            name: req.user.name,
+            email: req.user.email,
+            phone: req.user.phone || '',
+        },
+    }));
     return res.status(201).json({ ok: true, appointment: serializeAppointment(appointment) });
 }
 
@@ -108,6 +125,8 @@ async function updateAppointment(req, res) {
     const isAdmin = req.user.role === 'admin';
     if (!isOwner && !isAdmin) return res.status(403).json({ ok: false, error: 'Not allowed.' });
 
+    const previousDate = appointment.date;
+    const previousTime = appointment.time;
     const previousStatus = appointment.status;
     const { day, slot } = normalizeDateTime({
         date: req.body.date ?? appointment.date,
@@ -128,12 +147,36 @@ async function updateAppointment(req, res) {
     }
 
     if (typeof req.body.notes === 'string') appointment.notes = req.body.notes.trim();
+    const slotChanged = previousDate !== day || previousTime !== slot;
     appointment.date = day;
     appointment.time = slot;
     appointment.startAt = new Date(`${day}T${slot}:00`);
+    if (slotChanged) {
+        // If the appointment is moved, allow reminder scheduler to notify again.
+        appointment.reminderSentAt = null;
+    }
+    if (previousStatus === 'Cancelled' && appointment.status !== 'Cancelled') {
+        appointment.reminderSentAt = null;
+    }
 
     await appointment.save();
     await maybeAwardLoyalty(appointment, previousStatus);
+    const appointmentChanged =
+        previousStatus !== appointment.status ||
+        previousDate !== appointment.date ||
+        previousTime !== appointment.time;
+    if (appointmentChanged) {
+        const user = await User.findOne({ id: appointment.userId }).lean();
+        fireAndForget(notificationService.sendAppointmentUpdated({
+            appointment,
+            previousStatus,
+            user: {
+                name: user?.name || appointment.userName,
+                email: user?.email || appointment.userEmail,
+                phone: user?.phone || '',
+            },
+        }));
+    }
     return res.json({ ok: true, appointment: serializeAppointment(appointment) });
 }
 
